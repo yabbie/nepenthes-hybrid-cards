@@ -153,11 +153,11 @@ button, input, select, textarea { font-family: inherit; }
                 <div style="padding-top:{{ v.symPadM }}px; transform:scale({{ v.symK }}); transform-origin:0 0"><svg width="26" height="26" style="display:block; overflow:visible"><circle cx="13" cy="9.1" r="6.1" style="fill:none; stroke:#1b1a17; stroke-width:3"></circle><line x1="13" y1="15.2" x2="13" y2="25.1" style="stroke:#1b1a17; stroke-width:3"></line><line x1="8.4" y1="20.4" x2="17.6" y2="20.4" style="stroke:#1b1a17; stroke-width:3"></line></svg></div>
                 <div>
                   <sc-if value="{{ v.zh }}" hint-placeholder-val="{{ true }}">
-                    <div style="font-weight:700; font-size:{{ v.fit.cnM }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnMDisp }}</div>
-                    <sc-if value="{{ v.hasEnM }}" hint-placeholder-val="{{ true }}"><div style="font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enMDisp }}</div></sc-if>
+                    <div data-ff="cn" style="font-kerning:none; font-feature-settings:'kern' 0, 'palt' 0, 'chws' 0, 'halt' 0; text-spacing-trim:space-all; text-autospace:no-autospace; letter-spacing:0; font-weight:700; font-size:{{ v.fit.cnM }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnMDisp }}</div>
+                    <sc-if value="{{ v.hasEnM }}" hint-placeholder-val="{{ true }}"><div data-ff="it" style="font-kerning:none; font-feature-settings:'kern' 0; letter-spacing:0; font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enMDisp }}</div></sc-if>
                   </sc-if>
                   <sc-if value="{{ v.en }}" hint-placeholder-val="{{ false }}">
-                    <div style="font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enMTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
+                    <div data-ff="up" style="font-kerning:none; font-feature-settings:'kern' 0; letter-spacing:0; font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enMTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
                   </sc-if>
                 </div>
               </div>
@@ -165,11 +165,11 @@ button, input, select, textarea { font-family: inherit; }
                 <div style="padding-top:{{ v.symPadF }}px; transform:scale({{ v.symK }}); transform-origin:0 0"><svg width="26" height="26" style="display:block; overflow:visible"><circle cx="10" cy="16" r="6.1" style="fill:none; stroke:#1b1a17; stroke-width:3"></circle><line x1="14.3" y1="11.7" x2="22.1" y2="3.9" style="stroke:#1b1a17; stroke-width:3"></line><polyline points="16.2,3 23,3 23,9.8" style="fill:none; stroke:#1b1a17; stroke-width:3; stroke-linejoin:miter"></polyline></svg></div>
                 <div>
                   <sc-if value="{{ v.zh }}" hint-placeholder-val="{{ true }}">
-                    <div style="font-weight:700; font-size:{{ v.fit.cnF }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnFDisp }}</div>
-                    <sc-if value="{{ v.hasEnF }}" hint-placeholder-val="{{ true }}"><div style="font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enFDisp }}</div></sc-if>
+                    <div data-ff="cn" style="font-kerning:none; font-feature-settings:'kern' 0, 'palt' 0, 'chws' 0, 'halt' 0; text-spacing-trim:space-all; text-autospace:no-autospace; letter-spacing:0; font-weight:700; font-size:{{ v.fit.cnF }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnFDisp }}</div>
+                    <sc-if value="{{ v.hasEnF }}" hint-placeholder-val="{{ true }}"><div data-ff="it" style="font-kerning:none; font-feature-settings:'kern' 0; letter-spacing:0; font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enFDisp }}</div></sc-if>
                   </sc-if>
                   <sc-if value="{{ v.en }}" hint-placeholder-val="{{ false }}">
-                    <div style="font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enFTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
+                    <div data-ff="up" style="font-kerning:none; font-feature-settings:'kern' 0; letter-spacing:0; font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enFTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
                   </sc-if>
                 </div>
               </div>
@@ -368,9 +368,27 @@ class Component extends DCLogic {
     this._mc = this._mc || {};
     const k = font + '|' + text;
     if (this._mc[k] != null) return this._mc[k];
-    if (!this._ctx) this._ctx = document.createElement('canvas').getContext('2d');
-    this._ctx.font = font;
-    return (this._mc[k] = this._ctx.measureText(text).width);
+    if (!this._ctx) { const s = document.createElement('span'); s.style.cssText = "position:absolute;left:-99999px;top:0;visibility:hidden;white-space:pre;pointer-events:none;letter-spacing:0;font-feature-settings:'kern' 0,'palt' 0,'chws' 0,'halt' 0;text-spacing-trim:space-all;text-autospace:no-autospace;" + 'word-spacing:normal;font-kerning:none;text-rendering:auto'; document.body.appendChild(s); this._ctx = s; }
+    this._ctx.style.font = font;
+    this._ctx.style.fontKerning = 'none';
+    this._ctx.textContent = text;
+    const w = this._ctx.getBoundingClientRect().width;
+    if (document.fonts && text && !this._fd?.has(k)) {
+      let ok = true;
+      try { ok = document.fonts.check(font, text); } catch (e) {}
+      if (!ok) { this.needFont(font, text, k); return w; }
+    }
+    return (this._mc[k] = w);
+  }
+  needFont(font, text, k) {
+    this._fd = this._fd || new Set(); this._fq = this._fq || new Map();
+    this._fq.set(k, [font, text]);
+    clearTimeout(this._ft);
+    this._ft = setTimeout(async () => {
+      const q = [...this._fq.entries()]; this._fq.clear();
+      await Promise.all(q.map(([kk, [f, t]]) => { this._fd.add(kk); return document.fonts.load(f, t).catch(() => {}); }));
+      this._mc = {}; this._fitState = {}; this.forceUpdate();
+    }, 30);
   }
   breakable(cn) {
     let d = 0, out = '';
@@ -393,16 +411,17 @@ class Component extends DCLogic {
   lines(text, font, size, avail, isCn) {
     if (!text) return 0;
     const segs = isCn ? this.breakable(text).split('\u200B') : text.split(/(?<=\s)/);
+    const wf = (this._wf && this._wf[font + '|' + text]) || 1;
     let n = 1, cur = 0;
     for (const sg of segs) {
-      const w = this.measure(sg, font) / 100 * size;
+      const w = this.measure(sg, font) / 100 * size * wf;
       if (cur > 0 && cur + w > avail) { n++; cur = w; } else cur += w;
       while (cur > avail) { n++; cur -= avail; }
     }
     return n;
   }
-  fitNames(c, avail, lang, r34, corr = 1) {
-    const ns = this.props.nameScale ?? 1, A = avail * 0.98, en = lang === 'en';
+  fitNames(c, avail, lang, r34, corr = 1, wc = 1) {
+    const ns = this.props.nameScale ?? 1, A = avail * 0.97 / wc, en = lang === 'en';
     const inside = this.ef() === 'right', box = this.geo(r34 ? '34' : '11').box;
     const fCn = '700 100px ' + FF.serif, fIt = 'italic 500 100px ' + FF.gara, fUp = '500 100px ' + FF.gara;
     const enM = c.enM ? 'N. ' + c.enM : '', enF = c.enF || '';
@@ -411,7 +430,8 @@ class Component extends DCLogic {
       ? (e ? this.lines(e, fUp, BE * kc, A, false) * BE * kc * 1.2 : 0)
       : this.lines(cn, fCn, BC * kc, A, true) * BC * kc * 1.25 + (e ? 4 + this.lines(e, fIt, BS * ke, A, false) * BS * ke * 1.3 : 0);
     const h = (kM, kF, ke) => (ent(c.cnM, enM, kM, ke) + 18 * Math.max(kM, kF) + ent(c.cnF, enF, kF, ke)) * corr;
-    const lm = this.measure(en ? enM : (c.cnM || ''), en ? fUp : fCn), lf = this.measure(en ? enF : (c.cnF || ''), en ? fUp : fCn);
+    const wfo = (t, f) => (this._wf && this._wf[f + '|' + t]) || 1;
+    const lm = this.measure(en ? enM : (c.cnM || ''), en ? fUp : fCn) * wfo(en ? enM : (c.cnM || ''), en ? fUp : fCn), lf = this.measure(en ? enF : (c.cnF || ''), en ? fUp : fCn) * wfo(en ? enF : (c.cnF || ''), en ? fUp : fCn);
     const d = lm && lf ? Math.max(0.78, Math.min(1, Math.pow(Math.min(lm, lf) / Math.max(lm, lf), 0.3))) : 1;
     const mLong = lm > lf, kMax = r34 ? 1.4 : 0.85;
     const pair = kS => mLong ? [kS * d, kS] : [kS, kS * d];
@@ -424,8 +444,12 @@ class Component extends DCLogic {
     let ke = keOf(kM, kF, kf);
     if (!en) { const keMax = ke * 1.25; while (ke + 0.02 <= keMax && h(kM, kF, ke + 0.02) <= target) ke += 0.02; }
     const hpred = Math.round(h(kM, kF, ke));
-    if (en) return { s: kS, hpred, enM: Math.round(BE * kM), enF: Math.round(BE * kF) };
-    return { s: kS, hpred, cnM: Math.round(BC * kM), cnF: Math.round(BC * kF), enM: Math.round(BS * ke), enF: Math.round(BS * ke) };
+    const snap = (t, f, sz) => { if (!t) return sz; const one = Math.floor(A / (this.measure(t, f) / 100 * wfo(t, f))); return this.lines(t, f, sz, A, f === fCn) > 1 && one >= sz * 0.94 ? one : sz; };
+    if (en) { const a = snap(enM, fUp, Math.round(BE * kM)), b = snap(enF, fUp, Math.round(BE * kF)); return { s: kS, hpred, enM: a, enF: b, lnM: this.lines(enM, fUp, a, A, false), lnF: this.lines(enF, fUp, b, A, false) }; }
+    const cm = snap(c.cnM, fCn, Math.round(BC * kM)), cf = snap(c.cnF, fCn, Math.round(BC * kF));
+    const snapE = (t, sz) => { if (!t) return sz; const one = Math.floor(A / (this.measure(t, fIt) / 100 * wfo(t, fIt))); return this.lines(t, fIt, sz, A, false) > 1 && one >= sz * 0.8 ? one : sz; };
+    const es = Math.min(snapE(enM, Math.round(BS * ke)), snapE(enF, Math.round(BS * ke)));
+    return { s: kS, hpred, cnM: cm, cnF: cf, enM: es, enF: es, lnM: this.lines(c.cnM, fCn, cm, A, true), lnF: this.lines(c.cnF, fCn, cf, A, true), leM: this.lines(enM, fIt, es, A, false), leF: this.lines(enF, fIt, es, A, false) };
   }
   enTokens(str) {
     if (!str) return [];
@@ -588,16 +612,37 @@ class Component extends DCLogic {
     if (this._fitRaf) return;
     this._fitRaf = requestAnimationFrame(() => {
       this._fitRaf = null;
-      if (document.fonts && document.fonts.status !== 'loaded') return;
+      if (document.fonts && !this._fl) { this._fl = 1; document.fonts.addEventListener('loadingdone', () => { this._mc = {}; this._wn = {}; this._fitState = {}; this.forceUpdate(); this.checkFit(); }); }
       let changed = false;
+      this._wf = this._wf || {}; this._wn = this._wn || {};
+      const FM = { cn: '700 100px ' + FF.serif, it: 'italic 500 100px ' + FF.gara, up: '500 100px ' + FF.gara };
+      document.querySelectorAll('[data-ff]').forEach(t => {
+        const font = FM[t.dataset.ff], txt = (t.textContent || '').replace(/\u200B/g, '');
+        const fsz = parseFloat(getComputedStyle(t).fontSize);
+        if (!font || !txt || !fsz) return;
+        const key = font + '|' + txt;
+        if ((this._wn[key] || 0) >= 4) return;
+        const cl = t.cloneNode(true);
+        cl.removeAttribute('data-ff');
+        cl.style.position = 'absolute'; cl.style.visibility = 'hidden'; cl.style.whiteSpace = 'nowrap'; cl.style.width = 'auto'; cl.style.left = '0'; cl.style.top = '0';
+        t.parentNode.appendChild(cl);
+        const real = cl.getBoundingClientRect().width / ((t.getBoundingClientRect().width / t.offsetWidth) || 1);
+        cl.remove();
+        const pred = this.measure(txt, font) / 100 * fsz;
+        if (!real || !pred) return;
+        const f = real / pred;
+        if (Math.abs(f / (this._wf[key] || 1) - 1) > 0.003) { this._wf[key] = f; this._wn[key] = (this._wn[key] || 0) + 1; this._fitState = {}; changed = true; }
+      });
       document.querySelectorAll('[data-fitsig]').forEach(el => {
         const kids = el.children, box = el.clientHeight, hp = +el.dataset.hpred;
         if (!kids.length || !box || !hp) return;
+        const sg = el.dataset.fitsig, st = this._fitState[sg] || (this._fitState[sg] = { c: 1, n: 0 });
+
         const k = el.getBoundingClientRect().height / box;
         const gap = parseFloat(getComputedStyle(el).rowGap) || 0;
         const ch = [...kids].reduce((acc, kd) => acc + kd.getBoundingClientRect().height / k, 0) + gap * (kids.length - 1);
         const sig = el.dataset.fitsig, fs = this._fitState[sig] || (this._fitState[sig] = { c: 1, n: 0 });
-        if (fs.n >= 3) return;
+        if (fs.n >= 4) return;
         const nc = Math.max(0.5, Math.min(1.6, fs.c * ch / hp));
         if (Math.abs(nc / fs.c - 1) > 0.05) { fs.c = +nc.toFixed(3); fs.n++; changed = true; }
       });
@@ -830,7 +875,8 @@ class Component extends DCLogic {
       const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', name: n || '' });
       const slotM = c.id + ':m', slotF = c.id + ':f', slotS = c.id + ':s';
       const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot].join('|');
-      const fit = this.fitNames(c, avail, lang, r34, (this._fitState[sig] && this._fitState[sig].c) || 1), shrink = fit.s;
+      const fst = this._fitState[sig] || {};
+      const fit = this.fitNames(c, avail, lang, r34, fst.c || 1), shrink = fit.s;
       const yc = this.yc(c.year), key = c.id + ':C';
       const view = {
         key, H, sc, pw, ph, bs, sw, sh, rowH, colGap, footIn: footR, footOut: foot === 'full', footLeft: foot === 'left', footW: 'auto', yc, ycInk: this.inkOn(yc), num: c.num, year: c.year, producer: c.producer,
