@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#3f5a3a"/><text x="50" y="66" font-size="44" text-anchor="middle" fill="#f3f0e6" font-family="serif">亲</text></svg></template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&amp;family=Noto+Sans+SC:wght@300;400;500;700&amp;family=Hanken+Grotesk:wght@300;400;600&amp;family=EB+Garamond:ital,wght@0,500;0,600;1,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Bodoni+Moda:ital,wght@0,700;1,400;1,500&amp;display=swap">
+<style>
+html { overflow-y: scroll; }
+body { margin: 0; background: #e7e5e0; color: #22211e; font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+a { color: #5d4f8c; } a:hover { color: #3e3466; }
+button, input, select, textarea { font-family: inherit; }
+</style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column">
+
+<div style="position:sticky; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:12px 20px; display:flex; flex-direction:column; gap:10px">
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px">
+    <div style="display:flex; align-items:baseline; gap:10px">
+      <div style="font-size:16px; font-weight:700">亲本组图</div>
+      <div style="font-size:11px; color:#8a877f; letter-spacing:.14em">NEPENTHES HYBRID CARDS</div>
+    </div>
+    
+    <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+      <sc-for list="{{ ratioOpts }}" as="o" hint-placeholder-count="2">
+        <button data-ratio="{{ o.key }}" onClick="{{ onSetRatio }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+      <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
+        <button data-lang="{{ o.key }}" onClick="{{ onSetLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">底栏</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ footOpts }}" as="o" hint-placeholder-count="3">
+          <button data-foot="{{ o.key }}" onClick="{{ onSetFoot }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div></sc-if>
+    <div style="flex:1"></div>
+    <div style="flex:none; display:flex; gap:8px; white-space:nowrap">
+      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">导入清单</button>
+      <button onClick="{{ addCard }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">＋ 空白卡片</button>
+      <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden"><button data-fmt="png" onClick="{{ onSetFmt }}" style="border:0; background:{{ fmtPngBg }}; color:{{ fmtPngFg }}; padding:7px 11px; font-size:13px; cursor:pointer">PNG</button><button data-fmt="jpg" onClick="{{ onSetFmt }}" style="border:0; border-left:1px solid #d3d0c8; background:{{ fmtJpgBg }}; color:{{ fmtJpgFg }}; padding:7px 11px; font-size:13px; cursor:pointer">JPG</button></div>
+      <button onClick="{{ exportAll }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">{{ exportAllLabel }}</button>
+    </div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; font-size:12px; color:#6b6962">
+    <span>年份色</span>
+    <sc-for list="{{ years }}" as="y" hint-placeholder-count="1">
+      <button data-year="{{ y.year }}" onClick="{{ onPickYear }}" style="display:flex; align-items:center; gap:6px; background:#fff; border:1px solid {{ y.border }}; box-shadow:{{ y.shadow }}; border-radius:999px; padding:3px 10px 3px 4px; cursor:pointer; font-size:12px; white-space:nowrap; flex:none">
+        <span style="flex:none; width:20px; height:20px; border-radius:50%; background:{{ y.color }}; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span>
+        <span style="font-weight:600; color:#22211e">{{ y.year }}</span>
+        <span style="color:#6b6962">{{ y.name }}</span>
+      </button>
+    </sc-for>
+    <sc-if value="{{ hasActiveYear }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-basis:100%; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; padding:8px 10px; background:#fff; border:1px solid #dcd9d2; border-radius:10px">
+        <sc-for list="{{ swatchGroups }}" as="g" hint-placeholder-count="7">
+          <div style="display:grid; grid-template-columns:36px minmax(0,1fr); align-items:start; gap:8px">
+            <span style="font-size:11px; color:#8a877f; line-height:20px">{{ g.label }}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:4px">
+              <sc-for list="{{ g.items }}" as="w" hint-placeholder-count="12">
+                <button data-year="{{ w.year }}" data-color="{{ w.c }}" title="{{ w.name }}" onClick="{{ onYearColor }}" style="width:20px; height:20px; border-radius:50%; border:0; padding:0; cursor:pointer; background:{{ w.c }}; box-shadow:{{ w.ring }}"></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <button onClick="{{ resetColors }}" style="border:0; background:none; padding:4px 2px; font-size:12px; color:#6b6962; cursor:pointer; text-decoration:underline">恢复默认色</button>
+    <span style="color:#9a978f">照片上：拖动平移 · 滚轮缩放 · Ctrl+滚轮旋转种子照片 · 双击锁定/解锁（锁定后同一张照片在所有卡片同步）· 可直接把图片拖进框里</span>
+  </div>
+</div>
+
+<sc-if value="{{ showImport }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:16px 20px 0; background:#fff; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px">
+    <div style="font-size:13px; color:#55534d; line-height:1.6">每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。</div>
+    <textarea value="{{ raw }}" onChange="{{ onRaw }}" rows="7" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #d6d3cb; border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6; resize:vertical; outline:none; color:#22211e"></textarea>
+    <div style="display:flex; gap:8px">
+      <button onClick="{{ doImport }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">生成 / 更新卡片</button>
+      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">收起</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ noCards }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:40px auto; color:#8a877f; font-size:14px">还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。</div>
+</sc-if>
+
+<div ref="{{ listRef }}" style="padding:20px; display:grid; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:20px; align-items:start">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
+<div style="min-width:0; background:#fbfaf8; border-radius:14px; padding:18px; display:grid; grid-template-columns:{{ rowCols }}; gap:22px; align-items:start">
+
+  <div style="display:flex; flex-wrap:wrap; gap:14px">
+  <sc-for list="{{ r.views }}" as="v" hint-placeholder-count="3">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <div style="position:relative; overflow:hidden; width:{{ v.pw }}px; height:{{ v.ph }}px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.12), 0 6px 20px -10px rgba(0,0,0,.18)">
+
+      <sc-if value="{{ v.isC }}" hint-placeholder-val="{{ true }}">
+      <div data-export="{{ v.key }}" style="position:absolute; left:0; top:0; width:1080px; height:{{ v.H }}px; transform:scale({{ v.sc }}); transform-origin:0 0; box-sizing:border-box; padding:24px; background:#f4f3ee; display:flex; flex-direction:column; gap:0; overflow:hidden; font-family:'Noto Serif SC','Songti SC',serif; color:#1b1a17">
+        <div style="flex:none; height:{{ v.parH }}px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr); gap:12px">
+          <div data-slot="{{ v.slotM }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pm.cursor }}; touch-action:none">
+            <sc-if value="{{ v.pm.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pm.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pm.w }}; height:auto; max-width:none; transform:{{ v.pm.tf }}; user-select:none; pointer-events:none"></sc-if>
+            <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">母本照片</div></div></sc-if>
+            <sc-if value="{{ v.pm.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
+            <sc-if value="{{ v.pm.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+            <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="30" cy="21" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="30" y1="35" x2="30" y2="58" style="stroke:#fff; stroke-width:7"></line><line x1="19.5" y1="47" x2="40.5" y2="47" style="stroke:#fff; stroke-width:7"></line></svg></div>
+            <sc-if value="{{ v.wmM.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none"></sc-if>
+            <sc-if value="{{ v.wmM.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+          </div>
+          <div data-slot="{{ v.slotF }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pf.cursor }}; touch-action:none">
+            <sc-if value="{{ v.pf.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pf.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pf.w }}; height:auto; max-width:none; transform:{{ v.pf.tf }}; user-select:none; pointer-events:none"></sc-if>
+            <sc-if value="{{ v.pf.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">父本照片</div></div></sc-if>
+            <sc-if value="{{ v.pf.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
+            <sc-if value="{{ v.pf.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+            <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="23" cy="37" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="32.9" y1="27.1" x2="51" y2="9" style="stroke:#fff; stroke-width:7"></line><polyline points="37.5,7 53,7 53,22.5" style="fill:none; stroke:#fff; stroke-width:7; stroke-linejoin:miter"></polyline></svg></div>
+            <sc-if value="{{ v.wmF.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none"></sc-if>
+            <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+          </div>
+        </div>
+        <div style="flex:1; min-height:0; margin-top:20px; display:flex; align-items:stretch; gap:{{ v.colGap }}px">
+          <div style="flex:none; width:{{ v.sw }}px; box-sizing:border-box; padding-bottom:{{ v.seedPadB }}px; display:flex; flex-direction:column; justify-content:{{ v.seedJustify }}; gap:16px">
+          <div data-slot="{{ v.slotS }}" style="flex: none; width: {{ v.sw }}px; height: {{ v.sh }}px; position: relative; overflow: hidden; container-type: size; border-radius: 6px; background: #dedcd5; cursor: {{ v.ps.cursor }}; touch-action: none">
+            <sc-if value="{{ v.ps.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.ps.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.ps.w }}; height:auto; max-width:none; transform:{{ v.ps.tf }}; user-select:none; pointer-events:none"></sc-if>
+            <sc-if value="{{ v.ps.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:30px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:20px; letter-spacing:.12em">种子照片</div></div></sc-if>
+            <sc-if value="{{ v.ps.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
+            <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+          </div>
+          <sc-if value="{{ v.footLeft }}" hint-placeholder-val="{{ false }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:8px 12px">
+              <div style="display:flex; align-items:baseline; gap:12px">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em; color:#5f5b52">NO.</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:54px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
+              </div>
+              <div style="flex:none; background:{{ v.yc }}; color:{{ v.ycInk }}; padding:8px 12px 8px 14px; display:flex; align-items:baseline; gap:10px; white-space:nowrap">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em">{{ v.producer }}</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:26px; line-height:1">{{ v.year }}</span>
+              </div>
+            </div></sc-if>
+          </div>
+          <div style="flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; gap:16px">
+            <div data-fitsig="{{ v.sig }}" data-hpred="{{ v.hpred }}" style="flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; justify-content:{{ v.namesJustify }}; gap:{{ v.entryGap }}px">
+              <div style="display:grid; grid-template-columns:40px minmax(0,1fr); align-items:start">
+                <div style="padding-top:{{ v.symPadM }}px; transform:scale({{ v.symK }}); transform-origin:0 0"><svg width="26" height="26" style="display:block; overflow:visible"><circle cx="13" cy="9.1" r="6.1" style="fill:none; stroke:#1b1a17; stroke-width:3"></circle><line x1="13" y1="15.2" x2="13" y2="25.1" style="stroke:#1b1a17; stroke-width:3"></line><line x1="8.4" y1="20.4" x2="17.6" y2="20.4" style="stroke:#1b1a17; stroke-width:3"></line></svg></div>
+                <div>
+                  <sc-if value="{{ v.zh }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-weight:700; font-size:{{ v.fit.cnM }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnMDisp }}</div>
+                    <sc-if value="{{ v.hasEnM }}" hint-placeholder-val="{{ true }}"><div style="font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enMDisp }}</div></sc-if>
+                  </sc-if>
+                  <sc-if value="{{ v.en }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enM }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enMTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
+                  </sc-if>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:40px minmax(0,1fr); align-items:start">
+                <div style="padding-top:{{ v.symPadF }}px; transform:scale({{ v.symK }}); transform-origin:0 0"><svg width="26" height="26" style="display:block; overflow:visible"><circle cx="10" cy="16" r="6.1" style="fill:none; stroke:#1b1a17; stroke-width:3"></circle><line x1="14.3" y1="11.7" x2="22.1" y2="3.9" style="stroke:#1b1a17; stroke-width:3"></line><polyline points="16.2,3 23,3 23,9.8" style="fill:none; stroke:#1b1a17; stroke-width:3; stroke-linejoin:miter"></polyline></svg></div>
+                <div>
+                  <sc-if value="{{ v.zh }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-weight:700; font-size:{{ v.fit.cnF }}px; line-height:1.25; text-wrap:balance; word-break:keep-all; overflow-wrap:anywhere">{{ v.cnFDisp }}</div>
+                    <sc-if value="{{ v.hasEnF }}" hint-placeholder-val="{{ true }}"><div style="font-family:'EB Garamond',serif; font-style:italic; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.3; color:#5f5b52; margin-top:4px; text-wrap:balance">{{ v.enFDisp }}</div></sc-if>
+                  </sc-if>
+                  <sc-if value="{{ v.en }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-family:'EB Garamond',serif; font-weight:500; font-size:{{ v.fit.enF }}px; line-height:1.2; text-wrap:balance"><sc-for list="{{ v.enFTok }}" as="t" hint-placeholder-count="1"><span style="font-style:{{ t.fs }}; color:{{ t.col }}">{{ t.txt }}</span></sc-for></div>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+            <sc-if value="{{ v.footIn }}" hint-placeholder-val="{{ true }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px">
+              <div style="display:flex; align-items:baseline; gap:12px">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em; color:#5f5b52">NO.</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:54px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
+              </div>
+              <div style="flex:none; background:{{ v.yc }}; color:{{ v.ycInk }}; padding:8px 12px 8px 14px; display:flex; align-items:baseline; gap:10px; white-space:nowrap">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em">{{ v.producer }}</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:26px; line-height:1">{{ v.year }}</span>
+              </div>
+            </div></sc-if>
+          </div>
+        </div>
+        <sc-if value="{{ v.footOut }}" hint-placeholder-val="{{ false }}"><div style="flex:none; width:{{ v.footW }}; box-sizing:border-box; margin-top:16px; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px">
+              <div style="display:flex; align-items:baseline; gap:12px">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em; color:#5f5b52">NO.</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:54px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
+              </div>
+              <div style="flex:none; background:{{ v.yc }}; color:{{ v.ycInk }}; padding:8px 12px 8px 14px; display:flex; align-items:baseline; gap:10px; white-space:nowrap">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em">{{ v.producer }}</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:26px; line-height:1">{{ v.year }}</span>
+              </div>
+            </div></sc-if>
+      </div>
+      </sc-if>
+
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:{{ v.pw }}px">
+      <span style="font-size:12px; color:#6b6962">{{ v.label }}</span>
+      <button data-action="export" data-key="{{ v.key }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ v.exportLabel }}</button>
+    </div>
+  </div>
+  </sc-for>
+  </div>
+
+  <div style="min-width:0; display:flex; flex-direction:column; gap:12px; font-size:13px">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+      <div style="font-size:15px; font-weight:700">{{ r.title }}</div>
+      <div style="display:flex; gap:6px">
+        <button data-id="{{ r.id }}" data-action="reset" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#22211e">重置裁剪</button>
+        <button data-id="{{ r.id }}" data-action="delete" onClick="{{ onAction }}" style="border:1px solid #e3c9c4; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#a2382c">删除</button>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:8px">
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">编号<input data-id="{{ r.id }}" data-field="num" value="{{ r.num }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">年份<input data-id="{{ r.id }}" data-field="year" value="{{ r.year }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">种子生产者<input data-id="{{ r.id }}" data-field="producer" value="{{ r.producer }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px">
+      <div style="font-weight:600">♀ 母本</div>
+      <textarea data-id="{{ r.id }}" data-field="cnM" value="{{ r.cnM }}" onChange="{{ onField }}" rows="2" placeholder="中文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ r.id }}" data-field="enM" value="{{ r.enM }}" onChange="{{ onField }}" rows="2" placeholder="英文名（不含 N.）" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px">
+      <div style="font-weight:600">♂ 父本</div>
+      <textarea data-id="{{ r.id }}" data-field="cnF" value="{{ r.cnF }}" onChange="{{ onField }}" rows="2" placeholder="中文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ r.id }}" data-field="enF" value="{{ r.enF }}" onChange="{{ onField }}" rows="2" placeholder="英文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="flex:none; width:104px; color:#6b6962">♀ 种子提供者</span>
+        <select data-id="{{ r.id }}" data-field="wmMType" value="{{ r.wmMType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="yabbie">yabbie 水印</option><option value="xianyu">闲鱼账号</option><option value="none">不加水印</option></select>
+        <sc-if value="{{ r.mXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmMName" value="{{ r.wmMName }}" onChange="{{ onField }}" placeholder="闲鱼用户名" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="flex:none; width:104px; color:#6b6962">♂ 花粉提供者</span>
+        <select data-id="{{ r.id }}" data-field="wmFType" value="{{ r.wmFType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="yabbie">yabbie 水印</option><option value="xianyu">闲鱼账号</option><option value="none">不加水印</option></select>
+        <sc-if value="{{ r.fXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmFName" value="{{ r.wmFName }}" onChange="{{ onField }}" placeholder="闲鱼用户名" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px">
+      <button data-action="pick" data-slot="{{ r.slotM }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换母本图</button>
+      <button data-action="pick" data-slot="{{ r.slotF }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换父本图</button>
+      <button data-action="pick" data-slot="{{ r.slotS }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换种子图</button>
+    </div>
+  </div>
+
+</div>
+</sc-for>
+</div>
+
+<input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFile }}" style="display:none">
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;exportScale&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 1, &quot;max&quot;: 4, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;导出&quot;}, &quot;nameScale&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.7, &quot;max&quot;: 1.2, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;排版&quot;}, &quot;namesAlign&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;center&quot;, &quot;top&quot;, &quot;bottom&quot;], &quot;default&quot;: &quot;center&quot;, &quot;tsType&quot;: &quot;'center' | 'top' | 'bottom'&quot;, &quot;section&quot;: &quot;排版&quot;}}">
+const FONT_FAMILIES = ['Noto+Serif+SC:wght@600;700;900', 'Noto+Sans+SC:wght@300;400;500;700', 'Hanken+Grotesk:wght@300;400;600', 'EB+Garamond:ital,wght@0,500;0,600;1,500', 'IBM+Plex+Mono:wght@400;500', 'Bodoni+Moda:ital,wght@0,700;1,400;1,500'];
+const FF = {
+  sans: "'Noto Sans SC','PingFang SC',sans-serif",
+  serif: "'Noto Serif SC','Songti SC',serif",
+  hanken: "'Hanken Grotesk','Noto Sans SC',sans-serif",
+  gara: "'EB Garamond','Noto Serif SC',serif",
+  bodoni: "'Bodoni Moda','Noto Serif SC',serif",
+};
+const MORANDI = [['#886d68','灰玫'],['#847060','驼灰'],['#787459','橄榄灰'],['#687865','灰绿'],['#5e7775','青灰'],['#617686','雾霾蓝'],['#6d747c','岩灰'],['#777086','灰紫'],['#816e7a','灰藕'],['#8d6a6c','豆沙'],['#8f6b5e','砖灰'],['#7d7068','可可灰']];
+MORANDI.push(...[['#f2eae3','晴空'],['#e6d8d3','奶粉'],['#e0d3c8','奶咖'],['#e4cece','泡沫粉'],['#e2cece','奶茶粉'],['#e2cfbe','亚麻'],['#dccfcb','枫舞灰'],['#e0c7af','驼毛'],['#cdc2c0','鲟鱼灰'],['#cdbdb2','沙漠'],['#c6bbb6','莫奈印象'],['#d0b4a7','茶红'],['#cda49c','欢乐小鹿'],['#b5a8a4','荷兰兔'],['#b3a8a2','土陶瓷'],['#b3a09c','霜梅'],['#bc9e87','亚麻布'],['#e38c7a','伯爵橙'],['#b19e8e','焗腰果'],['#bc9575','焦糖橙'],['#ab8d7f','巧克力奶'],['#a28f81','缅因猫'],['#b1886a','太妃糖'],['#a98568','丰收地'],['#998882','巴伐利亚棕'],['#b27d74','赤红土'],['#9c816e','楸木'],['#a47b75','丰收苹果'],['#a77979','陈酒红'],['#927e78','樵夫'],['#826e5f','苏轼回廊'],['#826859','陶泥'],['#7a6a5b','阿拉伯香料'],['#9c583e','铁锈红'],['#875f5e','高丽红参'],['#806247','山毛榉'],['#96504b','锈红'],['#805c49','远航灯塔'],['#6f5e4e','印第安之土'],['#675b54','熔岩蛋糕'],['#71544f','覆盆子'],['#6b5449','黑巧克力'],['#6b4f4d','深褐石'],['#7d463b','蓝山咖啡'],['#634b45','卡布基诺'],['#544e4d','车前草'],['#f8f1e0','香草黄'],['#f7eed0','卡普里清酒'],['#eeeada','柠檬绸'],['#eeeac1','白桦林'],['#f1e1d0','月光黄'],['#ece2d1','白土布'],['#e6e1d7','貂白'],['#e5e0d7','浅豆沙'],['#e1dad3','月光石'],['#dddacf','八卦相'],['#dfd8d0','肩章灰'],['#dfd5c5','面纱'],['#d8d0bf','飞沙走石'],['#d9d19b','浅茶绿'],['#d6cbb7','淡米色'],['#d7cab1','蘑菇灰'],['#cbcab9','奶酪薄荷'],['#e3c2a1','麦芽糖'],['#cbc4bc','暖心灰'],['#d6bf98','目本棕'],['#c7ba9f','新石器时代'],['#c7b59e','田园褐'],['#beb79f','蘑菇农场'],['#c5b49f','浅咖'],['#beb5a4','云褐色'],['#c7b398','滨海胜地'],['#d2ae5b','沙茶彩'],['#c6af75','陶瓷黄'],['#baaf98','卡其布'],['#d4a46f','金秋年月'],['#abaa78','青葱'],['#c29f7b','细沙海岸'],['#b5a283','田园风光'],['#bda072','咖喱'],['#c99c4e','黄铜彩'],['#ada28d','暮冬黄'],['#c99158','激情巧克力'],['#a79a7b','退潮'],['#a09e5c','焦糖'],['#ac9a5a','甘草'],['#a49885','石材灰'],['#a1968b','风沙'],['#b89052','编钟'],['#9a9489','牡蛎'],['#b48e56','桃木心'],['#a98251','野外烧烤'],['#a1834f','刚果'],['#8d6b48','乡村土布'],['#7c6e4a','棕榈树'],['#806c4b','烟草黄'],['#6f6b51','潘帕斯草原'],['#786247','落基山脉'],['#67645c','砂普绿'],['#5a5247','砖茶'],['#53524e','日全食'],['#564e45','深邃眸'],['#e9edd6','霜封苔原'],['#d3dac4','薄荷绿'],['#cfd7b0','嘉年华'],['#cbd289','杏仁饼绿'],['#c1c19c','莴苣'],['#b3b3a3','青城灰'],['#9ca986','荷塘月色'],['#9c9e89','暮光绿'],['#97998d','风铃灰'],['#657453','橄榄石'],['#606153','贤春绿'],['#5b5c54','青铜文物'],['#bccbb0','浅灰绿'],['#80897a','铜绿'],['#4c4f4a','洗砚池'],['#9baa9d','青燕'],['#6c746d','红高粱'],['#636f64','灰绿'],['#606f65','灰绿'],['#515751','牛油果绿'],['#b8dad2','海洋蓝'],['#adc2b9','初秋冬田'],['#768692','甘蓝'],['#515e68','火山浮石'],['#363c3f','魔力黑'],['#bac2d4','风趣蓝'],['#a4aab4','百慕大'],['#99a4bc','梦幻蓝'],['#595e66','夏蝉'],['#4b5c74','深紫蓝'],['#525b66','素灰色'],['#53547d','东方韵紫'],['#465169','夜巴黎'],['#354b69','蓝珐琅'],['#cac3d4','淡紫'],['#907dac','紫西梅'],['#e7c2da','珊瑚粉'],['#a390a2','紫色暮光'],['#74646d','浣熊棕'],['#6a5f65','紫砂'],['#ecc5d0','马卡龙粉'],['#d4acbf','樱落'],['#d79da4','空谷幽兰'],['#de7487','玫瑰'],['#c47a9b','黑醋栗'],['#ad838b','枫薰衣草'],['#76676c','乌梅'],['#79606a','深棕灰'],['#f5f5f4','北风'],['#f3efe6','流花白'],['#e4e4e1','迅捷'],['#e5e3dd','米灰'],['#dde0dc','牛津白'],['#d8d6d9','仓灰'],['#d4d1cd','牛津灰'],['#cbcbc9','灰纽扣'],['#c4c2bf','蛋白石'],['#bdc0c9','豪雨'],['#bbbbba','幻影灰'],['#bbb8b9','卡普里微风'],['#a7a8a0','石灰'],['#a0a3a4','白矮星'],['#8b8c8c','高级灰'],['#85858c','泥炭'],['#757573','乌云灰'],['#656667','神秘灰']]);
+const COLOR_NAME = Object.fromEntries(MORANDI.map(([c, n]) => [c, n]));
+const PALETTE_GROUPS = (() => {
+  const fam = [['红粉', h => h >= 330 || h < 18], ['橙棕', h => h < 38], ['黄褐', h => h < 70], ['绿', h => h < 165], ['青蓝', h => h < 255], ['紫', h => h < 330]];
+  const groups = fam.map(([label]) => ({ label, items: [] })).concat([{ label: '灰', items: [] }]);
+  const seen = new Set();
+  for (const [c, name] of MORANDI) {
+    if (seen.has(c)) continue; seen.add(c);
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(c.substr(i, 2), 16) / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, l = (mx + mn) / 2;
+    const s = d ? d / (1 - Math.abs(2 * l - 1)) : 0;
+    let h = 0; if (d) { h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h = (h * 60 + 360) % 360; }
+    const item = { c, name, h, l };
+    if (s < 0.07 || d < 0.03) groups[6].items.push(item);
+    else groups[fam.findIndex(([, t]) => t(h))].items.push(item);
+  }
+  groups.forEach(g => g.items.sort((a, b) => b.l - a.l));
+  return groups.filter(g => g.items.length);
+})();
+const YEAR_COLORS = { '2022': '#847060', '2023': '#687865', '2024': '#5e7775', '2025': '#617686', '2026': '#777086', '2027': '#8f6b5e', '2028': '#8d6a6c', '2029': '#787459', '2030': '#816e7a' };
+const CYCLE = ['#687865', '#5e7775', '#617686', '#777086', '#8f6b5e', '#8d6a6c', '#847060'];
+const DEF = { x: 0, y: 0, s: 1 };
+const DEMO = { m: { src: 'assets/demo-mother.jpg', ar: 0.7994 }, f: { src: 'assets/demo-father.jpg', ar: 0.75 }, s: { src: 'assets/demo-seed.jpg', ar: 1.3323 } };
+const DEMO_CROP = { m: { x: 2, y: -4, s: 1.12 }, f: { x: 0, y: 0, s: 1.05 }, s: { x: 5.5, y: 0, s: 1.05 } };
+const RAW = [
+  "飞翼海盗x[(飞翼奇异x黑月苹果)x(飞翼奇异x(海盗x苹果))]\tN. Viking Winged x ((mirabilis Winged x ampullaria 'Black Miracle') x (mirabilis Winged x (Viking x ampullaria))), YAB-X2607",
+  "[(三色莱佛士x海盗)x莱佛士]x草莓新地\tN. ((rafflesiana Tricolor x Viking) x rafflesiana) x 'Strawberry Sundae', YAB-X2611",
+  "[(三色莱佛士x海盗)x莱佛士]x[(诺斯x维奇)x维奇]\tN. ((rafflesiana Tricolor x Viking) x rafflesiana) x ((northiana x veitchii) x veitchii), YAB-X2612",
+  "[海盗x诺斯]x飞翼“虎克”\tN. (Viking x northiana) x \"hookeriana\" Winged, YAB-X2615",
+  "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
+].join('\n');
+const LS_KEY = 'yabbie-nep-cards-v1';
+const LIB = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
+
+class Component extends DCLogic {
+  state = this.initState();
+  fileRef = React.createRef();
+  listRef = React.createRef();
+  _fitState = {};
+
+  initState() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
+    let fmt = 'png'; try { fmt = localStorage.getItem('qb_fmt') === 'jpg' ? 'jpg' : 'png'; } catch (e) {}
+    const base = { fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900 };
+    if (saved && Array.isArray(saved.cards)) {
+      const photos = {};
+      this._pendingIdb = [];
+      for (const [k, m] of Object.entries(saved.meta || {})) {
+        if (m.src) photos[k] = { src: m.src, ar: m.ar, pid: m.pid || m.src }; else this._pendingIdb.push([k, m]);
+      }
+      return { ...base, cards: saved.cards, ratio: saved.ratio || '11', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
+    }
+    return { ...base, cards: [], ratio: '11', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
+  }
+
+  splitTop(str, en) {
+    let d = 0;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if ('([{（【'.includes(ch)) d++;
+      else if (')]}）】'.includes(ch)) d--;
+      else if (d === 0 && (ch === 'x' || ch === 'X' || ch === '×')) {
+        if (en && !(str[i - 1] === ' ' && str[i + 1] === ' ')) continue;
+        return [str.slice(0, i).trim(), str.slice(i + 1).trim()];
+      }
+    }
+    return [str.trim(), ''];
+  }
+  parseLine(line) {
+    line = line.trim();
+    if (!line) return null;
+    let cn, en;
+    const parts = line.split(/\t+/);
+    if (parts.length > 1) { cn = parts[0]; en = parts.slice(1).join(' '); }
+    else { const i = line.search(/N\.\s/); if (i > 0) { cn = line.slice(0, i); en = line.slice(i); } else { cn = line; en = ''; } }
+    let num = '';
+    const m = en.match(/,?\s*[A-Za-z]*-?[A-Za-z]*(\d{4})\s*$/);
+    if (m) { num = m[1]; en = en.slice(0, m.index); }
+    en = en.trim().replace(/,$/, '').replace(/^N\.\s*/, '');
+    const [cnM, cnF] = this.splitTop(cn.trim(), false);
+    const [enM, enF] = this.splitTop(en, true);
+    const p = { num, cnM, cnF, enM, enF };
+    if (num) p.year = '20' + num.slice(0, 2);
+    return p;
+  }
+  parseRaw(raw) { return raw.split(/\r?\n/).map(l => this.parseLine(l)).filter(Boolean); }
+  newCard(p) {
+    return { id: 'c' + Math.random().toString(36).slice(2, 9), num: '', year: String(new Date().getFullYear()), producer: 'YABBIE', cnM: '', cnF: '', enM: '', enF: '', wmMType: 'yabbie', wmMName: '', wmFType: 'yabbie', wmFName: '', crop: {}, ...p };
+  }
+  yc(y) { return this.state.yearColors[y] || YEAR_COLORS[y] || CYCLE[(parseInt(y, 10) || 0) % CYCLE.length]; }
+  hash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return 'p' + (h >>> 0).toString(36) + str.length.toString(36);
+  }
+
+  measure(text, font) {
+    this._mc = this._mc || {};
+    const k = font + '|' + text;
+    if (this._mc[k] != null) return this._mc[k];
+    if (!this._ctx) this._ctx = document.createElement('canvas').getContext('2d');
+    this._ctx.font = font;
+    return (this._mc[k] = this._ctx.measureText(text).width);
+  }
+  breakable(cn) {
+    let d = 0, out = '';
+    for (const ch of cn || '') {
+      if ('([{（【'.includes(ch)) d++;
+      else if (')]}）】'.includes(ch)) d--;
+      out += ch;
+      if (ch === 'x' || ch === 'X' || ch === '×' || ch === ')' || ch === ']') out += '\u200B';
+    }
+    return out;
+  }
+  fit(text, weight, family, avail, max, min, oneLine = 0.78) {
+    const w = this.measure(text || '', weight + ' 100px ' + family) / 100;
+    if (!w) return Math.round(max);
+    const one = avail * 0.97 / w;
+    if (one >= max) return Math.round(max);
+    if (one >= max * oneLine) return Math.floor(one);
+    return Math.max(Math.round(min), Math.floor(Math.min(max * 0.86, avail * 2 * 0.86 / w)));
+  }
+  lines(text, font, size, avail, isCn) {
+    if (!text) return 0;
+    const segs = isCn ? this.breakable(text).split('\u200B') : text.split(/(?<=\s)/);
+    let n = 1, cur = 0;
+    for (const sg of segs) {
+      const w = this.measure(sg, font) / 100 * size;
+      if (cur > 0 && cur + w > avail) { n++; cur = w; } else cur += w;
+      while (cur > avail) { n++; cur -= avail; }
+    }
+    return n;
+  }
+  fitNames(c, avail, lang, r34, corr = 1) {
+    const ns = this.props.nameScale ?? 1, A = avail * 0.98, en = lang === 'en';
+    const inside = this.ef() === 'right', box = this.geo(r34 ? '34' : '11').box;
+    const fCn = '700 100px ' + FF.serif, fIt = 'italic 500 100px ' + FF.gara, fUp = '500 100px ' + FF.gara;
+    const enM = c.enM ? 'N. ' + c.enM : '', enF = c.enF || '';
+    const BC = 45.6 * ns, BS = 26.4 * ns, BE = 43.2 * ns;
+    const ent = (cn, e, kc, ke) => en
+      ? (e ? this.lines(e, fUp, BE * kc, A, false) * BE * kc * 1.2 : 0)
+      : this.lines(cn, fCn, BC * kc, A, true) * BC * kc * 1.25 + (e ? 4 + this.lines(e, fIt, BS * ke, A, false) * BS * ke * 1.3 : 0);
+    const h = (kM, kF, ke) => (ent(c.cnM, enM, kM, ke) + 18 * Math.max(kM, kF) + ent(c.cnF, enF, kF, ke)) * corr;
+    const lm = this.measure(en ? enM : (c.cnM || ''), en ? fUp : fCn), lf = this.measure(en ? enF : (c.cnF || ''), en ? fUp : fCn);
+    const d = lm && lf ? Math.max(0.78, Math.min(1, Math.pow(Math.min(lm, lf) / Math.max(lm, lf), 0.3))) : 1;
+    const mLong = lm > lf, kMax = r34 ? 1.4 : 0.85;
+    const pair = kS => mLong ? [kS * d, kS] : [kS, kS * d];
+    const keMin = en ? 0 : (r34 ? 0.98 : 0.9), keOf = (a, b, kf) => Math.max(Math.min(a, b) * kf, keMin);
+    const solve = (t, kf) => { let kS = kMax; while (kS > 0.4) { const [a, b] = pair(kS); if (h(a, b, keOf(a, b, kf)) <= t) break; kS -= 0.02; } return kS; };
+    let target = box * (r34 ? 0.9 : 0.78), kf = 1;
+    let kS = solve(target, kf);
+    if (Math.min(...pair(kS)) < kMax * 0.75) { target = box * 0.98; kf = 0.85; kS = solve(target, kf); }
+    let [kM, kF] = pair(kS);
+    let ke = keOf(kM, kF, kf);
+    if (!en) { const keMax = ke * 1.25; while (ke + 0.02 <= keMax && h(kM, kF, ke + 0.02) <= target) ke += 0.02; }
+    const hpred = Math.round(h(kM, kF, ke));
+    if (en) return { s: kS, hpred, enM: Math.round(BE * kM), enF: Math.round(BE * kF) };
+    return { s: kS, hpred, cnM: Math.round(BC * kM), cnF: Math.round(BC * kF), enM: Math.round(BS * ke), enF: Math.round(BS * ke) };
+  }
+  enTokens(str) {
+    if (!str) return [];
+    const out = [];
+    for (const m of str.matchAll(/('[^']*'|"[^"]*"|“[^”]*”|‘[^’]*’|[A-Za-z][A-Za-z.\-]*|\s+|.)/g)) {
+      const t = m[0];
+      if (/^\s+$/.test(t)) { if (out.length) out[out.length - 1].txt += t; continue; }
+      let it = false, dim = false;
+      if (/^['"“‘]/.test(t)) it = false;
+      else if (t === 'x' || t === 'X' || t === '×') dim = true;
+      else if (t === 'N.' || /^[a-z]/.test(t)) it = true;
+      const prev = out[out.length - 1];
+      if (prev && prev.it === it && prev.dim === dim) prev.txt += t; else out.push({ txt: t, it, dim });
+    }
+    return out.map(o => ({ txt: o.txt, fs: 'normal', col: o.dim ? '#8a857a' : '#1b1a17' }));
+  }
+  inkOn(hex) {
+    const h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return '#ffffff';
+    const L = [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16) / 255).map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)).reduce((acc, c, i) => acc + c * [0.2126, 0.7152, 0.0722][i], 0);
+    return L > 0.2 ? '#1b1a17' : '#ffffff';
+  }
+
+  // crop: x/y in % of frame, s >= 1 (cover). Clamped so the photo always fills its frame.
+  defR() { return 0; }
+  clampCrop(c, ar, fa) {
+    const rr = c.r || 0, th = rr * Math.PI / 180, co = Math.cos(th), si = Math.sin(th);
+    const ex = (fa * Math.abs(co) + Math.abs(si)) / 2, ey = (fa * Math.abs(si) + Math.abs(co)) / 2, w0 = Math.max(2 * ex, 2 * ey * ar);
+    const sc = Math.max(1, Math.min(8, c.s || 1));
+    const mx = Math.max(0, sc * w0 / 2 - ex), my = Math.max(0, sc * w0 / ar / 2 - ey);
+    const tx = (c.x || 0) / 100 * fa, ty = (c.y || 0) / 100;
+    const ux = Math.max(-mx, Math.min(mx, co * tx + si * ty)), uy = Math.max(-my, Math.min(my, -si * tx + co * ty));
+    const nr = Math.round((((rr + 180) % 360 + 360) % 360 - 180) * 100) / 100;
+    return { s: sc, r: nr, x: (co * ux - si * uy) / fa * 100, y: (si * ux + co * uy) * 100 };
+  }
+  ck(slot, ratio) { return ratio === '34' ? slot + '@34' + (slot === 's' && this.ef() === 'left' ? 'L' : '') : slot; }
+  lk(pid, ratio) { return ratio === '34' ? pid + '@34' : pid; }
+  rawCrop(key, st = this.state) {
+    const [id, slot] = key.split(':'), p = st.photos[key];
+    const lock = p && p.pid && st.locks[this.lk(p.pid, st.ratio)];
+    const card = st.cards.find(c => c.id === id);
+    let c = lock || (card && card.crop && card.crop[this.ck(slot, st.ratio)]) || null;
+    if (!c && st.ratio === '34' && slot === 's' && this.ef(st) === 'left') {
+      const b = (card && card.crop && card.crop['s@34']) || DEF, ar = p ? p.ar : 1.33;
+      const f1 = this.geo('34', 'right'), f2 = this.geo('34', 'left'), a1 = f1.sw / f1.sh, a2 = f2.sw / f2.sh;
+      const I2 = (b.s || 1) * Math.max(a1, ar) * a2 / a1;
+      c = { ...b, s: Math.max(1, I2 / Math.max(a2, ar)), x: b.x || 0, y: (b.y || 0) * a2 / a1 };
+    }
+    c = c || DEF;
+    return { ...c, r: c.r ?? this.defR(slot, st.ratio) };
+  }
+  isLocked(key, st = this.state) { const p = st.photos[key]; return !!(p && p.pid && st.locks[this.lk(p.pid, st.ratio)]); }
+  ef(st = this.state) { return st.ratio === '34' ? (st.foot || 'right') : 'right'; }
+  geo(ratio, foot = this.ef()) {
+    const r34 = ratio === '34', band = r34 ? 440 : 280, parH = (r34 ? 1392 : 1032) - 20 - band, colGap = 26;
+    const rowH = foot === 'full' ? band - 78 : band, sh = foot === 'left' ? band - 78 : rowH;
+    const sw = foot === 'left' ? 380 : Math.round(rowH * (r34 ? (foot === 'right' ? 2 / 3 : 3 / 4) : 5 / 4));
+    return { band, parH, sw, sh, colGap, box: band - (foot === 'left' ? 0 : 78), avail: 1032 - sw - colGap - 40 };
+  }
+  frameAspect(slot, ratio) {
+    const g = this.geo(ratio);
+    return slot === 's' ? g.sw / g.sh : 510 / g.parH;
+  }
+  toggleLock(key) {
+    const p = this.state.photos[key]; if (!p || !p.pid) return;
+    const slot = key.split(':')[1];
+    this.setState(st => {
+      const locks = { ...st.locks }, L = this.lk(p.pid, st.ratio);
+      if (locks[L]) {
+        const lc = locks[L];
+        delete locks[L];
+        const cards = st.cards.map(c => {
+          let crop = c.crop || {}, ch = false;
+          for (const sl of ['m', 'f', 's']) { const q = st.photos[c.id + ':' + sl]; if (q && q.pid === p.pid) { crop = { ...crop, [this.ck(sl, st.ratio)]: lc }; ch = true; } }
+          return ch ? { ...c, crop } : c;
+        });
+        return { locks, cards };
+      }
+      locks[L] = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(slot, st.ratio));
+      return { locks };
+    });
+  }
+
+  db() {
+    if (!this._db) this._db = new Promise((res, rej) => {
+      const r = indexedDB.open('yabbie-nep-cards', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('photos');
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    return this._db;
+  }
+  async idb(mode, fn) {
+    try {
+      const db = await this.db();
+      return await new Promise(res => {
+        const tx = db.transaction('photos', mode);
+        const req = fn(tx.objectStore('photos'));
+        tx.oncomplete = () => res(req && req.result);
+        tx.onerror = () => res(null);
+      });
+    } catch (e) { return null; }
+  }
+
+  componentDidMount() {
+    this._h = {
+      down: e => this.onDown(e), move: e => this.onMove(e), up: () => this.onUp(),
+      wheel: e => this.onWheel(e), over: e => this.onOver(e), drop: e => this.onDrop(e),
+      leave: e => { if (!e.relatedTarget && this.state.dragKey) this.setState({ dragKey: null }); },
+      dbl: e => { const el = this.slotEl(e); if (el && this.state.photos[el.dataset.slot]) this.toggleLock(el.dataset.slot); },
+      resize: () => this.setState({ vh: window.innerHeight }),
+      hover: e => { const el = this.slotEl(e), k = el ? el.dataset.slot : null; if (k !== this.state.hoverKey) this.setState({ hoverKey: k }); },
+    };
+    document.addEventListener('pointerover', this._h.hover);
+    document.addEventListener('pointerdown', this._h.down);
+    window.addEventListener('pointermove', this._h.move);
+    window.addEventListener('pointerup', this._h.up);
+    document.addEventListener('wheel', this._h.wheel, { passive: false });
+    document.addEventListener('dragover', this._h.over);
+    document.addEventListener('drop', this._h.drop);
+    document.addEventListener('dragleave', this._h.leave);
+    document.addEventListener('dblclick', this._h.dbl);
+    window.addEventListener('resize', this._h.resize);
+    if (window.ResizeObserver && this.listRef.current) {
+      this._ro = new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w && Math.abs(w - this.state.vw) > 24) this.setState({ vw: w }); });
+      this._ro.observe(this.listRef.current);
+    }
+    if (document.fonts) {
+      this._fl = () => { this._mc = {}; this._fitState = {}; this.forceUpdate(); };
+      document.fonts.addEventListener('loadingdone', this._fl);
+      document.fonts.ready.then(this._fl);
+    }
+    this.checkFit();
+    (this._pendingIdb || []).forEach(async ([k, m]) => {
+      const src = await this.idb('readonly', st => st.get(k));
+      if (src) this.setState(st => ({ photos: { ...st.photos, [k]: { src, ar: m.ar, pid: m.pid || this.hash(src) } } }));
+    });
+  }
+  componentWillUnmount() {
+    const h = this._h; if (!h) return;
+    document.removeEventListener('pointerdown', h.down);
+    window.removeEventListener('pointermove', h.move);
+    window.removeEventListener('pointerup', h.up);
+    document.removeEventListener('wheel', h.wheel);
+    document.removeEventListener('dragover', h.over);
+    document.removeEventListener('drop', h.drop);
+    document.removeEventListener('dragleave', h.leave);
+    document.removeEventListener('dblclick', h.dbl);
+    window.removeEventListener('resize', h.resize);
+    document.removeEventListener('pointerover', h.hover);
+    if (this._ro) this._ro.disconnect();
+    if (document.fonts && this._fl) document.fonts.removeEventListener('loadingdone', this._fl);
+  }
+  componentDidUpdate() {
+    clearTimeout(this._st);
+    this._st = setTimeout(() => this.save(), 400);
+    this.checkFit();
+  }
+  checkFit() {
+    if (this._fitRaf) return;
+    this._fitRaf = requestAnimationFrame(() => {
+      this._fitRaf = null;
+      if (document.fonts && document.fonts.status !== 'loaded') return;
+      let changed = false;
+      document.querySelectorAll('[data-fitsig]').forEach(el => {
+        const kids = el.children, box = el.clientHeight, hp = +el.dataset.hpred;
+        if (!kids.length || !box || !hp) return;
+        const k = el.getBoundingClientRect().height / box;
+        const gap = parseFloat(getComputedStyle(el).rowGap) || 0;
+        const ch = [...kids].reduce((acc, kd) => acc + kd.getBoundingClientRect().height / k, 0) + gap * (kids.length - 1);
+        const sig = el.dataset.fitsig, fs = this._fitState[sig] || (this._fitState[sig] = { c: 1, n: 0 });
+        if (fs.n >= 3) return;
+        const nc = Math.max(0.5, Math.min(1.6, fs.c * ch / hp));
+        if (Math.abs(nc / fs.c - 1) > 0.05) { fs.c = +nc.toFixed(3); fs.n++; changed = true; }
+      });
+      if (changed) this.forceUpdate();
+    });
+  }
+  save() {
+    const s = this.state, meta = {};
+    for (const [k, p] of Object.entries(s.photos)) meta[k] = String(p.src).startsWith('data:') ? { ar: p.ar, pid: p.pid } : { ar: p.ar, pid: p.pid, src: p.src };
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ cards: s.cards, ratio: s.ratio, foot: s.foot, lang: s.lang, raw: s.raw, yearColors: s.yearColors, locks: s.locks, meta })); } catch (e) {}
+  }
+
+  slotEl(e) { return e.target && e.target.closest ? e.target.closest('[data-slot]') : null; }
+  onDown(e) {
+    if (e.button !== 0) return;
+    const el = this.slotEl(e); if (!el) return;
+    const key = el.dataset.slot, p = this.state.photos[key];
+    e.preventDefault();
+    const r = el.getBoundingClientRect(), fa = r.width / r.height;
+    this._drag = { key, x0: e.clientX, y0: e.clientY, r, fa, moved: false, has: !!p, locked: this.isLocked(key), c0: p ? this.clampCrop(this.rawCrop(key), p.ar, fa) : DEF };
+  }
+  onMove(e) {
+    const d = this._drag; if (!d) return;
+    const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+    if (!d.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    d.moved = true;
+    if (!d.has || d.locked) return;
+    const { c0, r } = d;
+    this.updateCrop(d.key, () => ({ ...c0, x: c0.x + dx / r.width * 100, y: c0.y + dy / r.height * 100 }), d.fa);
+  }
+  onUp() {
+    const d = this._drag; this._drag = null;
+    if (d && !d.moved && !d.has) this.pick(d.key);
+  }
+  onWheel(e) {
+    const el = this.slotEl(e); if (!el) return;
+    const key = el.dataset.slot; if (!this.state.photos[key]) return;
+    e.preventDefault();
+    if (this.isLocked(key)) return;
+    const r = el.getBoundingClientRect(), fa = r.width / r.height;
+    if (e.ctrlKey && key.endsWith(':s')) {
+      const dr = Math.max(-12, Math.min(12, e.deltaY * 0.08)), now = Date.now();
+      const cur = this.clampCrop(this.rawCrop(key), this.state.photos[key].ar, fa).r;
+      let rot = this._rot;
+      if (!rot || rot.key !== key || now - rot.t > 400) rot = this._rot = { key, raw: cur };
+      const prev = rot.raw; let raw = prev + dr;
+      const lo = Math.min(prev, raw), hi = Math.max(prev, raw), m = Math.ceil(lo / 90 + 1e-9) * 90;
+      if (m < hi - 1e-9 && Math.abs(prev - m) > 1e-9) raw = m;
+      rot.raw = raw; rot.t = now;
+      const near = Math.round(raw / 90) * 90, nr = Math.abs(raw - near) < 4 ? near : raw;
+      this.updateCrop(key, c => ({ ...c, r: nr }), fa);
+      return;
+    }
+    const px = (e.clientX - r.left - r.width / 2) / r.width * 100, py = (e.clientY - r.top - r.height / 2) / r.height * 100;
+    const f = Math.exp(-e.deltaY * (e.ctrlKey ? 0.002 : 0.0003));
+    this.updateCrop(key, c => { const sc = Math.min(8, Math.max(1, c.s * f)), k = sc / c.s; return { ...c, s: sc, x: px - (px - c.x) * k, y: py - (py - c.y) * k }; }, fa);
+  }
+  onOver(e) {
+    const dt = e.dataTransfer; if (!dt || ![...dt.types].includes('Files')) return;
+    e.preventDefault();
+    const el = this.slotEl(e), k = el ? el.dataset.slot : null;
+    dt.dropEffect = el ? 'copy' : 'none';
+    if (k !== this.state.dragKey) this.setState({ dragKey: k });
+  }
+  onDrop(e) {
+    const dt = e.dataTransfer; if (!dt || !dt.files || !dt.files.length) return;
+    e.preventDefault();
+    const el = this.slotEl(e);
+    this.setState({ dragKey: null });
+    if (!el) return;
+    const f = [...dt.files].find(x => x.type.startsWith('image/')) || dt.files[0];
+    if (f) this.loadFile(f, el.dataset.slot);
+  }
+  updateCrop(key, fn, fa) {
+    const [id, slot] = key.split(':');
+    this.setState(st => {
+      const p = st.photos[key];
+      if (!p || this.isLocked(key, st)) return null;
+      const cur = this.clampCrop(this.rawCrop(key, st), p.ar, fa);
+      const n = this.clampCrop(fn(cur), p.ar, fa);
+      return { cards: st.cards.map(c => {
+        if (c.id !== id) return c;
+        const crop = { ...c.crop, [this.ck(slot, st.ratio)]: { x: +n.x.toFixed(2), y: +n.y.toFixed(2), s: +n.s.toFixed(3), r: n.r } };
+        if (slot === 's' && !(st.ratio === '34' && this.ef(st) === 'left')) { const ok = st.ratio === '34' ? 's' : 's@34'; crop[ok] = { ...DEF, ...(crop[ok] || {}), s: +n.s.toFixed(3), r: n.r }; }
+        return { ...c, crop };
+      }) };
+    });
+  }
+  pick(key) {
+    this._pickKey = key;
+    const inp = this.fileRef.current; if (!inp) return;
+    inp.value = ''; inp.click();
+  }
+  async loadFile(file, key) {
+    try {
+      const url = URL.createObjectURL(file);
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+      const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, 2200 / Math.max(w, h));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      const src = cv.toDataURL('image/jpeg', 0.9), pid = this.hash(src);
+      await this.idb('readwrite', st => st.put(src, key));
+      const [id, slot] = key.split(':');
+      this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: cv.width / cv.height, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') } } } : c) }));
+    } catch (e) { alert('无法读取这张图片（HEIC 格式请先转成 JPG）'); }
+  }
+
+  loadLib() {
+    if (window.htmlToImage) return Promise.resolve();
+    return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = LIB; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+  }
+  async fontCSS(text) {
+    const chars = [...new Set([...(text + ' No.0123456789×·')])].filter(ch => ch !== '\n' && ch !== '\t').join('');
+    this._fc = this._fc || {};
+    if (this._fc[chars]) return this._fc[chars];
+    try {
+      const url = 'https://fonts.googleapis.com/css2?' + FONT_FAMILIES.map(f => 'family=' + f).join('&') + '&text=' + encodeURIComponent(chars);
+      let css = await (await fetch(url)).text();
+      const urls = [...new Set([...css.matchAll(/url\(([^)]+)\)/g)].map(m => m[1].replace(/['"]/g, '')))];
+      const data = await Promise.all(urls.map(async u => {
+        const bl = await (await fetch(u)).blob();
+        return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(bl); });
+      }));
+      urls.forEach((u, i) => { css = css.split(u).join(data[i]); });
+      return (this._fc[chars] = css);
+    } catch (e) { return ''; }
+  }
+  async exportKey(key) {
+    const node = document.querySelector('[data-export="' + key + '"]');
+    if (!node) return;
+    const id = key.split(':')[0];
+    const card = this.state.cards.find(c => c.id === id);
+    this.setState({ busy: key });
+    try {
+      await this.loadLib();
+      const H = this.state.ratio === '34' ? 1440 : 1080;
+      const css = await this.fontCSS(node.textContent || '');
+      const opts = { width: 1080, height: H, pixelRatio: this.props.exportScale ?? 2, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
+      if (css) opts.fontEmbedCSS = css; else opts.skipFonts = true;
+      const jpg = this.state.fmt === 'jpg';
+      const url = jpg ? await window.htmlToImage.toJpeg(node, { ...opts, quality: 1, backgroundColor: '#ffffff' }) : await window.htmlToImage.toPng(node, opts);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) { console.error(e); alert('导出失败：' + ((e && e.message) || e)); }
+    this.setState({ busy: null });
+  }
+
+  onSetFmt = e => { const fmt = e.currentTarget.dataset.fmt; try { localStorage.setItem('qb_fmt', fmt); } catch (er) {} this.setState({ fmt }); };
+  onSetRatio = e => this.setState({ ratio: e.currentTarget.dataset.ratio });
+  onSetFoot = e => this.setState({ foot: e.currentTarget.dataset.foot });
+  onSetLang = e => this.setState({ lang: e.currentTarget.dataset.lang });
+  toggleImport = () => this.setState(s => ({ showImport: !s.showImport }));
+  onRaw = e => this.setState({ raw: e.target.value });
+  doImport = () => {
+    const parsed = this.parseRaw(this.state.raw);
+    this.setState(s => {
+      const cards = [...s.cards];
+      for (const p of parsed) {
+        const i = p.num ? cards.findIndex(c => c.num === p.num) : -1;
+        if (i >= 0) cards[i] = { ...cards[i], ...p }; else cards.push(this.newCard(p));
+      }
+      return { cards, showImport: false };
+    });
+  };
+  addCard = () => this.setState(s => ({ cards: [...s.cards, this.newCard({})] }));
+  onField = e => {
+    const { id, field } = e.target.dataset, val = e.target.value;
+    this.setState(s => ({ cards: s.cards.map(c => c.id === id ? { ...c, [field]: val } : c) }));
+  };
+  onPickYear = e => { const y = e.currentTarget.dataset.year; this.setState(s => ({ activeYear: s.activeYear === y ? '' : y })); };
+  onYearColor = e => {
+    const y = e.currentTarget.dataset.year, v = e.currentTarget.dataset.color;
+    this.setState(s => ({ yearColors: { ...s.yearColors, [y]: v } }));
+  };
+  resetColors = () => this.setState({ yearColors: {} });
+  onFile = e => { const f = e.target.files && e.target.files[0]; if (f && this._pickKey) this.loadFile(f, this._pickKey); };
+  onAction = e => {
+    const d = e.currentTarget.dataset;
+    if (d.action === 'export') this.exportKey(d.key);
+    else if (d.action === 'pick') this.pick(d.slot);
+    else if (d.action === 'reset') this.setState(s => ({ cards: s.cards.map(c => c.id === d.id ? { ...c, crop: {} } : c) }));
+    else if (d.action === 'delete') {
+      if (!confirm('删除这张卡片？')) return;
+      ['m', 'f', 's'].forEach(sl => this.idb('readwrite', st => st.delete(d.id + ':' + sl)));
+      this.setState(s => {
+        const photos = { ...s.photos };
+        ['m', 'f', 's'].forEach(sl => delete photos[d.id + ':' + sl]);
+        return { cards: s.cards.filter(c => c.id !== d.id), photos };
+      });
+    }
+  };
+  exportAll = async () => {
+    if (this.state.busyAll) return;
+    this.setState({ busyAll: true });
+    const keys = [...document.querySelectorAll('[data-export]')].map(n => n.dataset.export);
+    for (const k of keys) { await this.exportKey(k); await new Promise(r => setTimeout(r, 350)); }
+    this.setState({ busyAll: false });
+  };
+
+  renderVals() {
+    const st = this.state;
+    const H = st.ratio === '34' ? 1440 : 1080;
+    const r34 = st.ratio === '34', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
+    const W = st.vw || 1000, vh = st.vh || 900, FORM = 320, CHROME = 36 + 22;
+    const pwCap = Math.max(300, (vh - 150) * 1080 / H);
+    const target = Math.max(820, Math.min(pwCap + CHROME + FORM, 1400));
+    const cols = Math.max(1, Math.round((W + 20) / (target + 20)));
+    const cellW = (W - 20 * (cols - 1)) / cols;
+    const stacked = cellW - CHROME - FORM < 420;
+    const pw = Math.floor(Math.max(260, Math.min(stacked ? cellW - 36 : cellW - CHROME - FORM, pwCap)));
+    const sc = pw / 1080, ph = Math.round(H * sc);
+    const rowCols = stacked ? 'minmax(0,1fr)' : pw + 'px minmax(0,520px)';
+    const rLabel = st.ratio === '34' ? '3:4' : '1:1';
+    const foot = this.ef(st), footR = foot === 'right';
+    const ns = this.props.nameScale ?? 1;
+    const nj = r34 ? ({ top: 'flex-start', bottom: 'flex-end' }[this.props.namesAlign] || 'center') : 'flex-start';
+    const seedJustify = 'flex-start', seedPadB = 0;
+    const rows = st.cards.map((c, i) => {
+      const photo = slot => {
+        const key = c.id + ':' + slot, p = st.photos[key], hl = st.dragKey === key;
+        if (!p) return { has: false, empty: true, hl, locked: false, cursor: 'pointer' };
+        const locked = this.isLocked(key, st);
+        const cr = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(slot, st.ratio));
+        return { has: true, empty: false, hl, locked, lockTip: locked && st.hoverKey === key, cursor: locked ? 'default' : 'grab', src: p.src, w: (() => { const th = cr.r * Math.PI / 180, ac = Math.abs(Math.cos(th)).toFixed(5), as = Math.abs(Math.sin(th)).toFixed(5); return 'max(calc(100cqw * ' + ac + ' + 100cqh * ' + as + '), calc(' + p.ar.toFixed(5) + ' * (100cqw * ' + as + ' + 100cqh * ' + ac + ')))'; })(), tf: 'translate(-50%, -50%) translate(' + cr.x.toFixed(2) + 'cqw, ' + cr.y.toFixed(2) + 'cqh) scale(' + cr.s.toFixed(3) + ') rotate(' + cr.r + 'deg)' };
+      };
+      const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', name: n || '' });
+      const slotM = c.id + ':m', slotF = c.id + ':f', slotS = c.id + ':s';
+      const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot].join('|');
+      const fit = this.fitNames(c, avail, lang, r34, (this._fitState[sig] && this._fitState[sig].c) || 1), shrink = fit.s;
+      const yc = this.yc(c.year), key = c.id + ':C';
+      const view = {
+        key, H, sc, pw, ph, bs, sw, sh, rowH, colGap, footIn: footR, footOut: foot === 'full', footLeft: foot === 'left', footW: 'auto', yc, ycInk: this.inkOn(yc), num: c.num, year: c.year, producer: c.producer,
+        isC: true, zh: lang === 'zh', en: lang === 'en', fit, sig, hpred: fit.hpred, namesJustify: nj, parH, seedJustify, seedPadB, entryGap: Math.round(18 * shrink),
+        symK: lang === 'en' ? 1.2 : 1, symPadM: lang === 'en' ? Math.round(fit.enM * 0.22) : Math.round(fit.cnM * 0.32), symPadF: lang === 'en' ? Math.round(fit.enF * 0.22) : Math.round(fit.cnF * 0.32), enMTok: this.enTokens(c.enM ? 'N. ' + c.enM : ''), enFTok: this.enTokens(c.enF || ''),
+        cnMDisp: this.breakable(c.cnM), cnFDisp: this.breakable(c.cnF), enMDisp: c.enM ? 'N. ' + c.enM : '', enFDisp: c.enF || '',
+        hasCnF: !!c.cnF, hasEnM: !!c.enM, hasEnF: !!c.enF,
+        pm: photo('m'), pf: photo('f'), ps: photo('s'), slotM, slotF, slotS,
+        wmM: wm(c.wmMType, c.wmMName), wmF: wm(c.wmFType, c.wmFName),
+        label: rLabel + ' · 导出 ' + 1080 * (this.props.exportScale ?? 2) + '×' + H * (this.props.exportScale ?? 2),
+        exportLabel: st.busy === key ? '导出中…' : '导出 ' + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
+      };
+      return { ...c, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: c.wmMType === 'xianyu', fXianyu: c.wmFType === 'xianyu' };
+    });
+    const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
+    return {
+      rows, cols, rowCols, listRef: this.listRef,
+      noCards: !st.cards.length,
+      ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio)],
+      footOpts: [opt('full', '整行平铺', foot), opt('right', '靠右·对齐名称', foot), opt('left', '靠左·对齐种子图', foot)], onSetFoot: this.onSetFoot, showFoot: r34,
+      langOpts: [opt('zh', '中英', lang), opt('en', '仅英文', lang)], onSetLang: this.onSetLang,
+      years: [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort().map(y => { const cur = this.yc(y).toLowerCase(), on = st.activeYear === y; return { year: y, color: cur, name: COLOR_NAME[cur] || cur, border: on ? '#22211e' : '#dcd9d2', shadow: on ? '0 0 0 1px #22211e' : 'none' }; }),
+      onPickYear: this.onPickYear,
+      hasActiveYear: !!st.activeYear && st.cards.some(c => c.year === st.activeYear),
+      swatchGroups: st.activeYear ? (() => { const y = st.activeYear, cur = this.yc(y).toLowerCase(); return PALETTE_GROUPS.map(g => ({ label: g.label, items: g.items.map(({ c, name }) => ({ c, name, year: y, ring: c === cur ? '0 0 0 2px #fff, 0 0 0 3.5px #22211e' : 'inset 0 0 0 1px rgba(0,0,0,.12)' })) })); })() : [],
+      showImport: st.showImport, raw: st.raw,
+      exportAllLabel: st.busyAll ? '导出中…' : '导出全部 ' + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
+      fileRef: this.fileRef,
+      onSetRatio: this.onSetRatio, onSetFmt: this.onSetFmt,
+      fmtPngBg: st.fmt !== 'jpg' ? '#22211e' : '#fff', fmtPngFg: st.fmt !== 'jpg' ? '#fff' : '#22211e', fmtJpgBg: st.fmt === 'jpg' ? '#22211e' : '#fff', fmtJpgFg: st.fmt === 'jpg' ? '#fff' : '#22211e', toggleImport: this.toggleImport, onRaw: this.onRaw,
+      doImport: this.doImport, addCard: this.addCard, onField: this.onField, onYearColor: this.onYearColor,
+      resetColors: this.resetColors, onFile: this.onFile, onAction: this.onAction, exportAll: this.exportAll,
+    };
+  }
+}
+</script>
+</body>
+</html>
