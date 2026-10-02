@@ -22,40 +22,78 @@ button, input, select, textarea { font-family: inherit; }
 <div style="min-height:100vh; display:flex; flex-direction:column">
 
 <div style="position:sticky; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:12px 20px; display:flex; flex-direction:column; gap:10px">
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px">
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px">
     <div style="display:flex; align-items:baseline; gap:10px">
-      <div style="font-size:16px; font-weight:700">亲本组图</div>
+      <div style="font-size:16px; font-weight:700">{{ ui.title }}</div>
       <div style="font-size:11px; color:#8a877f; letter-spacing:.14em">NEPENTHES HYBRID CARDS</div>
     </div>
-    
-    <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-      <sc-for list="{{ ratioOpts }}" as="o" hint-placeholder-count="2">
-        <button data-ratio="{{ o.key }}" onClick="{{ onSetRatio }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-      </sc-for>
+    <div style="flex:1"></div>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.uiLang }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ uiOpts }}" as="o" hint-placeholder-count="2">
+          <button data-uilang="{{ o.key }}" onClick="{{ onSetUiLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
     </div>
-    <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-      <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
-        <button data-lang="{{ o.key }}" onClick="{{ onSetLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-      </sc-for>
+    <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.importBtn }}</button>
+    <button onClick="{{ addCard }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.addBlank }}</button>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px">
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.ratio }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ ratioOpts }}" as="o" hint-placeholder-count="2">
+          <button data-ratio="{{ o.key }}" onClick="{{ onSetRatio }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.cardText }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
+          <button data-lang="{{ o.key }}" onClick="{{ onSetLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
     </div>
     <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">底栏</span>
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.foot }}</span>
       <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
         <sc-for list="{{ footOpts }}" as="o" hint-placeholder-count="3">
           <button data-foot="{{ o.key }}" onClick="{{ onSetFoot }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
         </sc-for>
       </div>
     </div></sc-if>
-    <div style="flex:1"></div>
-    <div style="flex:none; display:flex; gap:8px; white-space:nowrap">
-      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">导入清单</button>
-      <button onClick="{{ addCard }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">＋ 空白卡片</button>
-      <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden"><button data-fmt="png" onClick="{{ onSetFmt }}" style="border:0; background:{{ fmtPngBg }}; color:{{ fmtPngFg }}; padding:7px 11px; font-size:13px; cursor:pointer">PNG</button><button data-fmt="jpg" onClick="{{ onSetFmt }}" style="border:0; border-left:1px solid #d3d0c8; background:{{ fmtJpgBg }}; color:{{ fmtJpgFg }}; padding:7px 11px; font-size:13px; cursor:pointer">JPG</button></div>
-      <button onClick="{{ exportAll }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">{{ exportAllLabel }}</button>
+    <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameAlign }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ alignOpts }}" as="o" hint-placeholder-count="3">
+          <button data-align="{{ o.key }}" onClick="{{ onSetAlign }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div></sc-if>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameSize }} {{ nameScaleLabel }}</span>
+      <input type="range" min="0.7" max="1.2" step="0.05" value="{{ nameScaleVal }}" onChange="{{ onNameScale }}" style="width:96px; margin:0; cursor:pointer">
     </div>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.wmOpacity }} {{ wmTransLabel }}</span>
+      <input type="range" min="0" max="80" step="5" value="{{ wmTransVal }}" onChange="{{ onWmTrans }}" style="width:96px; margin:0; cursor:pointer">
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.exportScale }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ scaleOpts }}" as="o" hint-placeholder-count="3">
+          <button data-scale="{{ o.key }}" onClick="{{ onSetScale }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden"><button data-fmt="png" onClick="{{ onSetFmt }}" style="border:0; background:{{ fmtPngBg }}; color:{{ fmtPngFg }}; padding:7px 11px; font-size:13px; cursor:pointer">PNG</button><button data-fmt="jpg" onClick="{{ onSetFmt }}" style="border:0; border-left:1px solid #d3d0c8; background:{{ fmtJpgBg }}; color:{{ fmtJpgFg }}; padding:7px 11px; font-size:13px; cursor:pointer">JPG</button></div>
+    <button onClick="{{ exportAll }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff; white-space:nowrap">{{ exportAllLabel }}</button>
   </div>
   <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; font-size:12px; color:#6b6962">
-    <span>年份色</span>
+    <span>{{ ui.yearColor }}</span>
     <sc-for list="{{ years }}" as="y" hint-placeholder-count="1">
       <button data-year="{{ y.year }}" onClick="{{ onPickYear }}" style="display:flex; align-items:center; gap:6px; background:#fff; border:1px solid {{ y.border }}; box-shadow:{{ y.shadow }}; border-radius:999px; padding:3px 10px 3px 4px; cursor:pointer; font-size:12px; white-space:nowrap; flex:none">
         <span style="flex:none; width:20px; height:20px; border-radius:50%; background:{{ y.color }}; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span>
@@ -66,7 +104,7 @@ button, input, select, textarea { font-family: inherit; }
     <sc-if value="{{ hasActiveYear }}" hint-placeholder-val="{{ false }}">
       <div style="flex-basis:100%; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; padding:8px 10px; background:#fff; border:1px solid #dcd9d2; border-radius:10px">
         <sc-for list="{{ swatchGroups }}" as="g" hint-placeholder-count="7">
-          <div style="display:grid; grid-template-columns:36px minmax(0,1fr); align-items:start; gap:8px">
+          <div style="display:grid; grid-template-columns:56px minmax(0,1fr); align-items:start; gap:8px">
             <span style="font-size:11px; color:#8a877f; line-height:20px">{{ g.label }}</span>
             <div style="display:flex; flex-wrap:wrap; gap:4px">
               <sc-for list="{{ g.items }}" as="w" hint-placeholder-count="12">
@@ -77,24 +115,23 @@ button, input, select, textarea { font-family: inherit; }
         </sc-for>
       </div>
     </sc-if>
-    <button onClick="{{ resetColors }}" style="border:0; background:none; padding:4px 2px; font-size:12px; color:#6b6962; cursor:pointer; text-decoration:underline">恢复默认色</button>
-    <span style="color:#9a978f">照片上：拖动平移 · 滚轮缩放 · Ctrl+滚轮旋转种子照片 · 双击锁定/解锁（锁定后同一张照片在所有卡片同步）· 可直接把图片拖进框里</span>
+    <button onClick="{{ resetColors }}" style="border:0; background:none; padding:4px 2px; font-size:12px; color:#6b6962; cursor:pointer; text-decoration:underline">{{ ui.resetColors }}</button>
   </div>
 </div>
 
 <sc-if value="{{ showImport }}" hint-placeholder-val="{{ false }}">
   <div style="margin:16px 20px 0; background:#fff; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px">
-    <div style="font-size:13px; color:#55534d; line-height:1.6">每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。</div>
+    <div style="font-size:13px; color:#55534d; line-height:1.6">{{ ui.importHelp }}</div>
     <textarea value="{{ raw }}" onChange="{{ onRaw }}" rows="7" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #d6d3cb; border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6; resize:vertical; outline:none; color:#22211e"></textarea>
     <div style="display:flex; gap:8px">
-      <button onClick="{{ doImport }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">生成 / 更新卡片</button>
-      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">收起</button>
+      <button onClick="{{ doImport }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">{{ ui.generate }}</button>
+      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">{{ ui.collapse }}</button>
     </div>
   </div>
 </sc-if>
 
 <sc-if value="{{ noCards }}" hint-placeholder-val="{{ false }}">
-  <div style="margin:40px auto; color:#8a877f; font-size:14px">还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。</div>
+  <div style="margin:40px auto; color:#8a877f; font-size:14px">{{ ui.empty }}</div>
 </sc-if>
 
 <div ref="{{ listRef }}" style="padding:20px; display:grid; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:20px; align-items:start">
@@ -111,30 +148,36 @@ button, input, select, textarea { font-family: inherit; }
         <div style="flex:none; height:{{ v.parH }}px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr); gap:12px">
           <div data-slot="{{ v.slotM }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pm.cursor }}; touch-action:none">
             <sc-if value="{{ v.pm.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pm.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pm.w }}; height:auto; max-width:none; transform:{{ v.pm.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">母本照片</div></div></sc-if>
+            <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">{{ ui.phoM }}</div></div></sc-if>
             <sc-if value="{{ v.pm.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.pm.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+            <sc-if value="{{ v.pm.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
             <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="30" cy="21" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="30" y1="35" x2="30" y2="58" style="stroke:#fff; stroke-width:7"></line><line x1="19.5" y1="47" x2="40.5" y2="47" style="stroke:#fff; stroke-width:7"></line></svg></div>
-            <sc-if value="{{ v.wmM.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.wmM.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none; opacity:{{ wmOpacity }}"></sc-if>
+            <sc-if value="{{ v.wmM.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
           </div>
           <div data-slot="{{ v.slotF }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pf.cursor }}; touch-action:none">
             <sc-if value="{{ v.pf.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pf.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pf.w }}; height:auto; max-width:none; transform:{{ v.pf.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.pf.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">父本照片</div></div></sc-if>
+            <sc-if value="{{ v.pf.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">{{ ui.phoF }}</div></div></sc-if>
             <sc-if value="{{ v.pf.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.pf.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+            <sc-if value="{{ v.pf.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
             <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="23" cy="37" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="32.9" y1="27.1" x2="51" y2="9" style="stroke:#fff; stroke-width:7"></line><polyline points="37.5,7 53,7 53,22.5" style="fill:none; stroke:#fff; stroke-width:7; stroke-linejoin:miter"></polyline></svg></div>
-            <sc-if value="{{ v.wmF.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none; opacity:{{ wmOpacity }}"></sc-if>
+            <sc-if value="{{ v.wmF.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
           </div>
         </div>
         <div style="flex:1; min-height:0; margin-top:20px; display:flex; align-items:stretch; gap:{{ v.colGap }}px">
           <div style="flex:none; width:{{ v.sw }}px; box-sizing:border-box; padding-bottom:{{ v.seedPadB }}px; display:flex; flex-direction:column; justify-content:{{ v.seedJustify }}; gap:16px">
           <div data-slot="{{ v.slotS }}" style="flex: none; width: {{ v.sw }}px; height: {{ v.sh }}px; position: relative; overflow: hidden; container-type: size; border-radius: 6px; background: #dedcd5; cursor: {{ v.ps.cursor }}; touch-action: none">
             <sc-if value="{{ v.ps.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.ps.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.ps.w }}; height:auto; max-width:none; transform:{{ v.ps.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.ps.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:30px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>拖入或点击添加</div><div style="font-family:'IBM Plex Mono',monospace; font-size:20px; letter-spacing:.12em">种子照片</div></div></sc-if>
+            <sc-if value="{{ v.ps.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:30px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:20px; letter-spacing:.12em">{{ ui.phoS }}</div></div></sc-if>
             <sc-if value="{{ v.ps.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>已锁定</div></sc-if>
+            <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
           </div>
           <sc-if value="{{ v.footLeft }}" hint-placeholder-val="{{ false }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:8px 12px">
               <div style="display:flex; align-items:baseline; gap:12px">
@@ -212,41 +255,41 @@ button, input, select, textarea { font-family: inherit; }
     <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
       <div style="font-size:15px; font-weight:700">{{ r.title }}</div>
       <div style="display:flex; gap:6px">
-        <button data-id="{{ r.id }}" data-action="reset" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#22211e">重置裁剪</button>
-        <button data-id="{{ r.id }}" data-action="delete" onClick="{{ onAction }}" style="border:1px solid #e3c9c4; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#a2382c">删除</button>
+        <button data-id="{{ r.id }}" data-action="reset" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#22211e">{{ ui.resetCrop }}</button>
+        <button data-id="{{ r.id }}" data-action="delete" onClick="{{ onAction }}" style="border:1px solid #e3c9c4; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#a2382c">{{ ui.del }}</button>
       </div>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:8px">
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">编号<input data-id="{{ r.id }}" data-field="num" value="{{ r.num }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">年份<input data-id="{{ r.id }}" data-field="year" value="{{ r.year }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">种子生产者<input data-id="{{ r.id }}" data-field="producer" value="{{ r.producer }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.num }}<input data-id="{{ r.id }}" data-field="num" value="{{ r.num }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.year }}<input data-id="{{ r.id }}" data-field="year" value="{{ r.year }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.producer }}<input data-id="{{ r.id }}" data-field="producer" value="{{ r.producer }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
     </div>
     <div style="display:flex; flex-direction:column; gap:6px">
-      <div style="font-weight:600">♀ 母本</div>
-      <textarea data-id="{{ r.id }}" data-field="cnM" value="{{ r.cnM }}" onChange="{{ onField }}" rows="2" placeholder="中文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-      <textarea data-id="{{ r.id }}" data-field="enM" value="{{ r.enM }}" onChange="{{ onField }}" rows="2" placeholder="英文名（不含 N.）" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <div style="font-weight:600">{{ ui.mother }}</div>
+      <textarea data-id="{{ r.id }}" data-field="cnM" value="{{ r.cnM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ r.id }}" data-field="enM" value="{{ r.enM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnM }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
     </div>
     <div style="display:flex; flex-direction:column; gap:6px">
-      <div style="font-weight:600">♂ 父本</div>
-      <textarea data-id="{{ r.id }}" data-field="cnF" value="{{ r.cnF }}" onChange="{{ onField }}" rows="2" placeholder="中文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-      <textarea data-id="{{ r.id }}" data-field="enF" value="{{ r.enF }}" onChange="{{ onField }}" rows="2" placeholder="英文名" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <div style="font-weight:600">{{ ui.father }}</div>
+      <textarea data-id="{{ r.id }}" data-field="cnF" value="{{ r.cnF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ r.id }}" data-field="enF" value="{{ r.enF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnF }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
     </div>
     <div style="display:flex; flex-direction:column; gap:8px">
       <div style="display:flex; align-items:center; gap:8px">
-        <span style="flex:none; width:104px; color:#6b6962">♀ 种子提供者</span>
-        <select data-id="{{ r.id }}" data-field="wmMType" value="{{ r.wmMType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="yabbie">yabbie 水印</option><option value="xianyu">闲鱼账号</option><option value="none">不加水印</option></select>
-        <sc-if value="{{ r.mXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmMName" value="{{ r.wmMName }}" onChange="{{ onField }}" placeholder="闲鱼用户名" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
+        <span style="flex:none; width:104px; color:#6b6962">{{ ui.seedProv }}</span>
+        <select data-id="{{ r.id }}" data-field="wmMType" value="{{ r.wmMType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="yabbie">{{ ui.wmYab }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option></select>
+        <sc-if value="{{ r.mXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmMName" value="{{ r.wmMName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
       </div>
       <div style="display:flex; align-items:center; gap:8px">
-        <span style="flex:none; width:104px; color:#6b6962">♂ 花粉提供者</span>
-        <select data-id="{{ r.id }}" data-field="wmFType" value="{{ r.wmFType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="yabbie">yabbie 水印</option><option value="xianyu">闲鱼账号</option><option value="none">不加水印</option></select>
-        <sc-if value="{{ r.fXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmFName" value="{{ r.wmFName }}" onChange="{{ onField }}" placeholder="闲鱼用户名" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
+        <span style="flex:none; width:104px; color:#6b6962">{{ ui.pollenProv }}</span>
+        <select data-id="{{ r.id }}" data-field="wmFType" value="{{ r.wmFType }}" onChange="{{ onField }}" style="flex:1; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="yabbie">{{ ui.wmYab }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option></select>
+        <sc-if value="{{ r.fXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmFName" value="{{ r.wmFName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
       </div>
     </div>
     <div style="display:flex; flex-wrap:wrap; gap:6px">
-      <button data-action="pick" data-slot="{{ r.slotM }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换母本图</button>
-      <button data-action="pick" data-slot="{{ r.slotF }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换父本图</button>
-      <button data-action="pick" data-slot="{{ r.slotS }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">换种子图</button>
+      <button data-action="pick" data-slot="{{ r.slotM }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickM }}</button>
+      <button data-action="pick" data-slot="{{ r.slotF }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickF }}</button>
+      <button data-action="pick" data-slot="{{ r.slotS }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickS }}</button>
     </div>
   </div>
 
@@ -254,10 +297,11 @@ button, input, select, textarea { font-family: inherit; }
 </sc-for>
 </div>
 
+<div ref="{{ tipRef }}" style="position:fixed; left:0; top:0; z-index:60; display:{{ tip.display }}; pointer-events:none; max-width:300px; background:rgba(27,26,23,.93); color:#fff; font-size:12px; line-height:1.65; padding:8px 12px; border-radius:8px; box-shadow:0 6px 20px -6px rgba(0,0,0,.45)"><sc-for list="{{ tip.lines }}" as="ln" hint-placeholder-count="3"><div>{{ ln.txt }}</div></sc-for></div>
 <input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFile }}" style="display:none">
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;exportScale&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 2, &quot;min&quot;: 1, &quot;max&quot;: 4, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;导出&quot;}, &quot;nameScale&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.7, &quot;max&quot;: 1.2, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;排版&quot;}, &quot;namesAlign&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;center&quot;, &quot;top&quot;, &quot;bottom&quot;], &quot;default&quot;: &quot;center&quot;, &quot;tsType&quot;: &quot;'center' | 'top' | 'bottom'&quot;, &quot;section&quot;: &quot;排版&quot;}}">
+<script type="text/x-dc" data-dc-script>
 const FONT_FAMILIES = ['Noto+Serif+SC:wght@600;700;900', 'Noto+Sans+SC:wght@300;400;500;700', 'Hanken+Grotesk:wght@300;400;600', 'EB+Garamond:ital,wght@0,500;0,600;1,500', 'IBM+Plex+Mono:wght@400;500', 'Bodoni+Moda:ital,wght@0,700;1,400;1,500'];
 const FF = {
   sans: "'Noto Sans SC','PingFang SC',sans-serif",
@@ -298,6 +342,22 @@ const RAW = [
   "[海盗x诺斯]x飞翼“虎克”\tN. (Viking x northiana) x \"hookeriana\" Winged, YAB-X2615",
   "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
 ].join('\n');
+const I18N = {
+  zh: { title:'猪笼草亲本组图', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
+    importHelp:'每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。', generate:'生成 / 更新卡片', collapse:'收起', empty:'还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。',
+    drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
+    phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
+    pickM:'换母本图', pickF:'换父本图', pickS:'换种子图', footFull:'整行平铺', footRight:'靠右·对齐名称', footLeft:'靠左·对齐种子图', cardBoth:'中英', cardEn:'仅英文', top:'靠上', center:'居中', bottom:'靠下',
+    expSuffix:' · 导出 ', exporting:'导出中…', exportPre:'导出 ', exportAllPre:'导出全部 ', loadFail:'无法读取这张图片（HEIC 格式请先转成 JPG）', exportFail:'导出失败：', confirmDel:'删除这张卡片？', groups:{},
+    tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换' },
+  en: { title:'Nepenthes Parent Cards', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
+    importHelp:'One cross per line: Chinese name [Tab] English name, ID (e.g. YAB-X2607). Names are split into mother and father at the outermost x. Cards with the same ID only get their names updated; photos and crops are kept.', generate:'Create / update cards', collapse:'Close', empty:'No cards yet. Use "Import list" to paste crosses, or "+ Blank card".',
+    drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
+    phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
+    pickM:'Replace mother photo', pickF:'Replace father photo', pickS:'Replace seed photo', footFull:'Full width', footRight:'Right · align names', footLeft:'Left · align seed photo', cardBoth:'CN + EN', cardEn:'English only', top:'Top', center:'Center', bottom:'Bottom',
+    expSuffix:' · export ', exporting:'Exporting…', exportPre:'Export ', exportAllPre:'Export all ', loadFail:'Could not read this image (convert HEIC to JPG first).', exportFail:'Export failed: ', confirmDel:'Delete this card?', groups:{'红粉':'Red','橙棕':'Brown','黄褐':'Tan','绿':'Green','青蓝':'Blue','紫':'Purple','灰':'Gray'},
+    tipPan:'Drag: pan', tipZoom:'Wheel: zoom', tipRot:'Ctrl + wheel: rotate', tipLock:'Double-click: lock (same photo syncs across all cards)', tipLocked:'Locked: wheel scrolls the page, no zoom', tipUnlock:'Double-click: unlock', tipDrop:'Drop an image: replace' },
+};
 const LS_KEY = 'yabbie-nep-cards-v1';
 const LIB = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
 
@@ -305,22 +365,29 @@ class Component extends DCLogic {
   state = this.initState();
   fileRef = React.createRef();
   listRef = React.createRef();
+  tipRef = React.createRef();
   _fitState = {};
 
   initState() {
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
-    let fmt = 'png'; try { fmt = localStorage.getItem('qb_fmt') === 'jpg' ? 'jpg' : 'png'; } catch (e) {}
-    const base = { fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900 };
+    let fmt = 'jpg'; try { fmt = localStorage.getItem('qb_fmt') === 'png' ? 'png' : 'jpg'; } catch (e) {}
+    let ui = {}; try { ui = JSON.parse(localStorage.getItem('qb_ui')) || {}; } catch (e) {}
+    const exportScale = [1, 2, 4].includes(ui.exportScale) ? ui.exportScale : 2;
+    const nameScale = ui.nameScale >= 0.7 && ui.nameScale <= 1.2 ? ui.nameScale : 1;
+    const namesAlign = ['center', 'top', 'bottom'].includes(ui.namesAlign) ? ui.namesAlign : 'center';
+    const wmTrans = ui.wmTrans >= 0 && ui.wmTrans <= 80 ? ui.wmTrans : 10;
+    const uiLang = ui.uiLang === 'en' ? 'en' : 'zh';
+    const base = { uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900 };
     if (saved && Array.isArray(saved.cards)) {
       const photos = {};
       this._pendingIdb = [];
       for (const [k, m] of Object.entries(saved.meta || {})) {
         if (m.src) photos[k] = { src: m.src, ar: m.ar, pid: m.pid || m.src }; else this._pendingIdb.push([k, m]);
       }
-      return { ...base, cards: saved.cards, ratio: saved.ratio || '11', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
+      return { ...base, cards: saved.cards, ratio: saved.ratio || '34', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
     }
-    return { ...base, cards: [], ratio: '11', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
+    return { ...base, cards: [], ratio: '34', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
   }
 
   splitTop(str, en) {
@@ -355,7 +422,7 @@ class Component extends DCLogic {
   }
   parseRaw(raw) { return raw.split(/\r?\n/).map(l => this.parseLine(l)).filter(Boolean); }
   newCard(p) {
-    return { id: 'c' + Math.random().toString(36).slice(2, 9), num: '', year: String(new Date().getFullYear()), producer: 'YABBIE', cnM: '', cnF: '', enM: '', enF: '', wmMType: 'yabbie', wmMName: '', wmFType: 'yabbie', wmFName: '', crop: {}, ...p };
+    return { id: 'c' + Math.random().toString(36).slice(2, 9), num: '', year: String(new Date().getFullYear()), producer: 'YABBIE', cnM: '', cnF: '', enM: '', enF: '', wmMType: 'none', wmMName: '', wmFType: 'none', wmFName: '', crop: {}, ...p };
   }
   yc(y) { return this.state.yearColors[y] || YEAR_COLORS[y] || CYCLE[(parseInt(y, 10) || 0) % CYCLE.length]; }
   hash(str) {
@@ -421,7 +488,7 @@ class Component extends DCLogic {
     return n;
   }
   fitNames(c, avail, lang, r34, corr = 1, wc = 1) {
-    const ns = this.props.nameScale ?? 1, A = avail * 0.97 / wc, en = lang === 'en';
+    const ns = this.state.nameScale ?? 1, A = avail * 0.97 / wc, en = lang === 'en';
     const inside = this.ef() === 'right', box = this.geo(r34 ? '34' : '11').box;
     const fCn = '700 100px ' + FF.serif, fIt = 'italic 500 100px ' + FF.gara, fUp = '500 100px ' + FF.gara;
     const enM = c.enM ? 'N. ' + c.enM : '', enF = c.enF || '';
@@ -561,9 +628,11 @@ class Component extends DCLogic {
       leave: e => { if (!e.relatedTarget && this.state.dragKey) this.setState({ dragKey: null }); },
       dbl: e => { const el = this.slotEl(e); if (el && this.state.photos[el.dataset.slot]) this.toggleLock(el.dataset.slot); },
       resize: () => this.setState({ vh: window.innerHeight }),
+      tip: e => { this._mx = e.clientX; this._my = e.clientY; this.placeTip(); },
       hover: e => { const el = this.slotEl(e), k = el ? el.dataset.slot : null; if (k !== this.state.hoverKey) this.setState({ hoverKey: k }); },
     };
     document.addEventListener('pointerover', this._h.hover);
+    window.addEventListener('pointermove', this._h.tip);
     document.addEventListener('pointerdown', this._h.down);
     window.addEventListener('pointermove', this._h.move);
     window.addEventListener('pointerup', this._h.up);
@@ -600,6 +669,7 @@ class Component extends DCLogic {
     document.removeEventListener('dblclick', h.dbl);
     window.removeEventListener('resize', h.resize);
     document.removeEventListener('pointerover', h.hover);
+    window.removeEventListener('pointermove', h.tip);
     if (this._ro) this._ro.disconnect();
     if (document.fonts && this._fl) document.fonts.removeEventListener('loadingdone', this._fl);
   }
@@ -607,6 +677,16 @@ class Component extends DCLogic {
     clearTimeout(this._st);
     this._st = setTimeout(() => this.save(), 400);
     this.checkFit();
+    this.placeTip();
+  }
+  placeTip() {
+    const el = this.tipRef.current;
+    if (!el || el.style.display === 'none' || this._mx == null) return;
+    const w = el.offsetWidth, hh = el.offsetHeight;
+    let x = this._mx + 16, y = this._my + 18;
+    if (x + w > window.innerWidth - 8) x = this._mx - w - 14;
+    if (y + hh > window.innerHeight - 8) y = this._my - hh - 14;
+    el.style.transform = 'translate(' + Math.max(0, x) + 'px,' + Math.max(0, y) + 'px)';
   }
   checkFit() {
     if (this._fitRaf) return;
@@ -668,6 +748,7 @@ class Component extends DCLogic {
     const d = this._drag; if (!d) return;
     const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
     if (!d.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    if (!d.moved) this.setState({ panning: true });
     d.moved = true;
     if (!d.has || d.locked) return;
     const { c0, r } = d;
@@ -675,13 +756,14 @@ class Component extends DCLogic {
   }
   onUp() {
     const d = this._drag; this._drag = null;
+    if (this.state.panning) this.setState({ panning: false });
     if (d && !d.moved && !d.has) this.pick(d.key);
   }
   onWheel(e) {
     const el = this.slotEl(e); if (!el) return;
     const key = el.dataset.slot; if (!this.state.photos[key]) return;
+    if (this.isLocked(key)) { if (e.ctrlKey) e.preventDefault(); return; }
     e.preventDefault();
-    if (this.isLocked(key)) return;
     const r = el.getBoundingClientRect(), fa = r.width / r.height;
     if (e.ctrlKey && key.endsWith(':s')) {
       const dr = Math.max(-12, Math.min(12, e.deltaY * 0.08)), now = Date.now();
@@ -743,13 +825,13 @@ class Component extends DCLogic {
       const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, 2200 / Math.max(w, h));
       const cv = document.createElement('canvas');
       cv.width = Math.round(w * k); cv.height = Math.round(h * k);
-      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
       URL.revokeObjectURL(url);
       const src = cv.toDataURL('image/jpeg', 0.9), pid = this.hash(src);
       await this.idb('readwrite', st => st.put(src, key));
       const [id, slot] = key.split(':');
       this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: cv.width / cv.height, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') } } } : c) }));
-    } catch (e) { alert('无法读取这张图片（HEIC 格式请先转成 JPG）'); }
+    } catch (e) { alert((I18N[this.state.uiLang] || I18N.zh).loadFail); }
   }
 
   loadLib() {
@@ -782,7 +864,7 @@ class Component extends DCLogic {
       await this.loadLib();
       const H = this.state.ratio === '34' ? 1440 : 1080;
       const css = await this.fontCSS(node.textContent || '');
-      const opts = { width: 1080, height: H, pixelRatio: this.props.exportScale ?? 2, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
+      const opts = { width: 1080, height: H, pixelRatio: this.state.exportScale ?? 2, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
       if (css) opts.fontEmbedCSS = css; else opts.skipFonts = true;
       const jpg = this.state.fmt === 'jpg';
       const url = jpg ? await window.htmlToImage.toJpeg(node, { ...opts, quality: 1, backgroundColor: '#ffffff' }) : await window.htmlToImage.toPng(node, opts);
@@ -790,14 +872,20 @@ class Component extends DCLogic {
       a.href = url;
       a.download = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
       document.body.appendChild(a); a.click(); a.remove();
-    } catch (e) { console.error(e); alert('导出失败：' + ((e && e.message) || e)); }
+    } catch (e) { console.error(e); alert((I18N[this.state.uiLang] || I18N.zh).exportFail + ((e && e.message) || e)); }
     this.setState({ busy: null });
   }
 
   onSetFmt = e => { const fmt = e.currentTarget.dataset.fmt; try { localStorage.setItem('qb_fmt', fmt); } catch (er) {} this.setState({ fmt }); };
   onSetRatio = e => this.setState({ ratio: e.currentTarget.dataset.ratio });
   onSetFoot = e => this.setState({ foot: e.currentTarget.dataset.foot });
+  saveUi(p) { try { const u = JSON.parse(localStorage.getItem('qb_ui')) || {}; localStorage.setItem('qb_ui', JSON.stringify({ ...u, ...p })); } catch (er) {} this.setState(p); }
+  onWmTrans = e => this.saveUi({ wmTrans: +e.target.value });
+  onSetScale = e => this.saveUi({ exportScale: +e.currentTarget.dataset.scale });
+  onNameScale = e => this.saveUi({ nameScale: +e.target.value });
+  onSetAlign = e => this.saveUi({ namesAlign: e.currentTarget.dataset.align });
   onSetLang = e => this.setState({ lang: e.currentTarget.dataset.lang });
+  onSetUiLang = e => this.saveUi({ uiLang: e.currentTarget.dataset.uilang });
   toggleImport = () => this.setState(s => ({ showImport: !s.showImport }));
   onRaw = e => this.setState({ raw: e.target.value });
   doImport = () => {
@@ -829,7 +917,7 @@ class Component extends DCLogic {
     else if (d.action === 'pick') this.pick(d.slot);
     else if (d.action === 'reset') this.setState(s => ({ cards: s.cards.map(c => c.id === d.id ? { ...c, crop: {} } : c) }));
     else if (d.action === 'delete') {
-      if (!confirm('删除这张卡片？')) return;
+      if (!confirm((I18N[this.state.uiLang] || I18N.zh).confirmDel)) return;
       ['m', 'f', 's'].forEach(sl => this.idb('readwrite', st => st.delete(d.id + ':' + sl)));
       this.setState(s => {
         const photos = { ...s.photos };
@@ -848,6 +936,10 @@ class Component extends DCLogic {
 
   renderVals() {
     const st = this.state;
+    const T = I18N[st.uiLang] || I18N.zh;
+    const hk = st.hoverKey, hp = hk && st.photos[hk];
+    const tipL = !hp || st.panning ? [] : (this.isLocked(hk, st) ? [T.tipLocked, T.tipUnlock] : [T.tipPan, T.tipZoom, hk.endsWith(':s') ? T.tipRot : null, T.tipLock]).concat([T.tipDrop]);
+    const tip = { display: tipL.length ? 'block' : 'none', lines: tipL.filter(Boolean).map(txt => ({ txt })) };
     const H = st.ratio === '34' ? 1440 : 1080;
     const r34 = st.ratio === '34', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
     const W = st.vw || 1000, vh = st.vh || 900, FORM = 320, CHROME = 36 + 22;
@@ -861,8 +953,8 @@ class Component extends DCLogic {
     const rowCols = stacked ? 'minmax(0,1fr)' : pw + 'px minmax(0,520px)';
     const rLabel = st.ratio === '34' ? '3:4' : '1:1';
     const foot = this.ef(st), footR = foot === 'right';
-    const ns = this.props.nameScale ?? 1;
-    const nj = r34 ? ({ top: 'flex-start', bottom: 'flex-end' }[this.props.namesAlign] || 'center') : 'flex-start';
+    const ns = st.nameScale ?? 1, xs = st.exportScale ?? 2;
+    const nj = r34 ? ({ top: 'flex-start', bottom: 'flex-end' }[st.namesAlign] || 'center') : 'flex-start';
     const seedJustify = 'flex-start', seedPadB = 0;
     const rows = st.cards.map((c, i) => {
       const photo = slot => {
@@ -872,7 +964,7 @@ class Component extends DCLogic {
         const cr = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(slot, st.ratio));
         return { has: true, empty: false, hl, locked, lockTip: locked && st.hoverKey === key, cursor: locked ? 'default' : 'grab', src: p.src, w: (() => { const th = cr.r * Math.PI / 180, ac = Math.abs(Math.cos(th)).toFixed(5), as = Math.abs(Math.sin(th)).toFixed(5); return 'max(calc(100cqw * ' + ac + ' + 100cqh * ' + as + '), calc(' + p.ar.toFixed(5) + ' * (100cqw * ' + as + ' + 100cqh * ' + ac + ')))'; })(), tf: 'translate(-50%, -50%) translate(' + cr.x.toFixed(2) + 'cqw, ' + cr.y.toFixed(2) + 'cqh) scale(' + cr.s.toFixed(3) + ') rotate(' + cr.r + 'deg)' };
       };
-      const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', name: n || '' });
+      const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', xhs: t === 'xhs', fb: t === 'fb', ig: t === 'ig', name: n || '' });
       const slotM = c.id + ':m', slotF = c.id + ':f', slotS = c.id + ':s';
       const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot].join('|');
       const fst = this._fitState[sig] || {};
@@ -886,24 +978,29 @@ class Component extends DCLogic {
         hasCnF: !!c.cnF, hasEnM: !!c.enM, hasEnF: !!c.enF,
         pm: photo('m'), pf: photo('f'), ps: photo('s'), slotM, slotF, slotS,
         wmM: wm(c.wmMType, c.wmMName), wmF: wm(c.wmFType, c.wmFName),
-        label: rLabel + ' · 导出 ' + 1080 * (this.props.exportScale ?? 2) + '×' + H * (this.props.exportScale ?? 2),
-        exportLabel: st.busy === key ? '导出中…' : '导出 ' + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
+        label: rLabel + T.expSuffix + 1080 * xs + '×' + H * xs,
+        exportLabel: st.busy === key ? T.exporting : T.exportPre + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
       };
-      return { ...c, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: c.wmMType === 'xianyu', fXianyu: c.wmFType === 'xianyu' };
+      return { ...c, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmMType), fXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmFType) };
     });
     const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
     return {
-      rows, cols, rowCols, listRef: this.listRef,
+      rows, cols, rowCols, listRef: this.listRef, ui: T, tip, tipRef: this.tipRef,
+      uiOpts: [opt('zh', '中文', st.uiLang || 'zh'), opt('en', 'English', st.uiLang || 'zh')], onSetUiLang: this.onSetUiLang,
       noCards: !st.cards.length,
       ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio)],
-      footOpts: [opt('full', '整行平铺', foot), opt('right', '靠右·对齐名称', foot), opt('left', '靠左·对齐种子图', foot)], onSetFoot: this.onSetFoot, showFoot: r34,
-      langOpts: [opt('zh', '中英', lang), opt('en', '仅英文', lang)], onSetLang: this.onSetLang,
-      years: [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort().map(y => { const cur = this.yc(y).toLowerCase(), on = st.activeYear === y; return { year: y, color: cur, name: COLOR_NAME[cur] || cur, border: on ? '#22211e' : '#dcd9d2', shadow: on ? '0 0 0 1px #22211e' : 'none' }; }),
+      footOpts: [opt('full', T.footFull, foot), opt('right', T.footRight, foot), opt('left', T.footLeft, foot)], onSetFoot: this.onSetFoot, showFoot: r34,
+      langOpts: [opt('zh', T.cardBoth, lang), opt('en', T.cardEn, lang)], onSetLang: this.onSetLang,
+      years: [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort().map(y => { const cur = this.yc(y).toLowerCase(), on = st.activeYear === y; return { year: y, color: cur, name: st.uiLang === 'en' ? cur : (COLOR_NAME[cur] || cur), border: on ? '#22211e' : '#dcd9d2', shadow: on ? '0 0 0 1px #22211e' : 'none' }; }),
+      scaleOpts: [1, 2, 4].map(n => opt(n, n + '×', xs)), onSetScale: this.onSetScale,
+      wmOpacity: (100 - (st.wmTrans ?? 10)) / 100, wmTransVal: String(st.wmTrans ?? 10), wmTransLabel: (st.wmTrans ?? 10) + '%', onWmTrans: this.onWmTrans,
+      nameScaleVal: String(ns), nameScaleLabel: Math.round(ns * 100) + '%', onNameScale: this.onNameScale,
+      alignOpts: [opt('top', T.top, st.namesAlign), opt('center', T.center, st.namesAlign || 'center'), opt('bottom', T.bottom, st.namesAlign)], onSetAlign: this.onSetAlign,
       onPickYear: this.onPickYear,
       hasActiveYear: !!st.activeYear && st.cards.some(c => c.year === st.activeYear),
-      swatchGroups: st.activeYear ? (() => { const y = st.activeYear, cur = this.yc(y).toLowerCase(); return PALETTE_GROUPS.map(g => ({ label: g.label, items: g.items.map(({ c, name }) => ({ c, name, year: y, ring: c === cur ? '0 0 0 2px #fff, 0 0 0 3.5px #22211e' : 'inset 0 0 0 1px rgba(0,0,0,.12)' })) })); })() : [],
+      swatchGroups: st.activeYear ? (() => { const y = st.activeYear, cur = this.yc(y).toLowerCase(); return PALETTE_GROUPS.map(g => ({ label: T.groups[g.label] || g.label, items: g.items.map(({ c, name }) => ({ c, name, year: y, ring: c === cur ? '0 0 0 2px #fff, 0 0 0 3.5px #22211e' : 'inset 0 0 0 1px rgba(0,0,0,.12)' })) })); })() : [],
       showImport: st.showImport, raw: st.raw,
-      exportAllLabel: st.busyAll ? '导出中…' : '导出全部 ' + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
+      exportAllLabel: st.busyAll ? T.exporting : T.exportAllPre + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
       fileRef: this.fileRef,
       onSetRatio: this.onSetRatio, onSetFmt: this.onSetFmt,
       fmtPngBg: st.fmt !== 'jpg' ? '#22211e' : '#fff', fmtPngFg: st.fmt !== 'jpg' ? '#fff' : '#22211e', fmtJpgBg: st.fmt === 'jpg' ? '#22211e' : '#fff', fmtJpgFg: st.fmt === 'jpg' ? '#fff' : '#22211e', toggleImport: this.toggleImport, onRaw: this.onRaw,
