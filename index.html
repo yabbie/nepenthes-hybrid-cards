@@ -21,7 +21,7 @@ button, input, select, textarea { font-family: inherit; }
 </helmet>
 <div style="min-height:100vh; display:flex; flex-direction:column">
 
-<div style="position:sticky; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:{{ barPad }}; display:flex; flex-direction:column; gap:10px">
+<div ref="{{ barRef }}" style="position:{{ barPos }}; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:{{ barPad }}; display:flex; flex-direction:column; gap:10px">
   <div style="display:{{ narrowDisp }}; align-items:center; justify-content:space-between; gap:10px">
     <div style="font-size:16px; font-weight:700">{{ ui.title }}</div>
     <button onClick="{{ togglePanel }}" style="border:1px solid #22211e; background:{{ panelBg }}; color:{{ panelFg }}; border-radius:8px; padding:8px 14px; min-height:40px; font-size:14px; cursor:pointer; white-space:nowrap">{{ panelLabel }}</button>
@@ -161,8 +161,8 @@ button, input, select, textarea { font-family: inherit; }
     <div style="position:relative; overflow:hidden; width:{{ v.pw }}px; height:{{ v.ph }}px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.12), 0 6px 20px -10px rgba(0,0,0,.18)">
 
       <sc-if value="{{ v.isC }}" hint-placeholder-val="{{ true }}">
-      <div data-export="{{ v.key }}" style="position:absolute; left:0; top:0; width:1080px; height:{{ v.H }}px; transform:scale({{ v.sc }}); transform-origin:0 0; box-sizing:border-box; padding:24px; background:#f4f3ee; display:flex; flex-direction:column; gap:0; overflow:hidden; font-family:'Noto Serif SC','Songti SC',serif; color:#1b1a17">
-        <div style="flex:none; height:{{ v.parH }}px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr); gap:12px">
+      <div data-export="{{ v.key }}" style="position:absolute; left:0; top:0; width:1080px; height:{{ v.H }}px; transform:scale({{ v.sc }}); transform-origin:0 0; box-sizing:border-box; padding:12px; background:#f4f3ee; display:flex; flex-direction:column; gap:0; overflow:hidden; font-family:'Noto Serif SC','Songti SC',serif; color:#1b1a17">
+        <div style="flex:none; height:{{ v.parH }}px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr); gap:10px">
           <div data-slot="{{ v.slotM }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pm.cursor }}; touch-action:{{ touchAct }}">
             <sc-if value="{{ v.pm.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pm.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pm.w }}; height:auto; max-width:none; transform:{{ v.pm.tf }}; user-select:none; pointer-events:none"></sc-if>
             <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">{{ ui.phoM }}</div></div></sc-if>
@@ -188,7 +188,7 @@ button, input, select, textarea { font-family: inherit; }
             <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
           </div>
         </div>
-        <div style="flex:1; min-height:0; margin-top:20px; display:flex; align-items:stretch; gap:{{ v.colGap }}px">
+        <div style="flex:1; min-height:0; margin-top:16px; display:flex; align-items:stretch; gap:{{ v.colGap }}px">
           <div style="flex:none; width:{{ v.sw }}px; box-sizing:border-box; padding-bottom:{{ v.seedPadB }}px; display:flex; flex-direction:column; justify-content:{{ v.seedJustify }}; gap:16px">
           <div data-slot="{{ v.slotS }}" style="flex: none; width: {{ v.sw }}px; height: {{ v.sh }}px; position: relative; overflow: hidden; container-type: size; border-radius: 6px; background: #dedcd5; cursor: {{ v.ps.cursor }}; touch-action: {{ touchAct }}">
             <sc-if value="{{ v.ps.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.ps.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.ps.w }}; height:auto; max-width:none; transform:{{ v.ps.tf }}; user-select:none; pointer-events:none"></sc-if>
@@ -246,7 +246,7 @@ button, input, select, textarea { font-family: inherit; }
             </div></sc-if>
           </div>
         </div>
-        <sc-if value="{{ v.footOut }}" hint-placeholder-val="{{ false }}"><div style="flex:none; width:{{ v.footW }}; box-sizing:border-box; margin-top:16px; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px">
+        <sc-if value="{{ v.footOut }}" hint-placeholder-val="{{ false }}"><div style="flex:none; width:{{ v.footW }}; box-sizing:border-box; margin-top:10px; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px">
               <div style="display:flex; align-items:baseline; gap:12px">
                 <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em; color:#5f5b52">NO.</span>
                 <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:54px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
@@ -398,6 +398,7 @@ class Component extends DCLogic {
   fileRef = React.createRef();
   listRef = React.createRef();
   tipRef = React.createRef();
+  barRef = React.createRef();
   _fitState = {};
 
   initState() {
@@ -417,9 +418,9 @@ class Component extends DCLogic {
       for (const [k, m] of Object.entries(saved.meta || {})) {
         if (m.src) photos[k] = { src: m.src, ar: m.ar, pid: m.pid || m.src }; else this._pendingIdb.push([k, m]);
       }
-      return { ...base, cards: saved.cards, ratio: saved.ratio || '34', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
+      return { ...base, cards: saved.cards, ratio: saved.ratio || '11', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
     }
-    return { ...base, cards: [], ratio: '34', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
+    return { ...base, cards: [], ratio: '11', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
   }
 
   splitTop(str, en) {
@@ -616,14 +617,14 @@ class Component extends DCLogic {
   isLocked(key, st = this.state) { const p = st.photos[key]; return !!(p && p.pid && st.locks[this.lk(p.pid, st.ratio)]); }
   ef(st = this.state) { return st.ratio === '34' ? (st.foot || 'right') : 'right'; }
   geo(ratio, foot = this.ef()) {
-    const r34 = ratio === '34', band = r34 ? 440 : 280, parH = (r34 ? 1392 : 1032) - 20 - band, colGap = 26;
+    const r34 = ratio === '34', band = r34 ? 440 : 280, parH = (r34 ? 1416 : 1056) - 16 - band, colGap = 26;
     const rowH = foot === 'full' ? band - 78 : band, sh = foot === 'left' ? band - 78 : rowH;
     const sw = foot === 'left' ? 380 : Math.round(rowH * (r34 ? (foot === 'right' ? 2 / 3 : 3 / 4) : 5 / 4));
-    return { band, parH, sw, sh, colGap, box: band - (foot === 'left' ? 0 : 78), avail: 1032 - sw - colGap - 40 };
+    return { band, parH, sw, sh, colGap, box: band - (foot === 'left' ? 0 : 78), avail: 1056 - sw - colGap - 40 };
   }
   frameAspect(slot, ratio) {
     const g = this.geo(ratio);
-    return slot === 's' ? g.sw / g.sh : 510 / g.parH;
+    return slot === 's' ? g.sw / g.sh : 523 / g.parH;
   }
   toggleLock(key) {
     const p = this.state.photos[key]; if (!p || !p.pid) return;
@@ -695,6 +696,10 @@ class Component extends DCLogic {
       this._ro = new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w && Math.abs(w - this.state.vw) > 24) this.setState({ vw: w }); });
       this._ro.observe(this.listRef.current);
     }
+    if (window.ResizeObserver && this.barRef.current) {
+      this._rb = new ResizeObserver(() => { const h = Math.round(this.barRef.current.getBoundingClientRect().height); if (Math.abs(h - (this.state.barH || 0)) > 1) this.setState({ barH: h }); });
+      this._rb.observe(this.barRef.current);
+    }
     if (document.fonts) {
       this._fl = () => { this._mc = {}; this._fitState = {}; this.forceUpdate(); };
       document.fonts.addEventListener('loadingdone', this._fl);
@@ -720,6 +725,7 @@ class Component extends DCLogic {
     document.removeEventListener('pointerover', h.hover);
     window.removeEventListener('pointermove', h.tip); clearTimeout(this._tipT);
     if (this._ro) this._ro.disconnect();
+    if (this._rb) this._rb.disconnect();
     if (document.fonts && this._fl) document.fonts.removeEventListener('loadingdone', this._fl);
   }
   componentDidUpdate() {
@@ -1002,12 +1008,14 @@ class Component extends DCLogic {
     const r34 = st.ratio === '34', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
     const nr = !!st.narrow, listPad = nr ? 12 : 20, cardPad = nr ? 12 : 18;
     const W = st.vw || 1000, vh = st.vh || 900, FORM = 320, CHROME = 36 + 22;
-    const pwCap = Math.max(300, (vh - 150) * 1080 / H);
+    const barH = st.barH || 0, sticky = !barH || barH <= vh * 0.3;
+    const availH = vh - (sticky ? barH : 0) - listPad - 2 * cardPad - 46;
+    const pwCap = Math.max(200, availH * 1080 / H);
     const target = Math.max(820, Math.min(pwCap + CHROME + FORM, 1400));
     const cols = Math.max(1, Math.round((W + 20) / (target + 20)));
     const cellW = (W - 20 * (cols - 1)) / cols;
     const stacked = cellW - CHROME - FORM < 420;
-    const pw = Math.floor(Math.max(240, Math.min(stacked ? cellW - 2 * cardPad : cellW - CHROME - FORM, pwCap)));
+    const pw = Math.floor(Math.max(200, Math.min(stacked ? cellW - 2 * cardPad : cellW - CHROME - FORM, pwCap)));
     const sc = pw / 1080, ph = Math.round(H * sc);
     const rowCols = stacked ? 'minmax(0,1fr)' : pw + 'px minmax(0,520px)';
     const rLabel = st.ratio === '34' ? '3:4' : '1:1';
@@ -1045,6 +1053,7 @@ class Component extends DCLogic {
     const opt1 = (k, label, on) => ({ key: k, label, bg: on ? '#22211e' : 'transparent', fg: on ? '#fff' : '#3a3934' });
     const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
     return {
+      barRef: this.barRef, barPos: sticky ? 'sticky' : 'relative',
       narrow: nr, narrowDisp: nr ? 'flex' : 'none', wideDisp: nr ? 'none' : 'flex', barPad: nr ? '10px 12px' : '12px 20px', listPad, cardPad,
       ctlDisp: !nr || st.panelOpen ? 'flex' : 'none', ctlMax: nr ? '68vh' : 'none', ctlOv: nr ? 'auto' : 'visible',
       panelLabel: st.panelOpen ? T.closeSettings + ' ▴' : T.settings + ' ▾', panelBg: st.panelOpen ? '#22211e' : '#fff', panelFg: st.panelOpen ? '#fff' : '#22211e', togglePanel: this.togglePanel,
