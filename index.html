@@ -297,6 +297,21 @@ button, input, select, textarea { font-family: inherit; }
 </sc-for>
 </div>
 
+<footer style="margin-top:auto; border-top:1px solid #d9d6cf; padding:24px 20px 28px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:14px 32px">
+  <div style="display:flex; flex-direction:column; gap:6px; min-width:0">
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; color:#22211e; text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500" style-hover="color:#5d4f8c">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="flex:none"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+      <span>yabbie / nepenthes-hybrid-cards</span>
+    </a>
+    <div style="font-size:12px; color:#6b6962; line-height:1.6">{{ ghMeta }}</div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; font-size:13px">
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="white-space:nowrap">{{ ghStarTxt }}</a>
+    <a href="https://yabbie.github.io/nepenthes-hybrid-cards/" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghLive }} ↗</a>
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards/issues" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghIssues }} ↗</a>
+  </div>
+</footer>
+
 <div ref="{{ tipRef }}" style="position:fixed; left:0; top:0; z-index:60; display:{{ tip.display }}; pointer-events:none; max-width:300px; background:rgba(27,26,23,.93); color:#fff; font-size:12px; line-height:1.65; padding:8px 12px; border-radius:8px; box-shadow:0 6px 20px -6px rgba(0,0,0,.45)"><sc-for list="{{ tip.lines }}" as="ln" hint-placeholder-count="3"><div>{{ ln.txt }}</div></sc-for></div>
 <input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFile }}" style="display:none">
 </div>
@@ -343,14 +358,14 @@ const RAW = [
   "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
 ].join('\n');
 const I18N = {
-  zh: { title:'猪笼草亲本组图', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
+  zh: { title:'猪笼草亲本组图', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
     importHelp:'每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。', generate:'生成 / 更新卡片', collapse:'收起', empty:'还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。',
     drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
     phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
     pickM:'换母本图', pickF:'换父本图', pickS:'换种子图', footFull:'整行平铺', footRight:'靠右·对齐名称', footLeft:'靠左·对齐种子图', cardBoth:'中英', cardEn:'仅英文', top:'靠上', center:'居中', bottom:'靠下',
     expSuffix:' · 导出 ', exporting:'导出中…', exportPre:'导出 ', exportAllPre:'导出全部 ', loadFail:'无法读取这张图片（HEIC 格式请先转成 JPG）', exportFail:'导出失败：', confirmDel:'删除这张卡片？', groups:{},
     tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换' },
-  en: { title:'Nepenthes Parent Cards', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
+  en: { title:'Nepenthes Parent Cards', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
     importHelp:'One cross per line: Chinese name [Tab] English name, ID (e.g. YAB-X2607). Names are split into mother and father at the outermost x. Cards with the same ID only get their names updated; photos and crops are kept.', generate:'Create / update cards', collapse:'Close', empty:'No cards yet. Use "Import list" to paste crosses, or "+ Blank card".',
     drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
     phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
@@ -622,6 +637,10 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    fetch('https://api.github.com/repos/yabbie/nepenthes-hybrid-cards')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => this.setState({ gh: { stars: d.stargazers_count, pushed: (d.pushed_at || '').slice(0, 10), lic: d.license && d.license.spdx_id && d.license.spdx_id !== 'NOASSERTION' ? d.license.spdx_id : '' } }))
+      .catch(() => {});
     this._h = {
       down: e => this.onDown(e), move: e => this.onMove(e), up: () => this.onUp(),
       wheel: e => this.onWheel(e), over: e => this.onOver(e), drop: e => this.onDrop(e),
@@ -986,6 +1005,8 @@ class Component extends DCLogic {
     const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
     return {
       rows, cols, rowCols, listRef: this.listRef, ui: T, tip, tipRef: this.tipRef,
+      ghMeta: [T.ghDesc, (st.gh || {}).lic, (st.gh || {}).pushed ? T.ghUpd + st.gh.pushed : ''].filter(Boolean).join(' · '),
+      ghStarTxt: '★ ' + T.ghStar + ((st.gh || {}).stars != null ? ' ' + st.gh.stars : ''),
       uiOpts: [opt('zh', '中文', st.uiLang || 'zh'), opt('en', 'English', st.uiLang || 'zh')], onSetUiLang: this.onSetUiLang,
       noCards: !st.cards.length,
       ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio)],

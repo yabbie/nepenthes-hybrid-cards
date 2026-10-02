@@ -1,4 +1,4 @@
-# 亲本组图 · Nepenthes Hybrid Cards
+# 猪笼草亲本组图 · Nepenthes Hybrid Cards
 
 杂交猪笼草亲本组图生成页（Claude Design 导出，静态页面，GitHub Pages 托管）。
 
