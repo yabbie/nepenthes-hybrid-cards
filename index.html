@@ -69,6 +69,14 @@ button, input, select, textarea { font-family: inherit; }
         </sc-for>
       </div>
     </div>
+    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.preset }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ presetOpts }}" as="o" hint-placeholder-count="3">
+          <button data-preset="{{ o.key }}" onClick="{{ onPreset }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div></sc-if>
     <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
       <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.foot }}</span>
       <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
@@ -77,13 +85,29 @@ button, input, select, textarea { font-family: inherit; }
         </sc-for>
       </div>
     </div></sc-if>
-    <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
+    <sc-if value="{{ showAlign }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
       <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameAlign }}</span>
       <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
         <sc-for list="{{ alignOpts }}" as="o" hint-placeholder-count="3">
           <button data-align="{{ o.key }}" onClick="{{ onSetAlign }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
         </sc-for>
       </div>
+    </div></sc-if>
+    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.parRatio }}</span>
+      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
+        <sc-for list="{{ parOpts }}" as="o" hint-placeholder-count="3">
+          <button data-par="{{ o.key }}" onClick="{{ onParAr }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div></sc-if>
+    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.seedSize }} {{ seedWLabel }}</span>
+      <input type="range" min="280" max="523" step="10" value="{{ seedWVal }}" onChange="{{ onSeedW }}" style="width:96px; margin:0; cursor:pointer">
+    </div></sc-if>
+    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
+      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.seedRatio }} {{ seedArLabel }}</span>
+      <input type="range" min="1" max="1.6" step="0.05" value="{{ seedArVal }}" onChange="{{ onSeedAr }}" style="width:96px; margin:0; cursor:pointer">
     </div></sc-if>
     <div style="display:flex; align-items:center; gap:8px">
       <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameSize }} {{ nameScaleLabel }}</span>
@@ -196,14 +220,14 @@ button, input, select, textarea { font-family: inherit; }
             <sc-if value="{{ v.ps.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
             <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
           </div>
-          <sc-if value="{{ v.footLeft }}" hint-placeholder-val="{{ false }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:8px 12px">
-              <div style="display:flex; align-items:baseline; gap:12px">
-                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em; color:#5f5b52">NO.</span>
-                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:54px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
+          <sc-if value="{{ v.footLeft }}" hint-placeholder-val="{{ false }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; flex-wrap:nowrap; align-items:flex-end; justify-content:space-between; gap:{{ v.fgap }}px; white-space:nowrap">
+              <div style="display:flex; align-items:baseline; gap:{{ v.fgap }}px">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:{{ v.fNo }}px; letter-spacing:.22em; color:#5f5b52">NO.</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:{{ v.fNum }}px; line-height:.86; letter-spacing:-.01em">{{ v.num }}</span>
               </div>
-              <div style="flex:none; background:{{ v.yc }}; color:{{ v.ycInk }}; padding:8px 12px 8px 14px; display:flex; align-items:baseline; gap:10px; white-space:nowrap">
-                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; letter-spacing:.22em">{{ v.producer }}</span>
-                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:26px; line-height:1">{{ v.year }}</span>
+              <div style="flex:none; background:{{ v.yc }}; color:{{ v.ycInk }}; padding:{{ v.fPv }}px {{ v.fPr }}px {{ v.fPv }}px {{ v.fPl }}px; display:flex; align-items:baseline; gap:{{ v.fTg }}px; white-space:nowrap">
+                <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:{{ v.fNo }}px; letter-spacing:.22em">{{ v.producer }}</span>
+                <span style="font-family:'Bodoni Moda',serif; font-weight:700; font-size:{{ v.fYr }}px; line-height:1">{{ v.year }}</span>
               </div>
             </div></sc-if>
           </div>
@@ -365,6 +389,7 @@ const PALETTE_GROUPS = (() => {
 const YEAR_COLORS = { '2022': '#847060', '2023': '#687865', '2024': '#5e7775', '2025': '#617686', '2026': '#777086', '2027': '#8f6b5e', '2028': '#8d6a6c', '2029': '#787459', '2030': '#816e7a' };
 const CYCLE = ['#687865', '#5e7775', '#617686', '#777086', '#8f6b5e', '#8d6a6c', '#847060'];
 const DEF = { x: 0, y: 0, s: 1 };
+const PRESETS = { A: { foot: 'right', w: 340, ar: 1 }, B: { foot: 'full', w: 340, ar: 1.3 }, C: { foot: 'left', w: 410, ar: 1.6 } };
 const DEMO = { m: { src: 'assets/demo-mother.jpg', ar: 0.7994 }, f: { src: 'assets/demo-father.jpg', ar: 0.75 }, s: { src: 'assets/demo-seed.jpg', ar: 1.3323 } };
 const DEMO_CROP = { m: { x: 2, y: -4, s: 1.12 }, f: { x: 0, y: 0, s: 1.05 }, s: { x: 5.5, y: 0, s: 1.05 } };
 const RAW = [
@@ -375,14 +400,14 @@ const RAW = [
   "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
 ].join('\n');
 const I18N = {
-  zh: { title:'猪笼草亲本组图', settings:'设置', closeSettings:'收起', touchEdit:'手指拖动调整照片', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
+  zh: { title:'猪笼草亲本组图', settings:'设置', preset:'预设', closeSettings:'收起', touchEdit:'手指调整照片（单指平移，双指缩放/旋转种子图）', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', free:'自由', parRatio:'亲本比例', seedSize:'种子宽度', seedRatio:'种子比例（宽/高）', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
     importHelp:'每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。也可以只写中文名或只写英文名，会自动识别。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。', generate:'生成 / 更新卡片', collapse:'收起', empty:'还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。',
     drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
     phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
     pickM:'换母本图', pickF:'换父本图', pickS:'换种子图', footFull:'整行平铺', footRight:'靠右·对齐名称', footLeft:'靠左·对齐种子图', cardBoth:'中英', cardEn:'仅英文', top:'靠上', center:'居中', bottom:'靠下',
     expSuffix:' · 导出 ', exporting:'导出中…', exportPre:'导出 ', exportAllPre:'导出全部 ', loadFail:'无法读取这张图片（HEIC 格式请先转成 JPG）', exportFail:'导出失败：', confirmDel:'删除这张卡片？', groups:{},
     tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换' },
-  en: { title:'Nepenthes Parent Cards', settings:'Settings', closeSettings:'Close', touchEdit:'Touch to adjust photos', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
+  en: { title:'Nepenthes Parent Cards', settings:'Settings', preset:'Preset', closeSettings:'Close', touchEdit:'Touch edit (1 finger pan, 2 finger zoom; rotate seed photo)', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', free:'Free', parRatio:'Parent ratio', seedSize:'Seed width', seedRatio:'Seed ratio (w/h)', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
     importHelp:'One cross per line: Chinese name [Tab] English name, ID (e.g. YAB-X2607). Chinese-only or English-only lines also work and are detected automatically. Names are split into mother and father at the outermost x. Cards with the same ID only get their names updated; photos and crops are kept.', generate:'Create / update cards', collapse:'Close', empty:'No cards yet. Use "Import list" to paste crosses, or "+ Blank card".',
     drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
     phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
@@ -411,16 +436,18 @@ class Component extends DCLogic {
     const namesAlign = ['center', 'top', 'bottom'].includes(ui.namesAlign) ? ui.namesAlign : 'center';
     const wmTrans = ui.wmTrans >= 0 && ui.wmTrans <= 80 ? ui.wmTrans : 10;
     const uiLang = ui.uiLang === 'en' ? 'en' : 'zh';
-    const base = { uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
+    const seedW = ui.seedW >= 280 && ui.seedW <= 523 ? ui.seedW : 340, seedAr = ui.seedAr >= 1 && ui.seedAr <= 1.6 ? ui.seedAr : 1;
+    const parAr = [16 / 9, 4 / 3, 1.5].some(v => Math.abs(v - ui.parAr) < 0.001) ? ui.parAr : 1.5;
+    const base = { parAr, foot78: saved && ['full', 'right', 'left'].includes(saved.foot78) ? saved.foot78 : 'left', seedW, seedAr, uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
     if (saved && Array.isArray(saved.cards)) {
       const photos = {};
       this._pendingIdb = [];
       for (const [k, m] of Object.entries(saved.meta || {})) {
         if (m.src) photos[k] = { src: m.src, ar: m.ar, pid: m.pid || m.src }; else this._pendingIdb.push([k, m]);
       }
-      return { ...base, cards: saved.cards, ratio: saved.ratio || '11', foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
+      return { ...base, cards: saved.cards, ratio: saved.ratio === '45' ? '78' : (saved.ratio || '78'), foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
     }
-    return { ...base, cards: [], ratio: '11', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
+    return { ...base, cards: [], ratio: '78', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
   }
 
   splitTop(str, en) {
@@ -535,7 +562,7 @@ class Component extends DCLogic {
   }
   fitNames(c, avail, lang, r34, corr = 1, wc = 1) {
     const ns = this.state.nameScale ?? 1, A = avail * 0.97 / wc, en = lang === 'en';
-    const inside = this.ef() === 'right', box = this.geo(r34 ? '34' : '11').box;
+    const r45 = this.state.ratio === '78', big = r34 || r45, inside = this.ef() === 'right', box = this.geo(this.state.ratio).box;
     const fCn = '700 100px ' + FF.serif, fIt = 'italic 500 100px ' + FF.gara, fUp = '500 100px ' + FF.gara;
     const enM = c.enM ? 'N. ' + c.enM : '', enF = c.enF || '';
     const BC = 45.6 * ns, BS = 26.4 * ns, BE = 43.2 * ns;
@@ -546,11 +573,11 @@ class Component extends DCLogic {
     const wfo = (t, f) => (this._wf && this._wf[f + '|' + t]) || 1;
     const lm = this.measure(en ? enM : (c.cnM || ''), en ? fUp : fCn) * wfo(en ? enM : (c.cnM || ''), en ? fUp : fCn), lf = this.measure(en ? enF : (c.cnF || ''), en ? fUp : fCn) * wfo(en ? enF : (c.cnF || ''), en ? fUp : fCn);
     const d = lm && lf ? Math.max(0.78, Math.min(1, Math.pow(Math.min(lm, lf) / Math.max(lm, lf), 0.3))) : 1;
-    const mLong = lm > lf, kMax = r34 ? 1.4 : 0.85;
+    const mLong = lm > lf, kMax = r34 ? 1.4 : r45 ? 1.35 : 0.85;
     const pair = kS => mLong ? [kS * d, kS] : [kS, kS * d];
-    const keMin = en ? 0 : (r34 ? 0.98 : 0.9), keOf = (a, b, kf) => Math.max(Math.min(a, b) * kf, keMin);
+    const keMin = en ? 0 : (big ? 0.98 : 0.9), keOf = (a, b, kf) => Math.max(Math.min(a, b) * kf, keMin);
     const solve = (t, kf) => { let kS = kMax; while (kS > 0.4) { const [a, b] = pair(kS); if (h(a, b, keOf(a, b, kf)) <= t) break; kS -= 0.02; } return kS; };
-    let target = box * (r34 ? 0.9 : 0.78), kf = 1;
+    let target = box * (big ? 0.9 : 0.78), kf = 1;
     let kS = solve(target, kf);
     if (Math.min(...pair(kS)) < kMax * 0.75) { target = box * 0.98; kf = 0.85; kS = solve(target, kf); }
     let [kM, kF] = pair(kS);
@@ -598,8 +625,8 @@ class Component extends DCLogic {
     const nr = Math.round((((rr + 180) % 360 + 360) % 360 - 180) * 100) / 100;
     return { s: sc, r: nr, x: (co * ux - si * uy) / fa * 100, y: (si * ux + co * uy) * 100 };
   }
-  ck(slot, ratio) { return ratio === '34' ? slot + '@34' + (slot === 's' && this.ef() === 'left' ? 'L' : '') : slot; }
-  lk(pid, ratio) { return ratio === '34' ? pid + '@34' : pid; }
+  ck(slot, ratio) { return ratio === '78' ? slot + '@78' : ratio === '34' ? slot + '@34' + (slot === 's' && this.ef() === 'left' ? 'L' : '') : slot; }
+  lk(pid, ratio) { return ratio === '78' ? pid + '@78' : ratio === '34' ? pid + '@34' : pid; }
   rawCrop(key, st = this.state) {
     const [id, slot] = key.split(':'), p = st.photos[key];
     const lock = p && p.pid && st.locks[this.lk(p.pid, st.ratio)];
@@ -615,9 +642,11 @@ class Component extends DCLogic {
     return { ...c, r: c.r ?? this.defR(slot, st.ratio) };
   }
   isLocked(key, st = this.state) { const p = st.photos[key]; return !!(p && p.pid && st.locks[this.lk(p.pid, st.ratio)]); }
-  ef(st = this.state) { return st.ratio === '34' ? (st.foot || 'right') : 'right'; }
+  ef(st = this.state) { return st.ratio === '78' ? (st.foot78 || 'left') : st.ratio === '34' ? (st.foot || 'right') : 'right'; }
+  canvasH(ratio = this.state.ratio) { return ratio === '34' ? 1440 : ratio === '78' ? 24 + 16 + this.geo('78').parH + this.geo('78').band : 1080; }
   geo(ratio, foot = this.ef()) {
-    const r34 = ratio === '34', band = r34 ? 440 : 280, parH = (r34 ? 1416 : 1056) - 16 - band, colGap = 26;
+    if (ratio === '78') { const parH = Math.round(523 * (this.state.parAr || 1.5)), sw = this.state.seedW || 400, sh = Math.round(sw / (this.state.seedAr || 1.25)), band = foot === 'left' ? Math.max(300, sh + 89) : foot === 'full' ? sh + 78 : Math.max(sh, 330); return { band, parH, sw, sh, colGap: 26, box: foot === 'left' ? band : band - 78, avail: 1056 - sw - 26 - 40 }; }
+        const r34 = ratio === '34', band = r34 ? 440 : 280, parH = (r34 ? 1416 : 1056) - 16 - band, colGap = 26;
     const rowH = foot === 'full' ? band - 78 : band, sh = foot === 'left' ? band - 78 : rowH;
     const sw = foot === 'left' ? 380 : Math.round(rowH * (r34 ? (foot === 'right' ? 2 / 3 : 3 / 4) : 5 / 4));
     return { band, parH, sw, sh, colGap, box: band - (foot === 'left' ? 0 : 78), avail: 1056 - sw - colGap - 40 };
@@ -673,7 +702,7 @@ class Component extends DCLogic {
       .then(d => this.setState({ gh: { stars: d.stargazers_count, pushed: (d.pushed_at || '').slice(0, 10), lic: d.license && d.license.spdx_id && d.license.spdx_id !== 'NOASSERTION' ? d.license.spdx_id : '' } }))
       .catch(() => {});
     this._h = {
-      down: e => this.onDown(e), move: e => this.onMove(e), up: () => this.onUp(),
+      down: e => this.onDown(e), move: e => this.onMove(e), up: e => this.onUp(e),
       wheel: e => this.onWheel(e), over: e => this.onOver(e), drop: e => this.onDrop(e),
       leave: e => { if (!e.relatedTarget && this.state.dragKey) this.setState({ dragKey: null }); },
       dbl: e => { const el = this.slotEl(e); if (el && this.state.photos[el.dataset.slot]) this.toggleLock(el.dataset.slot); },
@@ -686,6 +715,7 @@ class Component extends DCLogic {
     document.addEventListener('pointerdown', this._h.down);
     window.addEventListener('pointermove', this._h.move);
     window.addEventListener('pointerup', this._h.up);
+    window.addEventListener('pointercancel', this._h.up);
     document.addEventListener('wheel', this._h.wheel, { passive: false });
     document.addEventListener('dragover', this._h.over);
     document.addEventListener('drop', this._h.drop);
@@ -716,6 +746,7 @@ class Component extends DCLogic {
     document.removeEventListener('pointerdown', h.down);
     window.removeEventListener('pointermove', h.move);
     window.removeEventListener('pointerup', h.up);
+    window.removeEventListener('pointercancel', h.up);
     document.removeEventListener('wheel', h.wheel);
     document.removeEventListener('dragover', h.over);
     document.removeEventListener('drop', h.drop);
@@ -787,7 +818,7 @@ class Component extends DCLogic {
   save() {
     const s = this.state, meta = {};
     for (const [k, p] of Object.entries(s.photos)) meta[k] = String(p.src).startsWith('data:') ? { ar: p.ar, pid: p.pid } : { ar: p.ar, pid: p.pid, src: p.src };
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ cards: s.cards, ratio: s.ratio, foot: s.foot, lang: s.lang, raw: s.raw, yearColors: s.yearColors, locks: s.locks, meta })); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ cards: s.cards, ratio: s.ratio, foot: s.foot, foot78: s.foot78, lang: s.lang, raw: s.raw, yearColors: s.yearColors, locks: s.locks, meta })); } catch (e) {}
   }
 
   slotEl(e) { return e.target && e.target.closest ? e.target.closest('[data-slot]') : null; }
@@ -795,12 +826,43 @@ class Component extends DCLogic {
     if (e.button !== 0) return;
     const el = this.slotEl(e); if (!el) return;
     const key = el.dataset.slot, p = this.state.photos[key];
+    if (e.pointerType === 'touch' && this.state.narrow && !this.state.touchEdit && p) return;
     e.preventDefault();
     const r = el.getBoundingClientRect(), fa = r.width / r.height;
+    if (e.pointerType === 'touch') {
+      this._tp = this._tp || new Map();
+      this._tp.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const d0 = this._drag;
+      if (this._tp.size > 1) {
+        if (d0 && d0.key === key && d0.has && !d0.locked && this._tp.size === 2 && !d0.pinch) {
+          const [a, b] = [...this._tp.values()];
+          d0.moved = true;
+          d0.pinch = { dist: Math.hypot(b.x - a.x, b.y - a.y) || 1, ang: Math.atan2(b.y - a.y, b.x - a.x), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, c0: this.clampCrop(this.rawCrop(key), p.ar, fa) };
+          this.setState({ panning: true });
+        }
+        return;
+      }
+    }
     this._drag = { key, x0: e.clientX, y0: e.clientY, r, fa, moved: false, has: !!p, locked: this.isLocked(key), c0: p ? this.clampCrop(this.rawCrop(key), p.ar, fa) : DEF };
   }
   onMove(e) {
     const d = this._drag; if (!d) return;
+    if (this._tp && this._tp.has(e.pointerId)) {
+      this._tp.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (d.pinch || this._tp.size > 1) {
+        if (d.pinch && this._tp.size >= 2) {
+          const [a, b] = [...this._tp.values()], pc = d.pinch, c0 = pc.c0, r = d.r;
+          const dist = Math.hypot(b.x - a.x, b.y - a.y) || 1, ang = Math.atan2(b.y - a.y, b.x - a.x);
+          const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+          const px = (pc.mx - r.left - r.width / 2) / r.width * 100, py = (pc.my - r.top - r.height / 2) / r.height * 100;
+          const sc = Math.min(8, Math.max(1, c0.s * dist / pc.dist)), k = sc / c0.s;
+          let rot = c0.r;
+          if (d.key.endsWith(':s')) { const raw = c0.r + (ang - pc.ang) * 180 / Math.PI, near = Math.round(raw / 90) * 90; rot = Math.abs(raw - near) < 4 ? near : raw; }
+          this.updateCrop(d.key, () => ({ ...c0, s: sc, r: rot, x: px - (px - c0.x) * k + (mx - pc.mx) / r.width * 100, y: py - (py - c0.y) * k + (my - pc.my) / r.height * 100 }), d.fa);
+        }
+        return;
+      }
+    }
     const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
     if (!d.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
     if (!d.moved) this.setState({ panning: true });
@@ -809,10 +871,22 @@ class Component extends DCLogic {
     const { c0, r } = d;
     this.updateCrop(d.key, () => ({ ...c0, x: c0.x + dx / r.width * 100, y: c0.y + dy / r.height * 100 }), d.fa);
   }
-  onUp() {
-    const d = this._drag; this._drag = null;
+  onUp(e) {
+    const d = this._drag;
+    if (e && e.pointerType === 'touch' && this._tp) {
+      this._tp.delete(e.pointerId);
+      if (d && d.pinch) {
+        if (this._tp.size === 1) {
+          const [q] = [...this._tp.values()], p = this.state.photos[d.key];
+          d.pinch = null; d.x0 = q.x; d.y0 = q.y; d.c0 = this.clampCrop(this.rawCrop(d.key), p.ar, d.fa);
+          return;
+        }
+        if (this._tp.size > 1) return;
+      }
+    }
+    this._drag = null;
     if (this.state.panning) this.setState({ panning: false });
-    if (d && !d.moved && !d.has) this.pick(d.key);
+    if (d && !d.moved && !d.has && !(e && e.type === 'pointercancel')) this.pick(d.key);
   }
   onWheel(e) {
     const el = this.slotEl(e); if (!el) return;
@@ -863,7 +937,7 @@ class Component extends DCLogic {
       return { cards: st.cards.map(c => {
         if (c.id !== id) return c;
         const crop = { ...c.crop, [this.ck(slot, st.ratio)]: { x: +n.x.toFixed(2), y: +n.y.toFixed(2), s: +n.s.toFixed(3), r: n.r } };
-        if (slot === 's' && !(st.ratio === '34' && this.ef(st) === 'left')) { const ok = st.ratio === '34' ? 's' : 's@34'; crop[ok] = { ...DEF, ...(crop[ok] || {}), s: +n.s.toFixed(3), r: n.r }; }
+        if (slot === 's' && st.ratio !== '78' && !(st.ratio === '34' && this.ef(st) === 'left')) { const ok = st.ratio === '34' ? 's' : 's@34'; crop[ok] = { ...DEF, ...(crop[ok] || {}), s: +n.s.toFixed(3), r: n.r }; }
         return { ...c, crop };
       }) };
     });
@@ -885,7 +959,7 @@ class Component extends DCLogic {
       const src = cv.toDataURL('image/jpeg', 0.9), pid = this.hash(src);
       await this.idb('readwrite', st => st.put(src, key));
       const [id, slot] = key.split(':');
-      this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: cv.width / cv.height, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') } } } : c) }));
+      this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: cv.width / cv.height, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') }, [slot + '@78']: { ...DEF } } } : c) }));
     } catch (e) { alert((I18N[this.state.uiLang] || I18N.zh).loadFail); }
   }
 
@@ -917,7 +991,7 @@ class Component extends DCLogic {
     this.setState({ busy: key });
     try {
       await this.loadLib();
-      const H = this.state.ratio === '34' ? 1440 : 1080;
+      const H = this.canvasH();
       const css = await this.fontCSS(node.textContent || '');
       const opts = { width: 1080, height: H, pixelRatio: this.state.exportScale ?? 2, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
       if (css) opts.fontEmbedCSS = css; else opts.skipFonts = true;
@@ -925,7 +999,7 @@ class Component extends DCLogic {
       const url = jpg ? await window.htmlToImage.toJpeg(node, { ...opts, quality: 1, backgroundColor: '#ffffff' }) : await window.htmlToImage.toPng(node, opts);
       const a = document.createElement('a');
       a.href = url;
-      a.download = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
+      a.download = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : this.state.ratio === '78' ? '7x8' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
       document.body.appendChild(a); a.click(); a.remove();
     } catch (e) { console.error(e); alert((I18N[this.state.uiLang] || I18N.zh).exportFail + ((e && e.message) || e)); }
     this.setState({ busy: null });
@@ -933,10 +1007,14 @@ class Component extends DCLogic {
 
   onSetFmt = e => { const fmt = e.currentTarget.dataset.fmt; try { localStorage.setItem('qb_fmt', fmt); } catch (er) {} this.setState({ fmt }); };
   onSetRatio = e => this.setState({ ratio: e.currentTarget.dataset.ratio });
-  onSetFoot = e => this.setState({ foot: e.currentTarget.dataset.foot });
+  onSetFoot = e => { const f = e.currentTarget.dataset.foot; this.setState(s => s.ratio === '78' ? { foot78: f } : { foot: f }); };
   saveUi(p) { try { const u = JSON.parse(localStorage.getItem('qb_ui')) || {}; localStorage.setItem('qb_ui', JSON.stringify({ ...u, ...p })); } catch (er) {} this.setState(p); }
   onWmTrans = e => this.saveUi({ wmTrans: +e.target.value });
   onSetScale = e => this.saveUi({ exportScale: +e.currentTarget.dataset.scale });
+  onParAr = e => this.saveUi({ parAr: +e.currentTarget.dataset.par });
+  onPreset = e => { const p = PRESETS[e.currentTarget.dataset.preset]; if (!p) return; this.saveUi({ seedW: p.w, seedAr: p.ar }); this.setState({ foot78: p.foot }); };
+  onSeedW = e => this.saveUi({ seedW: +e.target.value });
+  onSeedAr = e => this.saveUi({ seedAr: +e.target.value });
   onNameScale = e => this.saveUi({ nameScale: +e.target.value });
   onSetAlign = e => this.saveUi({ namesAlign: e.currentTarget.dataset.align });
   onSetLang = e => this.setState({ lang: e.currentTarget.dataset.lang });
@@ -1004,8 +1082,8 @@ class Component extends DCLogic {
     const hk = st.hoverKey, hp = hk && st.photos[hk];
     const tipL = !hp || st.panning ? [] : (this.isLocked(hk, st) ? [T.tipLocked, T.tipUnlock] : [T.tipPan, T.tipZoom, hk.endsWith(':s') ? T.tipRot : null, T.tipLock]).concat([T.tipDrop]);
     const tip = { display: tipL.length && !st.narrow && !st.tipGone ? 'block' : 'none', lines: tipL.filter(Boolean).map(txt => ({ txt })) };
-    const H = st.ratio === '34' ? 1440 : 1080;
-    const r34 = st.ratio === '34', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
+    const H = this.canvasH();
+    const r34 = st.ratio === '34', r45 = st.ratio === '78', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
     const nr = !!st.narrow, listPad = nr ? 12 : 20, cardPad = nr ? 12 : 18;
     const W = st.vw || 1000, vh = st.vh || 900, FORM = 320, CHROME = 36 + 22;
     const barH = st.barH || 0, sticky = !barH || barH <= vh * 0.3;
@@ -1018,11 +1096,11 @@ class Component extends DCLogic {
     const pw = Math.floor(Math.max(200, Math.min(stacked ? cellW - 2 * cardPad : cellW - CHROME - FORM, pwCap)));
     const sc = pw / 1080, ph = Math.round(H * sc);
     const rowCols = stacked ? 'minmax(0,1fr)' : pw + 'px minmax(0,520px)';
-    const rLabel = st.ratio === '34' ? '3:4' : '1:1';
+    const rLabel = st.ratio === '34' ? '3:4' : st.ratio === '78' ? T.free : '1:1';
     const foot = this.ef(st), footR = foot === 'right';
     const ns = st.nameScale ?? 1, xs = st.exportScale ?? 2;
-    const nj = r34 ? ({ top: 'flex-start', bottom: 'flex-end' }[st.namesAlign] || 'center') : 'flex-start';
-    const seedJustify = 'flex-start', seedPadB = 0;
+    const nj = (r34 || r45) ? ({ top: 'flex-start', bottom: 'flex-end' }[st.namesAlign] || 'center') : 'flex-start';
+    const seedJustify = r45 && foot === 'left' ? 'space-between' : 'flex-start', seedPadB = 0;
     const rows = st.cards.map((c, i) => {
       const photo = slot => {
         const key = c.id + ':' + slot, p = st.photos[key], hl = st.dragKey === key;
@@ -1033,12 +1111,14 @@ class Component extends DCLogic {
       };
       const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', xhs: t === 'xhs', fb: t === 'fb', ig: t === 'ig', name: n || '' });
       const slotM = c.id + ':m', slotF = c.id + ':f', slotS = c.id + ':s';
-      const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot].join('|');
+      const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot, st.seedW, st.seedAr, st.parAr].join('|');
       const fst = this._fitState[sig] || {};
       const fit = this.fitNames(c, avail, lang, r34, fst.c || 1), shrink = fit.s;
       const yc = this.yc(c.year), key = c.id + ':C';
+      const fk = foot !== 'left' ? 1 : (() => { const hk = '600 100px ' + FF.hanken, bd = '700 100px ' + FF.bodoni, m = (x, f) => this.measure(String(x || ''), f), L = x => String(x || '').length; const W0 = m('NO.', hk) / 100 * 15 + 3 * 0.22 * 15 + 12 + m(c.num, bd) / 100 * 54 - 0.01 * 54 * L(c.num) + 12 + 26 + m(c.producer, hk) / 100 * 15 + 0.22 * 15 * L(c.producer) + 10 + m(c.year, bd) / 100 * 26; return Math.max(0.4, Math.min(1, sw / W0)); })();
+      const rd = x => Math.round(x * fk * 10) / 10;
       const view = {
-        key, H, sc, pw, ph, bs, sw, sh, rowH, colGap, footIn: footR, footOut: foot === 'full', footLeft: foot === 'left', footW: 'auto', yc, ycInk: this.inkOn(yc), num: c.num, year: c.year, producer: c.producer,
+        key, H, sc, pw, ph, bs, sw, sh, rowH, colGap, fgap: rd(12), fNo: rd(15), fNum: rd(54), fPv: rd(8), fPr: rd(12), fPl: rd(14), fTg: rd(10), fYr: rd(26), footIn: footR, footOut: foot === 'full', footLeft: foot === 'left', footW: 'auto', yc, ycInk: this.inkOn(yc), num: c.num, year: c.year, producer: c.producer,
         isC: true, zh: lang === 'zh', en: lang === 'en', fit, sig, hpred: fit.hpred, namesJustify: nj, parH, seedJustify, seedPadB, entryGap: Math.round(18 * shrink),
         symK: lang === 'en' ? 1.2 : 1, symPadM: lang === 'en' ? Math.round(fit.enM * 0.22) : Math.round(fit.cnM * 0.32), symPadF: lang === 'en' ? Math.round(fit.enF * 0.22) : Math.round(fit.cnF * 0.32), enMTok: this.enTokens(c.enM ? 'N. ' + c.enM : ''), enFTok: this.enTokens(c.enF || ''),
         cnMDisp: this.breakable(c.cnM), cnFDisp: this.breakable(c.cnF), enMDisp: c.enM ? 'N. ' + c.enM : '', enFDisp: c.enF || '',
@@ -1063,8 +1143,9 @@ class Component extends DCLogic {
       ghStarTxt: '★ ' + T.ghStar + ((st.gh || {}).stars != null ? ' ' + st.gh.stars : ''),
       uiOpts: [opt('zh', '中文', st.uiLang || 'zh'), opt('en', 'English', st.uiLang || 'zh')], onSetUiLang: this.onSetUiLang,
       onRawKey: this.onRawKey, noCards: !st.cards.length, emptyHome: !st.cards.length && !st.showImport,
-      ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio)],
-      footOpts: [opt('full', T.footFull, foot), opt('right', T.footRight, foot), opt('left', T.footLeft, foot)], onSetFoot: this.onSetFoot, showFoot: r34,
+      presetOpts: Object.keys(PRESETS).map(k => { const p = PRESETS[k]; return opt(k, k, st.foot78 === p.foot && st.seedW === p.w && Math.abs(st.seedAr - p.ar) < 0.001 ? k : ''); }), onPreset: this.onPreset,
+      ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio), opt('78', T.free, st.ratio)],
+      footOpts: [opt('full', T.footFull, foot), opt('right', T.footRight, foot), opt('left', T.footLeft, foot)], onSetFoot: this.onSetFoot, showFoot: r34 || r45, showAlign: r34 || r45, showSeed: r45, parOpts: [['9:16', 16 / 9], ['2:3', 1.5], ['3:4', 4 / 3]].map(([l, v]) => ({ key: v, label: l, bg: Math.abs(v - (st.parAr || 1.5)) < 0.001 ? '#22211e' : 'transparent', fg: Math.abs(v - (st.parAr || 1.5)) < 0.001 ? '#fff' : '#3a3934' })), onParAr: this.onParAr, seedWVal: String(st.seedW), seedWLabel: st.seedW + 'px', seedArVal: String(st.seedAr), seedArLabel: (+st.seedAr).toFixed(2), onSeedW: this.onSeedW, onSeedAr: this.onSeedAr,
       langOpts: [opt('zh', T.cardBoth, lang), opt('en', T.cardEn, lang)], onSetLang: this.onSetLang,
       years: [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort().map(y => { const cur = this.yc(y).toLowerCase(), on = st.activeYear === y; return { year: y, color: cur, name: st.uiLang === 'en' ? cur : (COLOR_NAME[cur] || cur), border: on ? '#22211e' : '#dcd9d2', shadow: on ? '0 0 0 1px #22211e' : 'none' }; }),
       scaleOpts: [1, 2, 4].map(n => opt(n, n + '×', xs)), onSetScale: this.onSetScale,
