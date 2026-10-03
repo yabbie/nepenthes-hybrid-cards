@@ -1,0 +1,36 @@
+# Nepenthes Parent Cards (猪笼草亲本组图)
+
+> Browser tool that turns a list of Nepenthes crosses plus mother / father / seed photos into share-ready parent cards (JPG/PNG). Everything runs in the page; there is no server API.
+
+AI agents: open the page in a browser and drive it through the JavaScript object `window.nepCards`.
+Run `nepCards.help()` inside the page for the full reference (methods, fields, settings, limits).
+
+## Quick start
+
+```js
+await nepCards.ready;
+await nepCards.importList("[海盗x诺斯]x飞翼“虎克”\tN. (Viking x northiana) x \"hookeriana\" Winged, YAB-X2615");
+await nepCards.setPhoto("2615", "m", "https://example.com/mother.jpg"); // or a data: URL / base64
+await nepCards.setSettings({ ratio: "3:4", cardText: "zh" });
+nepCards.validate();                 // { ok, issues }
+await nepCards.scrollToCard("2615"); // then take a screenshot to check
+await nepCards.saveProject();        // downloads nepenthes-cards-<date>.json for a person to fine-tune
+```
+
+## Handing work to a person
+
+Cards live in the browser profile that built them. If your browser is not the person's own browser, finish with
+`await nepCards.saveProject()` and give them the downloaded `.json`. They open it with the 打开工程 (Open project) button,
+adjust photos and text by hand, and export. The file embeds every photo, crop, lock and layout setting.
+
+## Uploading local files
+
+- Photos, Playwright: `page.setInputFiles('input[data-upload="<cardId>:m"]', 'mother.jpg')` (slots m / f / s; selectors are listed in `nepCards.getState()`).
+- Photos, Chrome DevTools MCP / Playwright MCP: click the card's 换母本图 / 换父本图 / 换种子图 button (aria-label ends with `#<index> · <NO.>`) and answer the file chooser.
+- Project file: `page.setInputFiles('input[data-upload="project"]', 'cards.json')`, or `nepCards.openProject(urlOrJsonText)`.
+- Or pass a data: URL / base64 string to `nepCards.setPhoto(card, slot, source)`.
+
+## Notes
+
+- API calls never open confirm/alert dialogs; errors are thrown as `Error("[nepCards] …")`.
+- `exportAll()` triggers one download per card; the browser may ask to allow multiple downloads.

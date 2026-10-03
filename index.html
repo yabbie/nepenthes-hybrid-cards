@@ -9,6 +9,7 @@
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#3f5a3a"/><text x="50" y="66" font-size="44" text-anchor="middle" fill="#f3f0e6" font-family="serif">亲</text></svg></template>
 <x-dc>
 <helmet>
+<meta name="agent-api" content="AI agents: this page exposes window.nepCards. Run nepCards.help() in the page for the reference. Docs: llms.txt">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&amp;family=Noto+Sans+SC:wght@300;400;500;700&amp;family=Hanken+Grotesk:wght@300;400;600&amp;family=EB+Garamond:ital,wght@0,500;0,600;1,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Bodoni+Moda:ital,wght@0,700;1,400;1,500&amp;display=swap">
@@ -51,6 +52,10 @@ button, input, select, textarea { font-family: inherit; }
     </div>
     <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.importBtn }}</button>
     <button onClick="{{ addCard }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.addBlank }}</button>
+    <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden">
+      <button onClick="{{ openProjectUi }}" style="border:0; background:#fff; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ openProjLabel }}</button>
+      <sc-if value="{{ hasCards }}" hint-placeholder-val="{{ false }}"><button onClick="{{ saveProjectUi }}" style="border:0; border-left:1px solid #d3d0c8; background:#fff; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ saveProjLabel }}</button></sc-if>
+    </div>
   </div>
   <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px">
     <div style="display:flex; align-items:center; gap:8px">
@@ -172,6 +177,7 @@ button, input, select, textarea { font-family: inherit; }
   <div style="min-height:60vh; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:20px; padding:24px">
     <button onClick="{{ toggleImport }}" style="border:1px solid #22211e; background:#22211e; color:#fff; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ ui.importBtn }}</button>
     <button onClick="{{ addCard }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ ui.addBlank }}</button>
+    <button onClick="{{ openProjectUi }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ openProjLabel }}</button>
   </div>
 </sc-if>
 
@@ -328,9 +334,12 @@ button, input, select, textarea { font-family: inherit; }
       </div>
     </div>
     <div style="display:flex; flex-wrap:wrap; gap:6px">
-      <button data-action="pick" data-slot="{{ r.slotM }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickM }}</button>
-      <button data-action="pick" data-slot="{{ r.slotF }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickF }}</button>
-      <button data-action="pick" data-slot="{{ r.slotS }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickS }}</button>
+      <button data-action="pick" data-slot="{{ r.slotM }}" aria-label="{{ r.pickMAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickM }}</button>
+      <button data-action="pick" data-slot="{{ r.slotF }}" aria-label="{{ r.pickFAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickF }}</button>
+      <button data-action="pick" data-slot="{{ r.slotS }}" aria-label="{{ r.pickSAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickS }}</button>
+      <input type="file" accept="image/*" data-upload="{{ r.slotM }}" onChange="{{ onUpload }}" style="display:none">
+      <input type="file" accept="image/*" data-upload="{{ r.slotF }}" onChange="{{ onUpload }}" style="display:none">
+      <input type="file" accept="image/*" data-upload="{{ r.slotS }}" onChange="{{ onUpload }}" style="display:none">
     </div>
   </div>
 
@@ -350,11 +359,13 @@ button, input, select, textarea { font-family: inherit; }
     <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="white-space:nowrap">{{ ghStarTxt }}</a>
     <a href="https://yabbie.github.io/nepenthes-hybrid-cards/" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghLive }} ↗</a>
     <a href="https://github.com/yabbie/nepenthes-hybrid-cards/issues" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghIssues }} ↗</a>
+    <a href="llms.txt" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghAgent }} ↗</a>
   </div>
 </footer>
 
 <div ref="{{ tipRef }}" style="position:fixed; left:0; top:0; z-index:60; display:{{ tip.display }}; pointer-events:none; max-width:300px; background:rgba(27,26,23,.68); color:#fff; font-size:12px; line-height:1.65; padding:8px 12px; border-radius:8px; box-shadow:0 6px 20px -6px rgba(0,0,0,.45)"><sc-for list="{{ tip.lines }}" as="ln" hint-placeholder-count="3"><div>{{ ln.txt }}</div></sc-for></div>
 <input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFile }}" style="display:none">
+<input type="file" accept=".json,application/json" data-upload="project" ref="{{ projRef }}" onChange="{{ onProjFile }}" style="display:none">
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -389,7 +400,7 @@ const PALETTE_GROUPS = (() => {
 const YEAR_COLORS = { '2022': '#847060', '2023': '#687865', '2024': '#5e7775', '2025': '#617686', '2026': '#777086', '2027': '#8f6b5e', '2028': '#8d6a6c', '2029': '#787459', '2030': '#816e7a' };
 const CYCLE = ['#687865', '#5e7775', '#617686', '#777086', '#8f6b5e', '#8d6a6c', '#847060'];
 const DEF = { x: 0, y: 0, s: 1 };
-const PRESETS = { A: { foot: 'right', w: 340, ar: 1 }, B: { foot: 'full', w: 340, ar: 1.3 }, C: { foot: 'left', w: 410, ar: 1.6 } };
+const PRESETS = { A: { foot: 'right', w: 340, ar: 1 }, B: { foot: 'full', w: 380, ar: 1.3 }, C: { foot: 'left', w: 410, ar: 1.6 } };
 const DEMO = { m: { src: 'assets/demo-mother.jpg', ar: 0.7994 }, f: { src: 'assets/demo-father.jpg', ar: 0.75 }, s: { src: 'assets/demo-seed.jpg', ar: 1.3323 } };
 const DEMO_CROP = { m: { x: 2, y: -4, s: 1.12 }, f: { x: 0, y: 0, s: 1.05 }, s: { x: 5.5, y: 0, s: 1.05 } };
 const RAW = [
@@ -400,14 +411,14 @@ const RAW = [
   "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
 ].join('\n');
 const I18N = {
-  zh: { title:'猪笼草亲本组图', settings:'设置', preset:'预设', closeSettings:'收起', touchEdit:'手指调整照片（单指平移，双指缩放/旋转种子图）', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', free:'自由', parRatio:'亲本比例', seedSize:'种子宽度', seedRatio:'种子比例（宽/高）', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
+  zh: { title:'猪笼草亲本组图', settings:'设置', preset:'预设', closeSettings:'收起', touchEdit:'手指调整照片（单指平移，双指缩放/旋转种子图）', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghAgent:'AI 操作接口', saveProj:'保存工程', openProj:'打开工程', saving:'保存中…', opening:'读取中…', projConfirm:'打开工程会替换当前所有卡片和照片，继续吗？', projSaveFail:'保存失败：', projOpenFail:'无法打开这个工程文件：', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', free:'自由', parRatio:'亲本比例', seedSize:'种子宽度', seedRatio:'种子比例（宽/高）', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
     importHelp:'每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。也可以只写中文名或只写英文名，会自动识别。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。', generate:'生成 / 更新卡片', collapse:'收起', empty:'还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。',
     drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
     phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
     pickM:'换母本图', pickF:'换父本图', pickS:'换种子图', footFull:'整行平铺', footRight:'靠右·对齐名称', footLeft:'靠左·对齐种子图', cardBoth:'中英', cardEn:'仅英文', top:'靠上', center:'居中', bottom:'靠下',
     expSuffix:' · 导出 ', exporting:'导出中…', exportPre:'导出 ', exportAllPre:'导出全部 ', loadFail:'无法读取这张图片（HEIC 格式请先转成 JPG）', exportFail:'导出失败：', confirmDel:'删除这张卡片？', groups:{},
     tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换' },
-  en: { title:'Nepenthes Parent Cards', settings:'Settings', preset:'Preset', closeSettings:'Close', touchEdit:'Touch edit (1 finger pan, 2 finger zoom; rotate seed photo)', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', free:'Free', parRatio:'Parent ratio', seedSize:'Seed width', seedRatio:'Seed ratio (w/h)', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
+  en: { title:'Nepenthes Parent Cards', settings:'Settings', preset:'Preset', closeSettings:'Close', touchEdit:'Touch edit (1 finger pan, 2 finger zoom; rotate seed photo)', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghAgent:'AI agent API', saveProj:'Save project', openProj:'Open project', saving:'Saving…', opening:'Opening…', projConfirm:'Opening a project replaces all current cards and photos. Continue?', projSaveFail:'Save failed: ', projOpenFail:'Could not open this project file: ', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', free:'Free', parRatio:'Parent ratio', seedSize:'Seed width', seedRatio:'Seed ratio (w/h)', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
     importHelp:'One cross per line: Chinese name [Tab] English name, ID (e.g. YAB-X2607). Chinese-only or English-only lines also work and are detected automatically. Names are split into mother and father at the outermost x. Cards with the same ID only get their names updated; photos and crops are kept.', generate:'Create / update cards', collapse:'Close', empty:'No cards yet. Use "Import list" to paste crosses, or "+ Blank card".',
     drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
     phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
@@ -418,12 +429,95 @@ const I18N = {
 const LS_KEY = 'yabbie-nep-cards-v1';
 const LIB = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
 
+const API_VERSION = '1.0';
+const PAR = [['9:16', 16 / 9], ['2:3', 1.5], ['3:4', 4 / 3]];
+const AGENT_DOC = `Nepenthes Parent Cards - AI agent API (window.nepCards v1.0)
+
+Each card is one image 1080px wide: mother photo (m), father photo (f), seed photo (s), mother/father names, and a footer with NO. + producer + year.
+Async methods resolve after the page has re-rendered and text fitting has settled. Errors throw with a readable message.
+Cards, photos and settings are saved in this browser profile (localStorage + IndexedDB) and survive reloads.
+
+card  = 1-based index (number), card id ("c1a2b3c"), or NO. ("2607"; "YAB-X2607" also matches by its last 4 digits)
+slot  = "m" mother | "f" father | "s" seed
+
+READ (sync)
+  help()            this text
+  getState()        { settings, cards: [{ index, id, num, year, producer, cnM, enM, cnF, enF, wmMType, wmMName, wmFType, wmFName, photos: { m, f, s } }] }
+  listCards()       compact summary; photos = loaded slots, e.g. "mfs" or "m"
+  parseList(text)   preview how importList would split each line; changes nothing
+  validate()        { ok, issues: [{ card, level: "error"|"warn", msg }] }  missing photos/names, names overflowing their box
+  ready             Promise; await it once after page load (saved photos + fonts loaded)
+
+CARDS (async)
+  importList(text, { replace = false })  -> { created, updated, removed, cards }
+      One cross per line:  "中文名<TAB>N. English name, YAB-X2607". Chinese-only or English-only lines also work.
+      Names are split into mother / father at the outermost x. NO. keeps only the 4 digits ("2607"); year = "20" + first 2 digits.
+      A line whose NO. matches an existing card updates that card's names (photos and crops kept).
+      replace: true -> the card list becomes exactly these lines; cards with a matching NO. keep their photos, the rest are deleted.
+  addCard(fields?)            -> card
+  updateCard(card, fields)    -> card
+      fields: num, year, producer, cnM, cnF, enM, enF  (English names without the leading "N.")
+              cn / en: a whole cross string, split into mother/father automatically
+              wmMType / wmFType: "none"|"xianyu"|"yabbie"|"xhs"|"fb"|"ig"  watermark on the mother / father photo
+              wmMName / wmFName: account name shown under the xianyu / xhs / fb / ig mark
+  deleteCard(card)   clearCards()      (no confirmation dialog)
+
+PHOTOS (async)
+  setPhoto(card, slot, source)  source = http(s) or relative URL (cross-origin needs CORS), data: URL, raw base64, or Blob/File
+      Local files without CORS:
+        a) Playwright-style setInputFiles on getState().cards[i].photos[slot].uploadSelector  (hidden input[data-upload="<id>:<slot>"])
+        b) click the button 换母本图 / 换父本图 / 换种子图 (EN UI: Replace mother/father/seed photo; its aria-label ends with "#<index> · <NO.>") and answer the file chooser
+      Setting a photo resets its crop. JPG / PNG / WebP; HEIC is not supported.
+  setCrop(card, slot, { x, y, s, r })  any subset. x / y = offset in % of frame width / height, s = zoom >= 1 (1 = just covers the frame),
+      r = rotation in degrees (meant for the seed photo). Clamped so the photo always covers its frame.
+      Crops are stored per ratio (1:1, 3:4 and free each keep their own).
+  resetCrop(card)
+  lockPhoto(card, slot, on = true)  lock the crop; the same photo on other cards shares the locked crop. Locked photos reject setCrop.
+
+LAYOUT (async)
+  setSettings({ ... }) -> settings. Any subset:
+      ratio        "1:1" | "3:4" | "free"
+      cardText     "zh" (Chinese + English) | "en" (English only)
+      foot         "full" | "right" | "left"     footer layout for the current ratio (3:4 and free only)
+      namesAlign   "top" | "center" | "bottom"   (3:4 and free only)
+      nameScale    0.7 - 1.2
+      free ratio only:  preset "A"|"B"|"C",  parAr "9:16"|"2:3"|"3:4" (parent photo w:h),  seedW 280 - 523 (px),  seedAr 1 - 1.6 (seed w/h)
+      wmTrans      0 - 80  (watermark transparency %)
+      exportScale  1 | 2 | 4       fmt  "jpg" | "png"       uiLang  "zh" | "en"
+      yearColors   { "2026": "#777086" }  (a null value restores that year's default; yearColors: null resets all)
+  Numbers are clamped to their range; invalid choices throw.
+
+OUTPUT (async)
+  scrollToCard(card) -> { x, y, width, height }  viewport rect of the card preview, for an element / clip screenshot
+  exportCard(card, { download = true, dataUrl = false, fmt, scale }) -> { filename, width, height, dataUrl? }
+  exportAll({ download = true, fmt, scale }) -> [{ filename, width, height }]   (the browser may ask to allow multiple downloads)
+  File name: <NO.>_<1x1|3x4|7x8>[_EN].jpg|png. Size: 1080 x (1080 | 1440 | depends on free layout) times scale.
+
+PROJECT FILE (async) - hand the work to a person / another browser, or keep a backup
+  saveProject({ download = true, maxEdge = 2400, quality = 0.92, asText = false }) -> { filename, bytes, cards, photos, text? }
+      One .json with every card, photo, crop, lock and layout setting. Photos are embedded as JPEG data URLs with the
+      long edge shrunk to maxEdge (maxEdge: 0 keeps the originals). A photo shared by several cards is stored once.
+  openProject(source) -> { cards, settings }   source = File/Blob, JSON text, parsed object, or URL.
+      Replaces all current cards and photos. Local file: setInputFiles on input[data-upload="project"] (no confirmation on that path).
+  People open the same file with the button 打开工程 (EN UI: Open project) and save with 保存工程 (Save project).
+
+TYPICAL FLOW
+  await nepCards.ready
+  await nepCards.importList(lines)
+  upload m / f / s photos for every card (setPhoto or the upload inputs), adjust with setCrop if needed
+  await nepCards.setSettings({ ratio: "3:4" })
+  nepCards.validate()  -> fix every "error"
+  await nepCards.scrollToCard(1) -> take a screenshot and look at it
+  await nepCards.exportAll()      or, when a person will fine-tune first: await nepCards.saveProject() and hand over the .json
+`;
+
 class Component extends DCLogic {
   state = this.initState();
   fileRef = React.createRef();
   listRef = React.createRef();
   tipRef = React.createRef();
   barRef = React.createRef();
+  projRef = React.createRef();
   _fitState = {};
 
   initState() {
@@ -436,9 +530,9 @@ class Component extends DCLogic {
     const namesAlign = ['center', 'top', 'bottom'].includes(ui.namesAlign) ? ui.namesAlign : 'center';
     const wmTrans = ui.wmTrans >= 0 && ui.wmTrans <= 80 ? ui.wmTrans : 10;
     const uiLang = ui.uiLang === 'en' ? 'en' : 'zh';
-    const seedW = ui.seedW >= 280 && ui.seedW <= 523 ? ui.seedW : 340, seedAr = ui.seedAr >= 1 && ui.seedAr <= 1.6 ? ui.seedAr : 1;
+    const seedW = ui.seedW >= 280 && ui.seedW <= 523 ? ui.seedW : 380, seedAr = ui.seedAr >= 1 && ui.seedAr <= 1.6 ? ui.seedAr : 1.3;
     const parAr = [16 / 9, 4 / 3, 1.5].some(v => Math.abs(v - ui.parAr) < 0.001) ? ui.parAr : 1.5;
-    const base = { parAr, foot78: saved && ['full', 'right', 'left'].includes(saved.foot78) ? saved.foot78 : 'left', seedW, seedAr, uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
+    const base = { parAr, foot78: saved && ['full', 'right', 'left'].includes(saved.foot78) ? saved.foot78 : 'full', seedW, seedAr, uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
     if (saved && Array.isArray(saved.cards)) {
       const photos = {};
       this._pendingIdb = [];
@@ -696,6 +790,204 @@ class Component extends DCLogic {
     } catch (e) { return null; }
   }
 
+  installApi() {
+    const me = this;
+    const set = u => new Promise(r => this.setState(u, r));
+    const settle = async () => { try { if (document.fonts) await document.fonts.ready; } catch (e) {} for (let i = 0; i < 8; i++) await new Promise(r => { requestAnimationFrame(() => r()); setTimeout(r, 40); }); };
+    const fail = m => { throw new Error('[nepCards] ' + m); };
+    const SLOTS = { m: 'm', mother: 'm', '♀': 'm', f: 'f', father: 'f', '♂': 'f', s: 's', seed: 's' };
+    const slotOf = v => SLOTS[String(v ?? '').trim().toLowerCase()] || fail('slot must be "m" (mother), "f" (father) or "s" (seed), got ' + JSON.stringify(v));
+    const cardOf = ref => {
+      const cs = this.state.cards;
+      if (ref && typeof ref === 'object') ref = ref.id ?? ref.num ?? ref.index;
+      if (typeof ref === 'number') return cs[ref - 1] || fail('no card at index ' + ref + ' (there are ' + cs.length + ')');
+      const s = String(ref ?? '').trim(), d = s.match(/(\d{4})$/);
+      const c = cs.find(x => x.id === s) || cs.find(x => x.num && x.num === s) || (d && cs.find(x => x.num === d[1])) || (/^#?\d{1,3}$/.test(s) && cs[+s.replace('#', '') - 1]);
+      return c || fail('card not found: ' + JSON.stringify(ref) + '. Use a 1-based index, card id or NO. (see listCards())');
+    };
+    const FIELDS = ['num', 'year', 'producer', 'cnM', 'cnF', 'enM', 'enF', 'wmMType', 'wmMName', 'wmFType', 'wmFName'], WM = ['none', 'xianyu', 'yabbie', 'xhs', 'fb', 'ig'];
+    const norm = f => {
+      const o = {};
+      for (const [k, v] of Object.entries(f || {})) {
+        if (k === 'cn') { [o.cnM, o.cnF] = this.splitTop(String(v ?? ''), false); continue; }
+        if (k === 'en') { [o.enM, o.enF] = this.splitTop(String(v ?? '').trim().replace(/^N\.\s*/, ''), true); continue; }
+        if (!FIELDS.includes(k)) fail('unknown field "' + k + '". Allowed: ' + FIELDS.concat('cn', 'en').join(', '));
+        o[k] = v == null ? '' : String(v);
+        if ((k === 'wmMType' || k === 'wmFType') && !WM.includes(o[k])) fail(k + ' must be one of ' + WM.join(' | '));
+      }
+      if (o.enM) o.enM = o.enM.replace(/^N\.\s*/, '');
+      if (o.num && !('year' in o)) { const d = o.num.match(/(\d{2})\d{2}$/); if (d) o.year = '20' + d[1]; }
+      return o;
+    };
+    const r2 = (v, d) => +(+v).toFixed(d);
+    const cardOut = (c, i) => {
+      const st = this.state, photos = {};
+      for (const sl of ['m', 'f', 's']) {
+        const key = c.id + ':' + sl, p = st.photos[key], uploadSelector = 'input[data-upload="' + key + '"]';
+        if (!p) { photos[sl] = { loaded: false, uploadSelector }; continue; }
+        const k = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(sl, st.ratio));
+        photos[sl] = { loaded: true, aspect: r2(p.ar, 4), locked: this.isLocked(key, st), crop: { x: r2(k.x, 2), y: r2(k.y, 2), s: r2(k.s, 3), r: k.r }, uploadSelector };
+      }
+      const o = { index: i + 1, id: c.id };
+      FIELDS.forEach(f => { o[f] = c[f] ?? ''; });
+      o.photos = photos;
+      return o;
+    };
+    const out = id => { const cs = this.state.cards, i = cs.findIndex(c => c.id === id); return i < 0 ? null : cardOut(cs[i], i); };
+    const brief = id => { const o = out(id); return o && { index: o.index, id: o.id, num: o.num }; };
+    const settingsOut = () => {
+      const st = this.state, par = PAR.find(([, v]) => Math.abs(v - (st.parAr || 1.5)) < 0.001);
+      const years = [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort();
+      return { ratio: { '11': '1:1', '34': '3:4', '78': 'free' }[st.ratio], cardText: st.lang === 'en' ? 'en' : 'zh', foot: st.ratio === '11' ? null : this.ef(st), namesAlign: st.namesAlign || 'center', nameScale: st.nameScale ?? 1, parAr: par ? par[0] : '2:3', seedW: st.seedW, seedAr: st.seedAr, wmTrans: st.wmTrans ?? 10, exportScale: st.exportScale ?? 2, fmt: st.fmt, uiLang: st.uiLang, yearColors: Object.fromEntries(years.map(y => [y, this.yc(y)])), canvas: { width: 1080, height: this.canvasH() } };
+    };
+    const SETTINGS = ['ratio', 'preset', 'foot', 'cardText', 'lang', 'namesAlign', 'nameScale', 'seedW', 'seedAr', 'parAr', 'wmTrans', 'exportScale', 'fmt', 'uiLang', 'yearColors'];
+    const dropPhotos = async ids => {
+      if (!ids.length) return;
+      ids.forEach(id => ['m', 'f', 's'].forEach(sl => this.idb('readwrite', st => st.delete(id + ':' + sl))));
+      await set(s => { const photos = { ...s.photos }; ids.forEach(id => ['m', 'f', 's'].forEach(sl => delete photos[id + ':' + sl])); return { photos }; });
+    };
+    const toBlob = async src => {
+      if (src instanceof Blob) return src;
+      if (typeof src !== 'string' || !src.trim()) fail('source must be a URL, data: URL, base64 string or Blob');
+      let s = src.trim();
+      if (s.length > 64 && /^[A-Za-z0-9+/\s]+=*$/.test(s)) s = 'data:' + (s.startsWith('iVBOR') ? 'image/png' : s.startsWith('UklGR') ? 'image/webp' : 'image/jpeg') + ';base64,' + s.replace(/\s+/g, '');
+      let r;
+      try { r = await fetch(s); } catch (e) { fail('could not fetch ' + s.slice(0, 80) + ' (' + e.message + '). Cross-origin URLs must send CORS headers; otherwise use the upload input or a data: URL'); }
+      if (!r.ok) fail('fetch ' + s.slice(0, 80) + ' returned HTTP ' + r.status);
+      return r.blob();
+    };
+    const api = {
+      version: API_VERSION,
+      get ready() { return me._readyP || Promise.resolve(true); },
+      help: () => AGENT_DOC,
+      getState: () => ({ version: API_VERSION, settings: settingsOut(), cards: this.state.cards.map(cardOut) }),
+      listCards: () => this.state.cards.map((c, i) => ({ index: i + 1, id: c.id, num: c.num, mother: c.cnM || c.enM || '', father: c.cnF || c.enF || '', photos: ['m', 'f', 's'].filter(sl => this.state.photos[c.id + ':' + sl]).join('') || '-' })),
+      parseList: text => this.parseRaw(String(text ?? '')),
+      validate: () => {
+        const st = this.state, issues = [], en = st.lang === 'en';
+        st.cards.forEach((c, i) => {
+          const card = '#' + (i + 1) + (c.num ? ' (' + c.num + ')' : ''), add = (level, msg) => issues.push({ card, id: c.id, level, msg });
+          if (!c.num) add('warn', 'NO. is empty');
+          if (!c.year) add('warn', 'year is empty');
+          for (const [k, n] of [['m', 'mother'], ['f', 'father'], ['s', 'seed']]) if (!st.photos[c.id + ':' + k]) add('error', n + ' photo missing');
+          if (en) { if (!c.enM) add('error', 'mother English name is empty'); if (!c.enF) add('error', 'father English name is empty'); }
+          else { if (!c.cnM) add('error', 'mother Chinese name is empty'); if (!c.cnF) add('error', 'father Chinese name is empty'); if (!c.enM || !c.enF) add('warn', 'English name missing (shown under the Chinese name)'); }
+          const box = document.querySelector('[data-export="' + c.id + ':C"] [data-fitsig]');
+          if (box && box.scrollHeight > box.clientHeight + 2) add('error', 'names overflow their area; shorten them or lower nameScale');
+        });
+        return { ok: !issues.some(x => x.level === 'error'), cards: st.cards.length, issues };
+      },
+      importList: async (text, o = {}) => {
+        const parsed = this.parseRaw(String(text ?? ''));
+        if (!parsed.length) fail('no usable lines in text');
+        const old = this.state.cards, cards = o.replace ? [] : [...old], created = [], updated = [];
+        for (const p of parsed) {
+          const pool = o.replace ? old.filter(c => !cards.some(k => k.id === c.id)) : cards;
+          const ex = p.num ? pool.find(c => c.num === p.num) : null;
+          if (ex) { const n = { ...ex, ...p }; if (o.replace) cards.push(n); else cards[cards.indexOf(ex)] = n; updated.push(n.id); }
+          else { const n = this.newCard(p); cards.push(n); created.push(n.id); }
+        }
+        const removed = o.replace ? old.filter(c => !cards.some(k => k.id === c.id)).map(c => c.id) : [];
+        await set({ cards, raw: String(text), showImport: false });
+        await dropPhotos(removed);
+        await settle();
+        return { created: created.map(brief), updated: updated.map(brief), removed, cards: api.listCards() };
+      },
+      addCard: async (f = {}) => { const n = this.newCard(norm(f)); await set(s => ({ cards: [...s.cards, n] })); await settle(); return out(n.id); },
+      updateCard: async (ref, f = {}) => { const c = cardOf(ref), p = norm(f); await set(s => ({ cards: s.cards.map(x => x.id === c.id ? { ...x, ...p } : x) })); await settle(); return out(c.id); },
+      deleteCard: async ref => { const c = cardOf(ref); await set(s => ({ cards: s.cards.filter(x => x.id !== c.id) })); await dropPhotos([c.id]); await settle(); return { removed: c.id, total: this.state.cards.length }; },
+      clearCards: async () => { const ids = this.state.cards.map(c => c.id); await set({ cards: [] }); await dropPhotos(ids); await settle(); return { removed: ids.length }; },
+      setPhoto: async (ref, sl, source) => {
+        const c = cardOf(ref), k = slotOf(sl), blob = await toBlob(source);
+        await this.loadFile(blob, c.id + ':' + k, true);
+        await settle();
+        return out(c.id).photos[k];
+      },
+      setCrop: async (ref, sl, crop = {}) => {
+        const c = cardOf(ref), k = slotOf(sl), key = c.id + ':' + k;
+        if (!this.state.photos[key]) fail('no ' + k + ' photo on card ' + JSON.stringify(ref));
+        if (this.isLocked(key)) fail('this photo is locked; call lockPhoto(card, slot, false) first');
+        const pk = {};
+        for (const n of ['x', 'y', 's', 'r']) if (crop[n] != null) { if (!isFinite(+crop[n])) fail(n + ' must be a number'); pk[n] = +crop[n]; }
+        await new Promise(r => { this.updateCrop(key, cur => ({ ...cur, ...pk }), this.frameAspect(k, this.state.ratio)); this.setState({}, r); });
+        await settle();
+        return out(c.id).photos[k];
+      },
+      resetCrop: async ref => { const c = cardOf(ref); await set(s => ({ cards: s.cards.map(x => x.id === c.id ? { ...x, crop: {} } : x) })); await settle(); return out(c.id); },
+      lockPhoto: async (ref, sl, on = true) => {
+        const c = cardOf(ref), k = slotOf(sl), key = c.id + ':' + k;
+        if (!this.state.photos[key]) fail('no ' + k + ' photo on card ' + JSON.stringify(ref));
+        if (this.isLocked(key) !== !!on) { this.toggleLock(key); await set({}); }
+        await settle();
+        return out(c.id).photos[k];
+      },
+      setSettings: async (p = {}) => {
+        const st = this.state, s = {}, ui = {};
+        for (const k of Object.keys(p)) if (!SETTINGS.includes(k)) fail('unknown setting "' + k + '". Allowed: ' + SETTINGS.join(', '));
+        const one = (k, list) => { if (p[k] == null) return null; const v = String(p[k]); if (!list.includes(v)) fail(k + ' must be one of ' + list.join(' | ')); return v; };
+        const num = (k, lo, hi, dp) => { if (p[k] == null) return; const v = +p[k]; if (!isFinite(v)) fail(k + ' must be a number'); ui[k] = r2(Math.max(lo, Math.min(hi, v)), dp); };
+        if (p.ratio != null) { const m = { '1:1': '11', '3:4': '34', free: '78', '11': '11', '34': '34', '78': '78' }[String(p.ratio).toLowerCase()]; if (!m) fail('ratio must be "1:1" | "3:4" | "free"'); s.ratio = m; }
+        const ratio = s.ratio || st.ratio;
+        if (p.preset != null) { const q = PRESETS[String(p.preset).toUpperCase()]; if (!q) fail('preset must be A | B | C'); ui.seedW = q.w; ui.seedAr = q.ar; s.foot78 = q.foot; }
+        const ft = one('foot', ['full', 'right', 'left']); if (ft) { if (ratio === '78') s.foot78 = ft; else s.foot = ft; }
+        const ct = p.cardText ?? p.lang; if (ct != null) { const v = { zh: 'zh', both: 'zh', cn: 'zh', en: 'en' }[String(ct).toLowerCase()]; if (!v) fail('cardText must be "zh" (Chinese + English) or "en"'); s.lang = v; }
+        const na = one('namesAlign', ['top', 'center', 'bottom']); if (na) ui.namesAlign = na;
+        num('nameScale', 0.7, 1.2, 2); num('seedW', 280, 523, 0); num('seedAr', 1, 1.6, 2); num('wmTrans', 0, 80, 0);
+        if (p.parAr != null) { const q = PAR.find(([l]) => l === String(p.parAr)); if (!q) fail('parAr must be "9:16" | "2:3" | "3:4"'); ui.parAr = q[1]; }
+        if (p.exportScale != null) { const v = +p.exportScale; if (![1, 2, 4].includes(v)) fail('exportScale must be 1, 2 or 4'); ui.exportScale = v; }
+        const fm = one('fmt', ['jpg', 'png']); if (fm) { s.fmt = fm; try { localStorage.setItem('qb_fmt', fm); } catch (e) {} }
+        const ul = one('uiLang', ['zh', 'en']); if (ul) ui.uiLang = ul;
+        if ('yearColors' in p) {
+          if (p.yearColors === null) s.yearColors = {};
+          else { const yc = { ...st.yearColors }; for (const [y, v] of Object.entries(p.yearColors || {})) { if (v == null) delete yc[y]; else if (/^#[0-9a-f]{6}$/i.test(v)) yc[y] = v.toLowerCase(); else fail('yearColors values must be "#rrggbb"'); } s.yearColors = yc; }
+        }
+        if (Object.keys(ui).length) { try { const u = JSON.parse(localStorage.getItem('qb_ui')) || {}; localStorage.setItem('qb_ui', JSON.stringify({ ...u, ...ui })); } catch (e) {} }
+        await set({ ...s, ...ui });
+        await settle();
+        return settingsOut();
+      },
+      saveProject: async (o = {}) => { const r = await this.saveProjectFile(o); await settle(); return r; },
+      openProject: async source => {
+        let data = source;
+        if (source instanceof Blob) data = await source.text();
+        else if (typeof source === 'string' && !source.trim().startsWith('{')) {
+          let r;
+          try { r = await fetch(source.trim()); } catch (e) { fail('could not fetch ' + source.slice(0, 80) + ' (' + e.message + ')'); }
+          if (!r.ok) fail('fetch ' + source.slice(0, 80) + ' returned HTTP ' + r.status);
+          data = await r.text();
+        }
+        try { await this.loadProject(data); } catch (e) { fail(e.message); }
+        await settle();
+        return { cards: api.listCards(), settings: settingsOut() };
+      },
+      scrollToCard: async ref => {
+        const c = cardOf(ref), node = document.querySelector('[data-export="' + c.id + ':C"]');
+        if (!node) fail('card is not rendered');
+        const box = node.parentElement, bar = this.barRef.current, off = bar && getComputedStyle(bar).position === 'sticky' ? bar.getBoundingClientRect().height : 0;
+        window.scrollTo(0, Math.max(0, box.getBoundingClientRect().top + window.scrollY - off - 12));
+        await settle();
+        const r = box.getBoundingClientRect();
+        return { x: Math.round(r.left), y: Math.round(r.top), width: Math.round(r.width), height: Math.round(r.height) };
+      },
+      exportCard: async (ref, o = {}) => {
+        const c = cardOf(ref), fmt = o.fmt ?? o.format;
+        if (fmt != null && !['jpg', 'png'].includes(fmt)) fail('fmt must be "jpg" or "png"');
+        if (o.scale != null && ![1, 2, 4].includes(+o.scale)) fail('scale must be 1, 2 or 4');
+        await settle();
+        const r = await this.exportKey(c.id + ':C', { fmt, scale: o.scale != null ? +o.scale : undefined, download: o.download !== false, strict: true });
+        if (!o.dataUrl) delete r.dataUrl;
+        return r;
+      },
+      exportAll: async (o = {}) => {
+        const res = [];
+        for (const c of [...this.state.cards]) { res.push(await api.exportCard(c.id, { ...o, dataUrl: false })); if (o.download !== false) await new Promise(r => setTimeout(r, 400)); }
+        return res;
+      },
+    };
+    Object.defineProperty(api, '_owner', { value: this, enumerable: false });
+    window.nepCards = api;
+    console.info('[nepCards] AI agent API ready: run nepCards.help() for the reference');
+  }
   componentDidMount() {
     fetch('https://api.github.com/repos/yabbie/nepenthes-hybrid-cards')
       .then(r => r.ok ? r.json() : Promise.reject())
@@ -736,12 +1028,15 @@ class Component extends DCLogic {
       document.fonts.ready.then(this._fl);
     }
     this.checkFit();
-    (this._pendingIdb || []).forEach(async ([k, m]) => {
+    const idbP = (this._pendingIdb || []).map(async ([k, m]) => {
       const src = await this.idb('readonly', st => st.get(k));
-      if (src) this.setState(st => ({ photos: { ...st.photos, [k]: { src, ar: m.ar, pid: m.pid || this.hash(src) } } }));
+      if (src) await new Promise(done => this.setState(st => ({ photos: { ...st.photos, [k]: { src, ar: m.ar, pid: m.pid || this.hash(src) } } }), done));
     });
+    this._readyP = Promise.all(idbP).then(() => document.fonts && document.fonts.ready).catch(() => {}).then(() => new Promise(r => setTimeout(r, 300))).then(() => true);
+    this.installApi();
   }
   componentWillUnmount() {
+    if (window.nepCards && window.nepCards._owner === this) delete window.nepCards;
     const h = this._h; if (!h) return;
     document.removeEventListener('pointerdown', h.down);
     window.removeEventListener('pointermove', h.move);
@@ -947,22 +1242,103 @@ class Component extends DCLogic {
     const inp = this.fileRef.current; if (!inp) return;
     inp.value = ''; inp.click();
   }
-  async loadFile(file, key) {
+  async loadFile(file, key, strict) {
     try {
       const url = URL.createObjectURL(file);
       const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
-      const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, 2200 / Math.max(w, h));
-      const cv = document.createElement('canvas');
-      cv.width = Math.round(w * k); cv.height = Math.round(h * k);
-      const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+      const w = img.naturalWidth, h = img.naturalHeight;
       URL.revokeObjectURL(url);
-      const src = cv.toDataURL('image/jpeg', 0.9), pid = this.hash(src);
+      const src = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); }), pid = this.hash(src);
       await this.idb('readwrite', st => st.put(src, key));
       const [id, slot] = key.split(':');
-      this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: cv.width / cv.height, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') }, [slot + '@78']: { ...DEF } } } : c) }));
-    } catch (e) { alert((I18N[this.state.uiLang] || I18N.zh).loadFail); }
+      await new Promise(done => this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: w / h, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') }, [slot + '@78']: { ...DEF } } } : c) }), done));
+    } catch (e) { if (strict) throw new Error('[nepCards] could not decode this image (use JPG / PNG / WebP; HEIC is not supported)'); alert((I18N[this.state.uiLang] || I18N.zh).loadFail); }
   }
 
+  toDataURL(blob) { return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); }); }
+  async shrink(src, maxEdge, q) {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+    const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, maxEdge / Math.max(w, h));
+    if (k === 1 && /^data:image\/jpeg/.test(src) && src.length < 2.2e6) return src;
+    const cv = document.createElement('canvas'); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+    const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    const out = cv.toDataURL('image/jpeg', q);
+    return out.length < src.length ? out : src;
+  }
+  async buildProject(o = {}) {
+    const st = this.state, maxEdge = o.maxEdge === 0 ? 0 : (+o.maxEdge || 2400), q = +o.quality || 0.92, photos = {}, slots = {};
+    for (const [key, p] of Object.entries(st.photos)) {
+      if (!st.cards.some(c => key.startsWith(c.id + ':'))) continue;
+      const pid = p.pid || this.hash(p.src);
+      slots[key] = pid;
+      if (photos[pid]) continue;
+      let src = p.src;
+      if (!String(src).startsWith('data:')) { try { src = await this.toDataURL(await (await fetch(src)).blob()); } catch (e) {} }
+      if (maxEdge) { try { src = await this.shrink(src, maxEdge, q); } catch (e) {} }
+      photos[pid] = { src, ar: p.ar };
+    }
+    const settings = { ratio: st.ratio, foot: st.foot, foot78: st.foot78, lang: st.lang, fmt: st.fmt };
+    ['parAr', 'seedW', 'seedAr', 'nameScale', 'namesAlign', 'wmTrans', 'exportScale'].forEach(k => { settings[k] = st[k]; });
+    return { app: 'nepenthes-hybrid-cards', format: 1, savedAt: new Date().toISOString(), settings, raw: st.raw, yearColors: st.yearColors, locks: st.locks, cards: st.cards, slots, photos };
+  }
+  async saveProjectFile(o = {}) {
+    const proj = await this.buildProject(o), text = JSON.stringify(proj);
+    const d = new Date(), p2 = n => String(n).padStart(2, '0');
+    const filename = 'nepenthes-cards-' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '-' + p2(d.getHours()) + p2(d.getMinutes()) + '.json';
+    if (o.download !== false) {
+      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' })), a = document.createElement('a');
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+    const r = { filename, bytes: text.length, cards: proj.cards.length, photos: Object.keys(proj.photos).length };
+    if (o.asText) r.text = text;
+    return r;
+  }
+  async loadProject(data) {
+    if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) { throw new Error('file is not valid JSON'); } }
+    if (!data || data.app !== 'nepenthes-hybrid-cards' || !Array.isArray(data.cards)) throw new Error('not a parent-cards project file');
+    const photos = {}, puts = [];
+    for (const [key, pid] of Object.entries(data.slots || {})) {
+      const ph = data.photos && data.photos[pid];
+      if (!ph || !ph.src) continue;
+      photos[key] = { src: ph.src, ar: ph.ar, pid };
+      if (String(ph.src).startsWith('data:')) puts.push([key, ph.src]);
+    }
+    await this.idb('readwrite', st => { st.clear(); puts.forEach(([k, v]) => st.put(v, k)); });
+    const s = data.settings || {}, FT = ['full', 'right', 'left'], ui = {};
+    const next = { cards: data.cards.map(c => ({ ...this.newCard({}), ...c, crop: c.crop || {} })), photos, locks: data.locks || {}, yearColors: data.yearColors || {}, raw: data.raw ?? '', showImport: false, activeYear: '' };
+    if (['11', '34', '78'].includes(s.ratio)) next.ratio = s.ratio;
+    if (FT.includes(s.foot)) next.foot = s.foot;
+    if (FT.includes(s.foot78)) next.foot78 = s.foot78;
+    if (['zh', 'en'].includes(s.lang)) next.lang = s.lang;
+    if (['jpg', 'png'].includes(s.fmt)) { next.fmt = s.fmt; try { localStorage.setItem('qb_fmt', s.fmt); } catch (e) {} }
+    if ([1, 2, 4].includes(s.exportScale)) ui.exportScale = s.exportScale;
+    if (s.nameScale >= 0.7 && s.nameScale <= 1.2) ui.nameScale = s.nameScale;
+    if (['center', 'top', 'bottom'].includes(s.namesAlign)) ui.namesAlign = s.namesAlign;
+    if (s.wmTrans >= 0 && s.wmTrans <= 80) ui.wmTrans = s.wmTrans;
+    if (s.seedW >= 280 && s.seedW <= 523) ui.seedW = s.seedW;
+    if (s.seedAr >= 1 && s.seedAr <= 1.6) ui.seedAr = s.seedAr;
+    if (PAR.some(([, v]) => Math.abs(v - s.parAr) < 0.001)) ui.parAr = s.parAr;
+    try { const u = JSON.parse(localStorage.getItem('qb_ui')) || {}; localStorage.setItem('qb_ui', JSON.stringify({ ...u, ...ui })); } catch (e) {}
+    await new Promise(r => this.setState({ ...next, ...ui }, r));
+  }
+  saveProjectUi = async () => {
+    if (this.state.projBusy) return;
+    this.setState({ projBusy: 'save' });
+    try { await this.saveProjectFile({}); } catch (e) { console.error(e); alert((I18N[this.state.uiLang] || I18N.zh).projSaveFail + ((e && e.message) || e)); }
+    this.setState({ projBusy: null });
+  };
+  openProjectUi = () => { const inp = this.projRef.current; if (!inp || this.state.projBusy) return; this._projUi = true; inp.value = ''; inp.click(); };
+  onProjFile = async e => {
+    const f = e.target.files && e.target.files[0], viaUi = this._projUi; this._projUi = false;
+    e.target.value = '';
+    if (!f) return;
+    const T = I18N[this.state.uiLang] || I18N.zh;
+    if (viaUi && this.state.cards.length && !confirm(T.projConfirm)) return;
+    this.setState({ projBusy: 'open' });
+    try { await this.loadProject(await f.text()); } catch (err) { console.error(err); alert(T.projOpenFail + ((err && err.message) || err)); }
+    this.setState({ projBusy: null });
+  };
   loadLib() {
     if (window.htmlToImage) return Promise.resolve();
     return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = LIB; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
@@ -983,26 +1359,28 @@ class Component extends DCLogic {
       return (this._fc[chars] = css);
     } catch (e) { return ''; }
   }
-  async exportKey(key) {
+  async exportKey(key, o = {}) {
     const node = document.querySelector('[data-export="' + key + '"]');
-    if (!node) return;
+    if (!node) { if (o.strict) throw new Error('[nepCards] card is not rendered'); return; }
     const id = key.split(':')[0];
     const card = this.state.cards.find(c => c.id === id);
+    const fmt = o.fmt || this.state.fmt, scale = o.scale || (this.state.exportScale ?? 2);
+    let res;
     this.setState({ busy: key });
     try {
       await this.loadLib();
       const H = this.canvasH();
       const css = await this.fontCSS(node.textContent || '');
-      const opts = { width: 1080, height: H, pixelRatio: this.state.exportScale ?? 2, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
+      const opts = { width: 1080, height: H, pixelRatio: scale, style: { transform: 'none' }, cacheBust: false, filter: n => !(n.dataset && n.dataset.noexport) };
       if (css) opts.fontEmbedCSS = css; else opts.skipFonts = true;
-      const jpg = this.state.fmt === 'jpg';
+      const jpg = fmt === 'jpg';
       const url = jpg ? await window.htmlToImage.toJpeg(node, { ...opts, quality: 1, backgroundColor: '#ffffff' }) : await window.htmlToImage.toPng(node, opts);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : this.state.ratio === '78' ? '7x8' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
-      document.body.appendChild(a); a.click(); a.remove();
-    } catch (e) { console.error(e); alert((I18N[this.state.uiLang] || I18N.zh).exportFail + ((e && e.message) || e)); }
+      const filename = ((card && card.num) || 'card') + '_' + (this.state.ratio === '34' ? '3x4' : this.state.ratio === '78' ? '7x8' : '1x1') + (this.state.lang === 'en' ? '_EN' : '') + (jpg ? '.jpg' : '.png');
+      if (o.download !== false) { const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); }
+      res = { filename, width: Math.round(1080 * scale), height: Math.round(H * scale), dataUrl: url };
+    } catch (e) { console.error(e); if (o.strict) { this.setState({ busy: null }); throw new Error('[nepCards] export failed: ' + ((e && e.message) || e)); } alert((I18N[this.state.uiLang] || I18N.zh).exportFail + ((e && e.message) || e)); }
     this.setState({ busy: null });
+    return res;
   }
 
   onSetFmt = e => { const fmt = e.currentTarget.dataset.fmt; try { localStorage.setItem('qb_fmt', fmt); } catch (er) {} this.setState({ fmt }); };
@@ -1053,6 +1431,7 @@ class Component extends DCLogic {
   };
   resetColors = () => this.setState({ yearColors: {} });
   onFile = e => { const f = e.target.files && e.target.files[0]; if (f && this._pickKey) this.loadFile(f, this._pickKey); };
+  onUpload = e => { const f = e.target.files && e.target.files[0], k = e.target.dataset.upload; if (f && k) this.loadFile(f, k); e.target.value = ''; };
   onAction = e => {
     const d = e.currentTarget.dataset;
     if (d.action === 'export') this.exportKey(d.key);
@@ -1128,7 +1507,8 @@ class Component extends DCLogic {
         label: rLabel + T.expSuffix + 1080 * xs + '×' + H * xs,
         exportLabel: st.busy === key ? T.exporting : T.exportPre + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
       };
-      return { ...c, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmMType), fXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmFType) };
+      const tg = ' #' + (i + 1) + (c.num ? ' · ' + c.num : '');
+      return { ...c, pickMAria: T.pickM + tg, pickFAria: T.pickF + tg, pickSAria: T.pickS + tg, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmMType), fXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmFType) };
     });
     const opt1 = (k, label, on) => ({ key: k, label, bg: on ? '#22211e' : 'transparent', fg: on ? '#fff' : '#3a3934' });
     const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
@@ -1161,7 +1541,7 @@ class Component extends DCLogic {
       onSetRatio: this.onSetRatio, onSetFmt: this.onSetFmt,
       fmtPngBg: st.fmt !== 'jpg' ? '#22211e' : '#fff', fmtPngFg: st.fmt !== 'jpg' ? '#fff' : '#22211e', fmtJpgBg: st.fmt === 'jpg' ? '#22211e' : '#fff', fmtJpgFg: st.fmt === 'jpg' ? '#fff' : '#22211e', toggleImport: this.toggleImport, onRaw: this.onRaw,
       doImport: this.doImport, addCard: this.addCard, onField: this.onField, onYearColor: this.onYearColor,
-      resetColors: this.resetColors, onFile: this.onFile, onAction: this.onAction, exportAll: this.exportAll,
+      resetColors: this.resetColors, onFile: this.onFile, onUpload: this.onUpload, projRef: this.projRef, onProjFile: this.onProjFile, saveProjectUi: this.saveProjectUi, openProjectUi: this.openProjectUi, hasCards: !!st.cards.length, saveProjLabel: st.projBusy === 'save' ? T.saving : T.saveProj, openProjLabel: st.projBusy === 'open' ? T.opening : T.openProj, onAction: this.onAction, exportAll: this.exportAll,
     };
   }
 }
