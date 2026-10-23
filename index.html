@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -18,173 +18,161 @@ html { overflow-y: scroll; }
 body { margin: 0; background: #e7e5e0; color: #22211e; font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 a { color: #5d4f8c; } a:hover { color: #3e3466; }
 button, input, select, textarea { font-family: inherit; }
+body { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+@media (pointer: coarse), (max-width: 720px) {
+  button:not([data-color]):not([data-i]):not([data-flip]):not([data-year]):not([style*="padding:15px"]):not([style*="padding:0"]) { min-height: 28px; padding: 4px 9px !important; font-size: 12px !important; }
+  input:not([type=checkbox]):not([type=range]), textarea, select { padding: 5px 8px !important; font-size: 12px !important; }
+  input[type=range] { width: 100px !important; height: 20px; }
+  input[type=checkbox] { width: 16px !important; height: 16px !important; }
+}
 </style>
 </helmet>
 <div style="min-height:100vh; display:flex; flex-direction:column">
 
-<div ref="{{ barRef }}" style="position:{{ barPos }}; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:{{ barPad }}; display:flex; flex-direction:column; gap:10px">
-  <div style="display:{{ narrowDisp }}; align-items:center; justify-content:space-between; gap:10px">
-    <div style="font-size:16px; font-weight:700">{{ ui.title }}</div>
-    <button onClick="{{ togglePanel }}" style="border:1px solid #22211e; background:{{ panelBg }}; color:{{ panelFg }}; border-radius:8px; padding:8px 14px; min-height:40px; font-size:14px; cursor:pointer; white-space:nowrap">{{ panelLabel }}</button>
+<div ref="{{ barRef }}" style="position:sticky; top:0; z-index:20; background:rgba(246,245,242,.96); border-bottom:1px solid #d9d6cf; padding:{{ barPad }}; display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px">
+  <div ref="{{ bTitleRef }}" style="order:1; flex:none; display:flex; align-items:baseline">
+    <div style="font-family:'Noto Serif SC', serif; font-size:17px; font-weight:900; letter-spacing:.06em; white-space:nowrap">{{ ui.title }}</div>
+    <div ref="{{ bEyeRef }}" style="max-width:{{ eyeMax }}; overflow:hidden; white-space:nowrap"><span style="display:block; padding-left:10px; font-size:11px; font-weight:500; color:#8a877f; letter-spacing:.18em">NEPENTHES HYBRID CARDS</span></div>
   </div>
-  <div style="display:{{ ctlDisp }}; flex-direction:column; gap:12px; max-height:{{ ctlMax }}; overflow-y:{{ ctlOv }}">
-  <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
-    <span style="font-size:12px; color:#6b6962">{{ ui.touchEdit }}</span>
-    <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-      <sc-for list="{{ touchOpts }}" as="o" hint-placeholder-count="2">
-        <button data-touch="{{ o.key }}" onClick="{{ onSetTouch }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-      </sc-for>
+  <div style="order:{{ actOrder }}; flex:{{ actFlex }}; min-width:0; display:flex; flex-wrap:nowrap; align-items:center; gap:8px 24px; overflow-x:{{ actOv }}; scrollbar-width:none; padding:1px 0">
+    <div ref="{{ bG1Ref }}" style="flex:none; display:flex; align-items:center; gap:6px">
+      <button onClick="{{ toggleImport }}" style="flex:none; border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:6px 11px; font-size:12.5px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.importBtn }}</button>
+      <button onClick="{{ addCard }}" style="flex:none; border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:6px 11px; font-size:12.5px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.addBlank }}</button>
+      <div style="flex:none; width:1px; height:20px; margin:0 4px; background:#d9d6cf"></div>
+      <button onClick="{{ openProjectUi }}" style="flex:none; border:0; background:transparent; border-radius:8px; padding:6px 9px; font-size:12.5px; cursor:pointer; color:#3a3934; white-space:nowrap" style-hover="background:#e7e5e0">{{ openProjLabel }}</button>
+      <sc-if value="{{ hasCards }}" hint-placeholder-val="{{ false }}"><button onClick="{{ saveProjectUi }}" style="flex:none; border:0; background:transparent; border-radius:8px; padding:6px 9px; font-size:12.5px; cursor:pointer; color:#3a3934; white-space:nowrap" style-hover="background:#e7e5e0">{{ saveProjLabel }}</button></sc-if>
+      <sc-if value="{{ hasCards }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ selOff }}" hint-placeholder-val="{{ true }}"><button onClick="{{ toggleSel }}" style="flex:none; border:0; background:transparent; border-radius:8px; padding:6px 9px; font-size:12.5px; cursor:pointer; color:#3a3934; white-space:nowrap; color:#a2382c" style-hover="background:#f3e7e4">{{ ui.selMode }}</button></sc-if>
+        <sc-if value="{{ selMode }}" hint-placeholder-val="{{ false }}"><div style="flex:none; display:flex; align-items:center; gap:6px; padding:2px 4px 2px 10px; background:#f3e7e4; border-radius:9px">
+          <span style="font-size:12px; color:#7a2a20; white-space:nowrap">{{ selCountTxt }}</span>
+          <button onClick="{{ selAllToggle }}" style="flex:none; border:0; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap">{{ selAllLabel }}</button>
+          <button onClick="{{ deleteSel }}" style="flex:none; border:0; background:#a2382c; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; color:#fff; white-space:nowrap; opacity:{{ delSelOp }}">{{ delSelLabel }}</button>
+          <button onClick="{{ toggleSel }}" style="flex:none; border:0; background:none; padding:4px 6px; font-size:12px; cursor:pointer; color:#7a2a20; text-decoration:underline; white-space:nowrap">{{ ui.selDone }}</button>
+        </div></sc-if>
+      </sc-if>
     </div>
-  </div></sc-if>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px">
-    <div style="display:{{ wideDisp }}; align-items:baseline; gap:10px">
-      <div style="font-size:16px; font-weight:700">{{ ui.title }}</div>
-      <div style="font-size:11px; color:#8a877f; letter-spacing:.14em">NEPENTHES HYBRID CARDS</div>
-    </div>
-    <div style="flex:1"></div>
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.uiLang }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ uiOpts }}" as="o" hint-placeholder-count="2">
-          <button data-uilang="{{ o.key }}" onClick="{{ onSetUiLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div>
-    <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.importBtn }}</button>
-    <button onClick="{{ addCard }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ ui.addBlank }}</button>
-    <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden">
-      <button onClick="{{ openProjectUi }}" style="border:0; background:#fff; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ openProjLabel }}</button>
-      <sc-if value="{{ hasCards }}" hint-placeholder-val="{{ false }}"><button onClick="{{ saveProjectUi }}" style="border:0; border-left:1px solid #d3d0c8; background:#fff; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e; white-space:nowrap">{{ saveProjLabel }}</button></sc-if>
+    <div ref="{{ bG2Ref }}" style="flex:none; margin-left:auto; display:flex; align-items:center; gap:6px">
+      <div title="{{ ui.ratio }}" style="flex:none; display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ ratioOpts }}" as="o" hint-placeholder-count="3"><button data-ratio="{{ o.key }}" onClick="{{ onSetRatio }}" style="border:0; border-radius:7px; padding:5px 11px; font-size:12.5px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div>
+      <div title="{{ ui.cardText }}" style="flex:none; display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2"><button data-lang="{{ o.key }}" onClick="{{ onSetLang }}" style="border:0; border-radius:7px; padding:5px 11px; font-size:12.5px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div>
+      <button onClick="{{ exportAll }}" style="flex:none; border:1px solid #22211e; background:#22211e; border-radius:8px; padding:6px 13px; font-size:12.5px; cursor:pointer; color:#fff; white-space:nowrap">{{ exportAllLabel }}</button>
     </div>
   </div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px">
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.ratio }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ ratioOpts }}" as="o" hint-placeholder-count="2">
-          <button data-ratio="{{ o.key }}" onClick="{{ onSetRatio }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div>
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.cardText }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
-          <button data-lang="{{ o.key }}" onClick="{{ onSetLang }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div>
-    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.preset }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ presetOpts }}" as="o" hint-placeholder-count="3">
-          <button data-preset="{{ o.key }}" onClick="{{ onPreset }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div></sc-if>
-    <sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.foot }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ footOpts }}" as="o" hint-placeholder-count="3">
-          <button data-foot="{{ o.key }}" onClick="{{ onSetFoot }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div></sc-if>
-    <sc-if value="{{ showAlign }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameAlign }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ alignOpts }}" as="o" hint-placeholder-count="3">
-          <button data-align="{{ o.key }}" onClick="{{ onSetAlign }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div></sc-if>
-    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.parRatio }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ parOpts }}" as="o" hint-placeholder-count="3">
-          <button data-par="{{ o.key }}" onClick="{{ onParAr }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div></sc-if>
-    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.seedSize }} {{ seedWLabel }}</span>
-      <input type="range" min="280" max="523" step="10" value="{{ seedWVal }}" onChange="{{ onSeedW }}" style="width:96px; margin:0; cursor:pointer">
-    </div></sc-if>
-    <sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.seedRatio }} {{ seedArLabel }}</span>
-      <input type="range" min="1" max="1.6" step="0.05" value="{{ seedArVal }}" onChange="{{ onSeedAr }}" style="width:96px; margin:0; cursor:pointer">
-    </div></sc-if>
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.nameSize }} {{ nameScaleLabel }}</span>
-      <input type="range" min="0.7" max="1.2" step="0.05" value="{{ nameScaleVal }}" onChange="{{ onNameScale }}" style="width:96px; margin:0; cursor:pointer">
-    </div>
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.wmOpacity }} {{ wmTransLabel }}</span>
-      <input type="range" min="0" max="80" step="5" value="{{ wmTransVal }}" onChange="{{ onWmTrans }}" style="width:96px; margin:0; cursor:pointer">
-    </div>
-    <div style="flex:1"></div>
-    <div style="display:flex; align-items:center; gap:8px">
-      <span style="font-size:12px; color:#6b6962; white-space:nowrap">{{ ui.exportScale }}</span>
-      <div style="display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px">
-        <sc-for list="{{ scaleOpts }}" as="o" hint-placeholder-count="3">
-          <button data-scale="{{ o.key }}" onClick="{{ onSetScale }}" style="border:0; border-radius:7px; padding:6px 12px; font-size:13px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button>
-        </sc-for>
-      </div>
-    </div>
-    <div style="display:flex; border:1px solid #d3d0c8; border-radius:8px; overflow:hidden"><button data-fmt="png" onClick="{{ onSetFmt }}" style="border:0; background:{{ fmtPngBg }}; color:{{ fmtPngFg }}; padding:7px 11px; font-size:13px; cursor:pointer">PNG</button><button data-fmt="jpg" onClick="{{ onSetFmt }}" style="border:0; border-left:1px solid #d3d0c8; background:{{ fmtJpgBg }}; color:{{ fmtJpgFg }}; padding:7px 11px; font-size:13px; cursor:pointer">JPG</button></div>
-    <button onClick="{{ exportAll }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff; white-space:nowrap">{{ exportAllLabel }}</button>
-  </div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; font-size:12px; color:#6b6962">
-    <span>{{ ui.yearColor }}</span>
-    <sc-for list="{{ years }}" as="y" hint-placeholder-count="1">
-      <button data-year="{{ y.year }}" onClick="{{ onPickYear }}" style="display:flex; align-items:center; gap:6px; background:#fff; border:1px solid {{ y.border }}; box-shadow:{{ y.shadow }}; border-radius:999px; padding:3px 10px 3px 4px; cursor:pointer; font-size:12px; white-space:nowrap; flex:none">
-        <span style="flex:none; width:20px; height:20px; border-radius:50%; background:{{ y.color }}; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span>
-        <span style="font-weight:600; color:#22211e">{{ y.year }}</span>
-        <span style="color:#6b6962">{{ y.name }}</span>
-      </button>
-    </sc-for>
-    <sc-if value="{{ hasActiveYear }}" hint-placeholder-val="{{ false }}">
-      <div style="flex-basis:100%; display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; padding:8px 10px; background:#fff; border:1px solid #dcd9d2; border-radius:10px">
-        <sc-for list="{{ swatchGroups }}" as="g" hint-placeholder-count="7">
-          <div style="display:grid; grid-template-columns:56px minmax(0,1fr); align-items:start; gap:8px">
-            <span style="font-size:11px; color:#8a877f; line-height:20px">{{ g.label }}</span>
-            <div style="display:flex; flex-wrap:wrap; gap:4px">
-              <sc-for list="{{ g.items }}" as="w" hint-placeholder-count="12">
-                <button data-year="{{ w.year }}" data-color="{{ w.c }}" title="{{ w.name }}" onClick="{{ onYearColor }}" style="width:20px; height:20px; border-radius:50%; border:0; padding:0; cursor:pointer; background:{{ w.c }}; box-shadow:{{ w.ring }}"></button>
-              </sc-for>
-            </div>
-          </div>
-        </sc-for>
-      </div>
-    </sc-if>
-    <button onClick="{{ resetColors }}" style="border:0; background:none; padding:4px 2px; font-size:12px; color:#6b6962; cursor:pointer; text-decoration:underline">{{ ui.resetColors }}</button>
-  </div>
+  <div ref="{{ bSetRef }}" style="order:{{ setOrder }}; margin-left:{{ setML }}; flex:none; display:flex; align-items:center; gap:8px">
+    <button onClick="{{ togglePanel }}" aria-pressed="{{ setPressed }}" style="flex:none; display:flex; align-items:center; gap:7px; border:1px solid {{ setBd }}; background:{{ setBg }}; color:{{ setFg }}; border-radius:8px; padding:6px 12px; font-size:12.5px; cursor:pointer; white-space:nowrap"><svg width="14" height="14" viewBox="0 0 14 14" style="display:block; flex:none"><line x1="1" y1="3.5" x2="13" y2="3.5" style="stroke:currentColor; stroke-width:1.4"></line><line x1="1" y1="10.5" x2="13" y2="10.5" style="stroke:currentColor; stroke-width:1.4"></line><circle cx="9" cy="3.5" r="2" style="fill:{{ setBg }}; stroke:currentColor; stroke-width:1.4"></circle><circle cx="5" cy="10.5" r="2" style="fill:{{ setBg }}; stroke:currentColor; stroke-width:1.4"></circle></svg>{{ ui.drSettings }}</button>
+    <div title="{{ ui.uiLang }}" style="flex:none; display:flex; background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ uiOpts }}" as="o" hint-placeholder-count="2"><button data-uilang="{{ o.key }}" onClick="{{ onSetUiLang }}" style="border:0; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div>
   </div>
 </div>
 
+<sc-if value="{{ ed.show }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed; inset:0; z-index:100; background:#161513; color:#f3f0e6; display:flex; flex-direction:column; touch-action:none; overscroll-behavior:contain; user-select:none; -webkit-user-select:none">
+  <div style="flex:none; height:48px; box-sizing:border-box; padding:0 10px 0 16px; display:flex; align-items:center; justify-content:space-between; gap:12px">
+    <div style="font-size:15px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ed.title }}</div>
+    <button onClick="{{ closeEditor }}" style="flex:none; min-width:56px; min-height:32px; border:0; border-radius:8px; background:#f3f0e6; color:#161513; font-size:14px; font-weight:600; cursor:pointer">{{ ui.edDone }}</button>
+  </div>
+  <div style="flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px">
+    <sc-if value="{{ ed.photoMode }}" hint-placeholder-val="{{ true }}"><div data-slot="{{ ed.key }}" data-editor="1" style="position:relative; overflow:hidden; container-type:size; flex:none; width:{{ ed.w }}px; height:{{ ed.h }}px; border-radius:6px; background:#2b2a27; touch-action:none; box-shadow:0 0 0 1px rgba(255,255,255,.18)">
+      <img src="{{ ed.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ ed.imgW }}; height:auto; max-width:none; transform:{{ ed.tf }}; user-select:none; pointer-events:none">
+      <div style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(to right, transparent calc(33.33% - .5px), rgba(255,255,255,.28) calc(33.33% - .5px) calc(33.33% + .5px), transparent calc(33.33% + .5px) calc(66.66% - .5px), rgba(255,255,255,.28) calc(66.66% - .5px) calc(66.66% + .5px), transparent calc(66.66% + .5px)), linear-gradient(to bottom, transparent calc(33.33% - .5px), rgba(255,255,255,.28) calc(33.33% - .5px) calc(33.33% + .5px), transparent calc(33.33% + .5px) calc(66.66% - .5px), rgba(255,255,255,.28) calc(66.66% - .5px) calc(66.66% + .5px), transparent calc(66.66% + .5px))"></div>
+      <sc-if value="{{ ed.locked }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:50%; bottom:10px; transform:translateX(-50%); background:rgba(22,21,19,.82); color:#fff; font-size:13px; padding:6px 12px; border-radius:999px; white-space:nowrap; pointer-events:none">{{ ui.edLocked }}</div></sc-if>
+    </div></sc-if>
+    <sc-if value="{{ ed.wmMode }}" hint-placeholder-val="{{ false }}"><div style="position:relative; flex:none; width:{{ ed.w }}px; height:{{ ed.h }}px; overflow:hidden; border-radius:6px; box-shadow:0 0 0 1px rgba(255,255,255,.18)">
+      <div data-slot="{{ ed.key }}" data-editor="1" style="position:absolute; left:0; top:0; width:{{ ed.dw }}px; height:{{ ed.dh }}px; transform:scale({{ ed.sc }}); transform-origin:0 0; overflow:hidden; container-type:size; background:#2b2a27; touch-action:none">
+        <sc-if value="{{ ed.hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ ed.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ ed.imgW }}; height:auto; max-width:none; transform:{{ ed.tf }}; user-select:none; pointer-events:none"></sc-if>
+        <div data-wmc="{{ ed.key }}" style="position:absolute; left:{{ wmCustomL }}; top:{{ wmCustomT }}; width:{{ wmCustomPx }}px; transform:translate(-50%,-50%); touch-action:none"><img src="{{ wmCustomSrc }}" alt="" draggable="false" style="display:block; width:100%; height:auto; opacity:{{ wmCustomOpacity }}; pointer-events:none"><div style="position:absolute; left:-5px; top:-5px; right:-5px; bottom:-5px; border:2px dashed #fff; border-radius:4px; box-shadow:0 0 0 1px rgba(27,26,23,.55), inset 0 0 0 1px rgba(27,26,23,.55); pointer-events:none"></div></div>
+      </div>
+    </div></sc-if>
+    <div style="font-size:13px; color:#b4b0a5; text-align:center; padding:0 16px">{{ ed.hint }}</div>
+  </div>
+  <sc-if value="{{ ed.photoMode }}" hint-placeholder-val="{{ true }}"><div style="flex:none; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); background:#1f1e1b; display:flex; flex-direction:column; gap:6px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="flex:none; width:104px; font-size:13px; color:#b4b0a5; white-space:nowrap">{{ ui.edZoom }} {{ ed.zoomLabel }}</span>
+      <input type="range" min="0" max="1" step="0.002" value="{{ ed.zoomVal }}" onChange="{{ edZoom }}" style="flex:1; width:auto !important; min-width:0; margin:0; touch-action:none; accent-color:#f3f0e6">
+    </div>
+    <sc-if value="{{ ed.showRot }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:12px">
+      <span style="flex:none; width:104px; font-size:13px; color:#b4b0a5; white-space:nowrap">{{ ui.edRotate }} {{ ed.rotLabel }}</span>
+      <input type="range" min="-180" max="180" step="1" value="{{ ed.rotVal }}" onChange="{{ edRotSlide }}" style="flex:1; width:auto !important; min-width:0; margin:0; touch-action:none; accent-color:#f3f0e6">
+    </div></sc-if>
+    <div style="display:flex; gap:8px">
+      <button onClick="{{ edFlip }}" style="flex:1 1 0; min-width:0; min-height:34px; border:0; border-radius:8px; background:{{ ed.flipBg }}; color:{{ ed.flipFg }}; font-size:12px; cursor:pointer; white-space:nowrap">{{ ui.edFlip }}</button>
+      <sc-if value="{{ ed.showRot }}" hint-placeholder-val="{{ false }}"><button onClick="{{ edRot }}" style="flex:1 1 0; min-width:0; min-height:34px; border:0; border-radius:8px; background:#3a3934; color:#f3f0e6; font-size:12px; cursor:pointer; white-space:nowrap">{{ ui.edRot }}</button></sc-if>
+      <button onClick="{{ edLock }}" style="flex:1 1 0; min-width:0; min-height:34px; border:0; border-radius:8px; background:{{ ed.lockBg }}; color:{{ ed.lockFg }}; font-size:12px; cursor:pointer; white-space:nowrap">{{ ed.lockLabel }}</button>
+      <button onClick="{{ edReset }}" style="flex:1 1 0; min-width:0; min-height:34px; border:0; border-radius:8px; background:#3a3934; color:#f3f0e6; font-size:12px; cursor:pointer; white-space:nowrap">{{ ui.edReset }}</button>
+      <button onClick="{{ edReplace }}" style="flex:1 1 0; min-width:0; min-height:34px; border:0; border-radius:8px; background:#3a3934; color:#f3f0e6; font-size:12px; cursor:pointer; white-space:nowrap">{{ ui.edReplace }}</button>
+    </div>
+  </div></sc-if>
+  <sc-if value="{{ ed.wmMode }}" hint-placeholder-val="{{ false }}"><div style="flex:none; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); background:#1f1e1b; display:flex; flex-direction:column; gap:6px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="flex:none; width:104px; font-size:13px; color:#b4b0a5; white-space:nowrap">{{ ui.wmSize }} {{ wmCustomWLabel }}</span>
+      <input type="range" min="50" max="200" step="1" value="{{ wmCustomWVal }}" onChange="{{ onWmCustomW }}" style="flex:1; width:auto !important; min-width:0; margin:0; touch-action:none; accent-color:#f3f0e6">
+    </div>
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="flex:none; width:104px; font-size:13px; color:#b4b0a5; white-space:nowrap">{{ ui.wmOpacity }} {{ wmCustomTransLabel }}</span>
+      <input type="range" min="0" max="80" step="5" value="{{ wmCustomTransVal }}" onChange="{{ onWmCustomTrans }}" style="flex:1; width:auto !important; min-width:0; margin:0; touch-action:none; accent-color:#f3f0e6">
+    </div>
+    <div style="display:flex; gap:8px"><button onClick="{{ onWmReset }}" style="flex:1 1 0; min-height:34px; border:0; border-radius:8px; background:#3a3934; color:#f3f0e6; font-size:14px; cursor:pointer">{{ ui.edReset }}</button></div>
+  </div></sc-if>
+</div>
+</sc-if>
+
+<div style="flex:1 0 auto; display:flex; align-items:flex-start; min-width:0">
+<div style="flex:1; min-width:0; display:flex; flex-direction:column">
 <sc-if value="{{ showImport }}" hint-placeholder-val="{{ false }}">
   <div style="margin:16px {{ listPad }}px 0; background:#fff; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px">
     <div style="font-size:13px; color:#55534d; line-height:1.6">{{ ui.importHelp }}</div>
     <textarea value="{{ raw }}" onChange="{{ onRaw }}" onKeyDown="{{ onRawKey }}" rows="7" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #d6d3cb; border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6; resize:vertical; outline:none; color:#22211e"></textarea>
     <div style="display:flex; gap:8px">
-      <button onClick="{{ doImport }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; color:#fff">{{ ui.generate }}</button>
-      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; color:#22211e">{{ ui.collapse }}</button>
+      <button onClick="{{ doImport }}" style="border:1px solid #22211e; background:#22211e; border-radius:8px; padding:6px 13px; font-size:12.5px; cursor:pointer; color:#fff">{{ ui.generate }}</button>
+      <button onClick="{{ toggleImport }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:8px; padding:6px 11px; font-size:12.5px; cursor:pointer; color:#22211e">{{ ui.collapse }}</button>
     </div>
   </div>
 </sc-if>
 
 <sc-if value="{{ emptyHome }}" hint-placeholder-val="{{ false }}">
-  <div style="min-height:60vh; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:20px; padding:24px">
-    <button onClick="{{ toggleImport }}" style="border:1px solid #22211e; background:#22211e; color:#fff; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ ui.importBtn }}</button>
-    <button onClick="{{ addCard }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ ui.addBlank }}</button>
-    <button onClick="{{ openProjectUi }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:14px; padding:24px 44px; min-width:220px; font-size:19px; font-weight:500; cursor:pointer">{{ openProjLabel }}</button>
+  <div style="min-height:{{ heroH }}; box-sizing:border-box; padding:{{ listPad }}px; display:grid; grid-template-columns:{{ splitCols }}; align-items:center; gap:{{ splitGap }}; max-width:1600px; margin:0 auto; width:100%">
+    <div style="display:flex; flex-direction:column; gap:32px; align-items:{{ splitAlign }}; text-align:{{ splitText }}">
+      <div style="display:flex; flex-direction:column; gap:18px">
+        <div style="display:{{ eyebrowDisp }}; font-size:15px; font-weight:500; letter-spacing:.3em; color:#6b6962">NEPENTHES HYBRID CARDS</div>
+        <div style="font-family:'Noto Serif SC', serif; font-weight:900; font-size:{{ titleSize }}; letter-spacing:{{ titleLs }}; line-height:1.15; white-space:{{ titleWs }}; text-wrap:balance">{{ ui.title }}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; width:min(100%, 280px)">
+        <button onClick="{{ toggleImport }}" style="border:1px solid #22211e; background:#22211e; color:#fff; border-radius:12px; padding:15px 24px; font-size:16px; font-weight:500; cursor:pointer" style-hover="background:#3a3833">{{ ui.importBtn }}</button>
+        <button onClick="{{ addCard }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:12px; padding:15px 24px; font-size:16px; font-weight:500; cursor:pointer" style-hover="border-color:#22211e">{{ ui.addBlank }}</button>
+        <button onClick="{{ openProjectUi }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:12px; padding:15px 24px; font-size:16px; font-weight:500; cursor:pointer" style-hover="border-color:#22211e">{{ openProjLabel }}</button>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:22px; min-width:0">
+      <div ref="{{ heroRef }}" onTouchStart="{{ onHeroTouch }}" onTouchEnd="{{ onHeroTouch }}" style="position:relative; width:{{ heroW }}; aspect-ratio:2160 / 2390; touch-action:pan-y; user-select:none">
+        <sc-for list="{{ heroStack }}" as="c" hint-placeholder-count="4">
+          <div onClick="{{ onHeroNext }}" style="position:absolute; inset:0; z-index:{{ c.z }}; transform:{{ c.tf }}; transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s; background:#fff; padding:{{ c.pad }}; box-sizing:border-box; box-shadow:{{ c.shadow }}; cursor:{{ c.cursor }}">
+            <img src="{{ c.src }}" alt="" draggable="false" style="display:block; width:100%; height:100%; object-fit:cover; pointer-events:none">
+            <div style="position:absolute; inset:0; background:#e7e5e0; opacity:{{ c.dim }}; transition:opacity .5s; pointer-events:none"></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center">
+        <sc-for list="{{ heroDots }}" as="d" hint-placeholder-count="4">
+          <button data-i="{{ d.i }}" onClick="{{ onHeroDot }}" aria-label="{{ d.i }}" style="border:0; padding:0; width:{{ d.w }}; height:6px; border-radius:3px; background:{{ d.bg }}; cursor:pointer; transition:width .3s, background .3s"></button>
+        </sc-for>
+      </div>
+    </div>
   </div>
 </sc-if>
 
-<div ref="{{ listRef }}" style="padding:{{ listPad }}px; display:grid; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:{{ listPad }}px; align-items:start">
+<div ref="{{ listRef }}" style="padding:{{ listPad }}px; box-sizing:border-box; min-height:{{ listMinH }}; display:grid; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:{{ listPad }}px; align-content:center; align-items:start; justify-items:center">
 <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
-<div style="min-width:0; background:#fbfaf8; border-radius:14px; padding:{{ cardPad }}px; display:grid; grid-template-columns:{{ rowCols }}; gap:22px; align-items:start">
-
+<div data-card="{{ r.id }}" style="min-width:0; max-width:100%; background:#fbfaf8; border-radius:14px; box-shadow:{{ r.selRing }}; padding:{{ cardPad }}px; display:flex; flex-direction:column; gap:10px; transition:box-shadow .2s">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:{{ r.pw }}px; max-width:100%">
+    <label style="display:flex; align-items:center; gap:8px; min-width:0">
+      <sc-if value="{{ selMode }}" hint-placeholder-val="{{ false }}"><input type="checkbox" data-id="{{ r.id }}" checked="{{ r.sel }}" onChange="{{ onToggleSel }}" style="width:18px; height:18px; margin:0; cursor:pointer; accent-color:#a2382c"></sc-if>
+      <div style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ r.title }}</div>
+      <sc-if value="{{ r.demo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; color:#55534d; background:#ebe8e1; border-radius:5px; padding:2px 7px; white-space:nowrap">{{ ui.demoTag }}</span></sc-if>
+    </label>
+    <div style="flex:none; display:flex; align-items:center; gap:2px">
+      <button data-id="{{ r.id }}" onClick="{{ onInspect }}" aria-pressed="{{ r.edPressed }}" style="border:1px solid {{ r.edBd }}; background:{{ r.edBg }}; color:{{ r.edFg }}; border-radius:7px; padding:3px 10px; font-size:12px; cursor:pointer; white-space:nowrap">{{ ui.editCard }}</button>
+      <button data-id="{{ r.id }}" data-action="reset" onClick="{{ onAction }}" style="border:0; background:none; border-radius:7px; padding:3px 8px; font-size:12px; cursor:pointer; white-space:nowrap; color:#55534d" style-hover="background:#ecebe6">{{ ui.resetCrop }}</button>
+      <button data-id="{{ r.id }}" data-action="delete" onClick="{{ onAction }}" style="border:0; background:none; border-radius:7px; padding:3px 8px; font-size:12px; cursor:pointer; white-space:nowrap; color:#a2382c" style-hover="background:#f5e9e6">{{ ui.del }}</button>
+    </div>
+  </div>
   <div style="display:flex; flex-wrap:wrap; gap:14px">
   <sc-for list="{{ r.views }}" as="v" hint-placeholder-count="3">
   <div style="display:flex; flex-direction:column; gap:8px">
@@ -195,36 +183,45 @@ button, input, select, textarea { font-family: inherit; }
         <div style="flex:none; height:{{ v.parH }}px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr); gap:10px">
           <div data-slot="{{ v.slotM }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pm.cursor }}; touch-action:{{ touchAct }}">
             <sc-if value="{{ v.pm.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pm.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pm.w }}; height:auto; max-width:none; transform:{{ v.pm.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">{{ ui.phoM }}</div></div></sc-if>
+            <sc-if value="{{ v.pm.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:{{ v.dropFs }}px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:{{ v.dropFs2 }}px; letter-spacing:.12em">{{ ui.phoM }}</div></div></sc-if>
             <sc-if value="{{ v.pm.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.pm.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+            <div data-noexport="1" style="position:absolute; right:14px; top:14px; display:flex; align-items:center; gap:10px; pointer-events:none">
+              <sc-if value="{{ v.pm.lockTip }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+              <sc-if value="{{ v.pm.flipBtn }}" hint-placeholder-val="{{ false }}"><button data-flip="{{ v.slotM }}" onClick="{{ onFlip }}" title="{{ ui.flipTitle }}" aria-label="{{ ui.flipTitle }}" aria-pressed="{{ v.pm.flipped }}" style="pointer-events:auto; width:60px; height:60px; padding:0; border:none; border-radius:50%; background:{{ v.pm.flipBg }}; color:{{ v.pm.flipFg }}; transform:{{ v.pm.flipIco }}; box-shadow:0 2px 10px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .2s, color .2s" style-hover="opacity:.88"><svg width="34" height="34" viewBox="0 0 34 34" style="display:block"><polygon points="14,7 14,27 3,27" style="fill:currentColor"></polygon><polygon points="20,7 20,27 31,27" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round"></polygon><line x1="17" y1="3" x2="17" y2="31" style="stroke:currentColor; stroke-width:2; stroke-dasharray:3 3; opacity:.7"></line></svg></button></sc-if>
+            </div>
             <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="30" cy="21" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="30" y1="35" x2="30" y2="58" style="stroke:#fff; stroke-width:7"></line><line x1="19.5" y1="47" x2="40.5" y2="47" style="stroke:#fff; stroke-width:7"></line></svg></div>
-            <sc-if value="{{ v.wmM.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none; opacity:{{ wmOpacity }}"></sc-if>
-            <sc-if value="{{ v.wmM.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmM.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmM.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmM.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.custom }}" hint-placeholder-val="{{ false }}"><div data-wmc="{{ v.slotM }}" style="position:absolute; left:{{ wmCustomL }}; top:{{ wmCustomT }}; width:{{ wmCustomPx }}px; transform:translate(-50%,-50%); cursor:{{ v.wmCurM }}; touch-action:{{ v.wmTouchM }}"><img src="{{ wmCustomSrc }}" alt="" draggable="false" style="display:block; width:100%; height:auto; opacity:{{ wmCustomOpacity }}; pointer-events:none"><div data-noexport="1" style="position:absolute; left:-5px; top:-5px; right:-5px; bottom:-5px; border:1.5px dashed #fff; border-radius:4px; box-shadow:0 0 0 1px rgba(27,26,23,.55), inset 0 0 0 1px rgba(27,26,23,.55); display:{{ v.wmDispM }}; pointer-events:none"></div></div></sc-if>
+            <sc-if value="{{ v.wmM.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmM.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmM.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmM.name }}</div></div></sc-if>
           </div>
           <div data-slot="{{ v.slotF }}" style="position:relative; overflow:hidden; container-type:size; border-radius:6px; background:#dedcd5; cursor:{{ v.pf.cursor }}; touch-action:{{ touchAct }}">
             <sc-if value="{{ v.pf.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.pf.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.pf.w }}; height:auto; max-width:none; transform:{{ v.pf.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.pf.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:34px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; letter-spacing:.12em">{{ ui.phoF }}</div></div></sc-if>
+            <sc-if value="{{ v.pf.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:{{ v.dropFs }}px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:{{ v.dropFs2 }}px; letter-spacing:.12em">{{ ui.phoF }}</div></div></sc-if>
             <sc-if value="{{ v.pf.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.pf.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+            <div data-noexport="1" style="position:absolute; right:14px; top:14px; display:flex; align-items:center; gap:10px; pointer-events:none">
+              <sc-if value="{{ v.pf.lockTip }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+              <sc-if value="{{ v.pf.flipBtn }}" hint-placeholder-val="{{ false }}"><button data-flip="{{ v.slotF }}" onClick="{{ onFlip }}" title="{{ ui.flipTitle }}" aria-label="{{ ui.flipTitle }}" aria-pressed="{{ v.pf.flipped }}" style="pointer-events:auto; width:60px; height:60px; padding:0; border:none; border-radius:50%; background:{{ v.pf.flipBg }}; color:{{ v.pf.flipFg }}; transform:{{ v.pf.flipIco }}; box-shadow:0 2px 10px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .2s, color .2s" style-hover="opacity:.88"><svg width="34" height="34" viewBox="0 0 34 34" style="display:block"><polygon points="14,7 14,27 3,27" style="fill:currentColor"></polygon><polygon points="20,7 20,27 31,27" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round"></polygon><line x1="17" y1="3" x2="17" y2="31" style="stroke:currentColor; stroke-width:2; stroke-dasharray:3 3; opacity:.7"></line></svg></button></sc-if>
+            </div>
             <div style="position:absolute; left:26px; top:24px; pointer-events:none"><svg width="60" height="60" style="display:block; overflow:visible; opacity:.72; filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))"><circle cx="23" cy="37" r="14" style="fill:none; stroke:#fff; stroke-width:7"></circle><line x1="32.9" y1="27.1" x2="51" y2="9" style="stroke:#fff; stroke-width:7"></line><polyline points="37.5,7 53,7 53,22.5" style="fill:none; stroke:#fff; stroke-width:7; stroke-linejoin:miter"></polyline></svg></div>
-            <sc-if value="{{ v.wmF.yab }}" hint-placeholder-val="{{ false }}"><img src="assets/wm-yabbie-soft.png" alt="" style="position:absolute; right:14px; bottom:12px; width:86px; border-radius:14px; pointer-events:none; opacity:{{ wmOpacity }}"></sc-if>
-            <sc-if value="{{ v.wmF.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmF.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmF.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
-            <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block"><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.custom }}" hint-placeholder-val="{{ false }}"><div data-wmc="{{ v.slotF }}" style="position:absolute; left:{{ wmCustomL }}; top:{{ wmCustomT }}; width:{{ wmCustomPx }}px; transform:translate(-50%,-50%); cursor:{{ v.wmCurF }}; touch-action:{{ v.wmTouchF }}"><img src="{{ wmCustomSrc }}" alt="" draggable="false" style="display:block; width:100%; height:auto; opacity:{{ wmCustomOpacity }}; pointer-events:none"><div data-noexport="1" style="position:absolute; left:-5px; top:-5px; right:-5px; bottom:-5px; border:1.5px dashed #fff; border-radius:4px; box-shadow:0 0 0 1px rgba(27,26,23,.55), inset 0 0 0 1px rgba(27,26,23,.55); display:{{ v.wmDispF }}; pointer-events:none"></div></div></sc-if>
+            <sc-if value="{{ v.wmF.xhs }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-xhs.png" alt="" style="width:76px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.fb }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-fb.png" alt="" style="width:46px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.ig }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/wm-ig.png" alt="" style="width:46px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmF.name }}</div></div></sc-if>
+            <sc-if value="{{ v.wmF.xy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:20px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:5px; pointer-events:none; opacity:{{ wmOpacity }}"><div style="width:100%; box-sizing:border-box; padding-left:max(0px, calc(100% - 140px)); display:flex; justify-content:center"><img src="assets/xianyu-logo.png" alt="" style="width:72px; display:block; flex:none"></div><div style="font-family:'Noto Sans SC',sans-serif; font-weight:300; font-size:22px; color:#fff; white-space:nowrap; max-width:460px; overflow:hidden; text-overflow:ellipsis; line-height:1.35">{{ v.wmF.name }}</div></div></sc-if>
           </div>
         </div>
         <div style="flex:1; min-height:0; margin-top:16px; display:flex; align-items:stretch; gap:{{ v.colGap }}px">
           <div style="flex:none; width:{{ v.sw }}px; box-sizing:border-box; padding-bottom:{{ v.seedPadB }}px; display:flex; flex-direction:column; justify-content:{{ v.seedJustify }}; gap:16px">
           <div data-slot="{{ v.slotS }}" style="flex: none; width: {{ v.sw }}px; height: {{ v.sh }}px; position: relative; overflow: hidden; container-type: size; border-radius: 6px; background: #dedcd5; cursor: {{ v.ps.cursor }}; touch-action: {{ touchAct }}">
             <sc-if value="{{ v.ps.has }}" hint-placeholder-val="{{ false }}"><img src="{{ v.ps.src }}" alt="" draggable="false" style="position:absolute; left:50%; top:50%; width:{{ v.ps.w }}; height:auto; max-width:none; transform:{{ v.ps.tf }}; user-select:none; pointer-events:none"></sc-if>
-            <sc-if value="{{ v.ps.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:30px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:20px; letter-spacing:.12em">{{ ui.phoS }}</div></div></sc-if>
+            <sc-if value="{{ v.ps.empty }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#86837b; font-size:{{ v.dropFs }}px; background:repeating-linear-gradient(135deg, rgba(0,0,0,0) 0 16px, rgba(0,0,0,.035) 16px 32px)"><div>{{ ui.drop }}</div><div style="font-family:'IBM Plex Mono',monospace; font-size:{{ v.dropFs2 }}px; letter-spacing:.12em">{{ ui.phoS }}</div></div></sc-if>
             <sc-if value="{{ v.ps.hl }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; inset:0; box-shadow:inset 0 0 0 10px #3b82f6; background:rgba(59,130,246,.15)"></div></sc-if>
-            <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div data-noexport="1" style="position:absolute; right:12px; top:12px; display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px; pointer-events:none"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+            <div data-noexport="1" style="position:absolute; right:14px; top:14px; display:flex; align-items:center; gap:10px; pointer-events:none">
+              <sc-if value="{{ v.ps.lockTip }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:6px; background:rgba(27,26,23,.78); color:#fff; font-family:'Noto Sans SC',sans-serif; font-size:16px; font-weight:500; padding:5px 11px 5px 8px; border-radius:999px"><div style="width:8px; height:8px; border-radius:50%; background:#f2c14e"></div>{{ ui.locked }}</div></sc-if>
+              <sc-if value="{{ v.ps.flipBtn }}" hint-placeholder-val="{{ false }}"><button data-flip="{{ v.slotS }}" onClick="{{ onFlip }}" title="{{ ui.flipTitle }}" aria-label="{{ ui.flipTitle }}" aria-pressed="{{ v.ps.flipped }}" style="pointer-events:auto; width:60px; height:60px; padding:0; border:none; border-radius:50%; background:{{ v.ps.flipBg }}; color:{{ v.ps.flipFg }}; transform:{{ v.ps.flipIco }}; box-shadow:0 2px 10px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .2s, color .2s" style-hover="opacity:.88"><svg width="34" height="34" viewBox="0 0 34 34" style="display:block"><polygon points="14,7 14,27 3,27" style="fill:currentColor"></polygon><polygon points="20,7 20,27 31,27" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round"></polygon><line x1="17" y1="3" x2="17" y2="31" style="stroke:currentColor; stroke-width:2; stroke-dasharray:3 3; opacity:.7"></line></svg></button></sc-if>
+            </div>
           </div>
           <sc-if value="{{ v.footLeft }}" hint-placeholder-val="{{ false }}"><div style="flex:none; border-top:1.5px solid #1b1a17; padding-top:14px; display:flex; flex-wrap:nowrap; align-items:flex-end; justify-content:space-between; gap:{{ v.fgap }}px; white-space:nowrap">
               <div style="display:flex; align-items:baseline; gap:{{ v.fgap }}px">
@@ -290,76 +287,159 @@ button, input, select, textarea { font-family: inherit; }
       </sc-if>
 
     </div>
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:{{ v.pw }}px">
-      <span style="font-size:12px; color:#6b6962">{{ v.label }}</span>
-      <button data-action="export" data-key="{{ v.key }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ v.exportLabel }}</button>
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; width:{{ v.pw }}px; max-width:100%">
+      <span style="flex:1 1 auto; font-size:11.5px; color:#8a877f; min-width:0">{{ v.label }}<span style="display:{{ tapHintDisp }}; margin-top:2px">{{ ui.tapHint }}</span></span>
+      <button data-action="pick" data-slot="{{ r.slotM }}" aria-label="{{ r.pickMAria }}" onClick="{{ onAction }}" style="flex:none; border:0; background:#ecebe6; border-radius:7px; padding:4px 9px; font-size:11.5px; cursor:pointer; color:#22211e; white-space:nowrap" style-hover="background:#e2e0d9">{{ ui.pickM }}</button>
+      <button data-action="pick" data-slot="{{ r.slotF }}" aria-label="{{ r.pickFAria }}" onClick="{{ onAction }}" style="flex:none; border:0; background:#ecebe6; border-radius:7px; padding:4px 9px; font-size:11.5px; cursor:pointer; color:#22211e; white-space:nowrap" style-hover="background:#e2e0d9">{{ ui.pickF }}</button>
+      <button data-action="pick" data-slot="{{ r.slotS }}" aria-label="{{ r.pickSAria }}" onClick="{{ onAction }}" style="flex:none; border:0; background:#ecebe6; border-radius:7px; padding:4px 9px; font-size:11.5px; cursor:pointer; color:#22211e; white-space:nowrap" style-hover="background:#e2e0d9">{{ ui.pickS }}</button>
+      <button data-action="export" data-key="{{ v.key }}" onClick="{{ onAction }}" style="flex:none; border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:4px 9px; font-size:11.5px; cursor:pointer; color:#22211e; white-space:nowrap">{{ v.exportLabel }}</button>
     </div>
   </div>
   </sc-for>
   </div>
 
-  <div style="min-width:0; display:flex; flex-direction:column; gap:12px; font-size:13px">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
-      <div style="font-size:15px; font-weight:700">{{ r.title }}</div>
-      <div style="display:flex; gap:6px">
-        <button data-id="{{ r.id }}" data-action="reset" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#22211e">{{ ui.resetCrop }}</button>
-        <button data-id="{{ r.id }}" data-action="delete" onClick="{{ onAction }}" style="border:1px solid #e3c9c4; background:#fff; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; white-space:nowrap; color:#a2382c">{{ ui.del }}</button>
-      </div>
-    </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:8px">
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.num }}<input data-id="{{ r.id }}" data-field="num" value="{{ r.num }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.year }}<input data-id="{{ r.id }}" data-field="year" value="{{ r.year }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
-      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.producer }}<input data-id="{{ r.id }}" data-field="producer" value="{{ r.producer }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></label>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:6px">
-      <div style="font-weight:600">{{ ui.mother }}</div>
-      <textarea data-id="{{ r.id }}" data-field="cnM" value="{{ r.cnM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-      <textarea data-id="{{ r.id }}" data-field="enM" value="{{ r.enM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnM }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:6px">
-      <div style="font-weight:600">{{ ui.father }}</div>
-      <textarea data-id="{{ r.id }}" data-field="cnF" value="{{ r.cnF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-      <textarea data-id="{{ r.id }}" data-field="enF" value="{{ r.enF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnF }}" style="width:100%; box-sizing:border-box; padding:7px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:8px">
-      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px">
-        <span style="flex:none; width:104px; color:#6b6962">{{ ui.seedProv }}</span>
-        <select data-id="{{ r.id }}" data-field="wmMType" value="{{ r.wmMType }}" onChange="{{ onField }}" style="flex:1 1 120px; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="yabbie">{{ ui.wmYab }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option></select>
-        <sc-if value="{{ r.mXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmMName" value="{{ r.wmMName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1 1 120px; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
-      </div>
-      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px">
-        <span style="flex:none; width:104px; color:#6b6962">{{ ui.pollenProv }}</span>
-        <select data-id="{{ r.id }}" data-field="wmFType" value="{{ r.wmFType }}" onChange="{{ onField }}" style="flex:1 1 120px; min-width:0; padding:6px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="yabbie">{{ ui.wmYab }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option></select>
-        <sc-if value="{{ r.fXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ r.id }}" data-field="wmFName" value="{{ r.wmFName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1 1 120px; min-width:0; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:13px; color:#22211e; outline:none"></sc-if>
-      </div>
-    </div>
-    <div style="display:flex; flex-wrap:wrap; gap:6px">
-      <button data-action="pick" data-slot="{{ r.slotM }}" aria-label="{{ r.pickMAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickM }}</button>
-      <button data-action="pick" data-slot="{{ r.slotF }}" aria-label="{{ r.pickFAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickF }}</button>
-      <button data-action="pick" data-slot="{{ r.slotS }}" aria-label="{{ r.pickSAria }}" onClick="{{ onAction }}" style="border:1px solid #d3d0c8; background:#fff; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; color:#22211e; white-space:nowrap; flex:none">{{ ui.pickS }}</button>
-      <input type="file" accept="image/*" data-upload="{{ r.slotM }}" onChange="{{ onUpload }}" style="display:none">
-      <input type="file" accept="image/*" data-upload="{{ r.slotF }}" onChange="{{ onUpload }}" style="display:none">
-      <input type="file" accept="image/*" data-upload="{{ r.slotS }}" onChange="{{ onUpload }}" style="display:none">
-    </div>
-  </div>
+  <input type="file" accept="image/*" data-upload="{{ r.slotM }}" onChange="{{ onUpload }}" style="display:none">
+  <input type="file" accept="image/*" data-upload="{{ r.slotF }}" onChange="{{ onUpload }}" style="display:none">
+  <input type="file" accept="image/*" data-upload="{{ r.slotS }}" onChange="{{ onUpload }}" style="display:none">
 
 </div>
 </sc-for>
 </div>
+</div>
+<sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+<aside style="position:{{ asPos }}; top:{{ asTop }}; left:{{ asL }}; right:{{ asR }}; bottom:{{ asB }}; z-index:30; flex:none; width:{{ asW }}; height:{{ asH }}; max-height:{{ asMaxH }}; box-sizing:border-box; background:rgba(246,245,242,.98); border:{{ asBd }}; border-radius:{{ asRad }}; box-shadow:{{ asSh }}; overflow:hidden; display:flex; flex-direction:column; overscroll-behavior:contain">
+  <div style="flex:none; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; border-bottom:1px solid #e1ded7">
+    <div style="font-size:14px; font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ drawerTitle }}</div>
+    <button onClick="{{ closeDrawer }}" aria-label="{{ ui.drClose }}" style="flex:none; width:30px; height:30px; padding:0; border:0; border-radius:8px; background:transparent; color:#55534d; font-size:20px; line-height:1; cursor:pointer" style-hover="background:#e7e5e0">×</button>
+  </div>
+  <div style="flex:1; min-height:0; overflow-y:auto; padding:0 16px 16px">
+    <sc-if value="{{ drawerCard }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:14px; padding-top:16px; font-size:12.5px">
+<div style="display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:8px">
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.num }}<input data-id="{{ insp.id }}" data-field="num" value="{{ insp.num }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.year }}<input data-id="{{ insp.id }}" data-field="year" value="{{ insp.year }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e; outline:none"></label>
+      <label style="display:flex; flex-direction:column; gap:4px; color:#6b6962">{{ ui.producer }}<input data-id="{{ insp.id }}" data-field="producer" value="{{ insp.producer }}" onChange="{{ onField }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e; outline:none"></label>
+    </div>
+<div style="display:flex; flex-direction:column; gap:6px">
+      <div style="font-weight:600">{{ ui.mother }}</div>
+      <textarea data-id="{{ insp.id }}" data-field="cnM" value="{{ insp.cnM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ insp.id }}" data-field="enM" value="{{ insp.enM }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnM }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px">
+      <div style="font-weight:600">{{ ui.father }}</div>
+      <textarea data-id="{{ insp.id }}" data-field="cnF" value="{{ insp.cnF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phCn }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+      <textarea data-id="{{ insp.id }}" data-field="enF" value="{{ insp.enF }}" onChange="{{ onField }}" rows="2" placeholder="{{ ui.phEnF }}" style="width:100%; box-sizing:border-box; padding:6px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; line-height:1.45; color:#22211e; outline:none; resize:vertical"></textarea>
+    </div>
+<div style="display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px">
+        <span style="flex:none; width:84px; color:#6b6962">{{ ui.seedProv }}</span>
+        <select data-id="{{ insp.id }}" data-field="wmMType" value="{{ insp.wmMType }}" onChange="{{ onField }}" style="flex:1 1 120px; min-width:0; padding:5px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option><option value="custom">{{ ui.wmCustom }}</option></select>
+        <sc-if value="{{ insp.mXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ insp.id }}" data-field="wmMName" value="{{ insp.wmMName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1 1 120px; min-width:0; box-sizing:border-box; padding:5px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e; outline:none"></sc-if>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px">
+        <span style="flex:none; width:84px; color:#6b6962">{{ ui.pollenProv }}</span>
+        <select data-id="{{ insp.id }}" data-field="wmFType" value="{{ insp.wmFType }}" onChange="{{ onField }}" style="flex:1 1 120px; min-width:0; padding:5px 8px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e"><option value="none">{{ ui.wmNone }}</option><option value="xianyu">{{ ui.wmXy }}</option><option value="xhs">{{ ui.wmXhs }}</option><option value="fb">{{ ui.wmFb }}</option><option value="ig">{{ ui.wmIg }}</option><option value="custom">{{ ui.wmCustom }}</option></select>
+        <sc-if value="{{ insp.fXianyu }}" hint-placeholder-val="{{ false }}"><input data-id="{{ insp.id }}" data-field="wmFName" value="{{ insp.wmFName }}" onChange="{{ onField }}" placeholder="{{ ui.acct }}" style="flex:1 1 120px; min-width:0; box-sizing:border-box; padding:5px 9px; border:1px solid #d6d3cb; border-radius:7px; background:#fff; font-size:12.5px; color:#22211e; outline:none"></sc-if>
+      </div>
+    </div>
+    </div></sc-if>
+    <sc-if value="{{ drawerSet }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column">
+<div style="display:flex; flex-direction:column; gap:16px; padding:18px 0;"><div style="display:flex; align-items:center; justify-content:space-between; gap:8px"><div style="font-size:11px; font-weight:600; letter-spacing:.14em; color:#8a877f">{{ ui.secLayout }}</div></div><sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.preset }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ presetOpts }}" as="o" hint-placeholder-count="3"><button data-preset="{{ o.key }}" onClick="{{ onPreset }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+<sc-if value="{{ showFoot }}" hint-placeholder-val="{{ true }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.foot }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ footOpts }}" as="o" hint-placeholder-count="3"><button data-foot="{{ o.key }}" onClick="{{ onSetFoot }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+<sc-if value="{{ showAlign }}" hint-placeholder-val="{{ true }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.nameAlign }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ alignOpts }}" as="o" hint-placeholder-count="3"><button data-align="{{ o.key }}" onClick="{{ onSetAlign }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+<div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.nameSize }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ nameScaleLabel }}</span></div><input type="range" min="0.7" max="1.2" step="0.05" value="{{ nameScaleVal }}" onChange="{{ onNameScale }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div>
+<sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.parRatio }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ parOpts }}" as="o" hint-placeholder-count="3"><button data-par="{{ o.key }}" onClick="{{ onParAr }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+<sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.seedSize }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ seedWLabel }}</span></div><input type="range" min="280" max="523" step="10" value="{{ seedWVal }}" onChange="{{ onSeedW }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div></sc-if>
+<sc-if value="{{ showSeed }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.seedRatio }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ seedArLabel }}</span></div><input type="range" min="1" max="1.6" step="0.05" value="{{ seedArVal }}" onChange="{{ onSeedAr }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div></sc-if></div>
+<div style="display:flex; flex-direction:column; gap:16px; padding:18px 0; border-top:1px solid #e1ded7;"><div style="display:flex; align-items:center; justify-content:space-between; gap:8px"><div style="font-size:11px; font-weight:600; letter-spacing:.14em; color:#8a877f">{{ ui.yearColor }}</div><button onClick="{{ resetColors }}" style="border:0; background:none; padding:0; font-size:12px; color:#6b6962; cursor:pointer; text-decoration:underline">{{ ui.resetColors }}</button></div><div style="display:flex; flex-wrap:wrap; gap:6px">
+      <sc-for list="{{ years }}" as="y" hint-placeholder-count="1">
+        <button data-year="{{ y.year }}" onClick="{{ onPickYear }}" style="display:flex; align-items:center; gap:6px; background:#fff; border:1px solid {{ y.border }}; box-shadow:{{ y.shadow }}; border-radius:999px; padding:3px 10px 3px 4px; cursor:pointer; font-size:12px; white-space:nowrap; flex:none">
+          <span style="flex:none; width:20px; height:20px; border-radius:50%; background:{{ y.color }}; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span>
+          <span style="font-weight:600; color:#22211e">{{ y.year }}</span>
+          <span style="color:#6b6962">{{ y.name }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasActiveYear }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:6px; padding:10px; background:#fff; border:1px solid #dcd9d2; border-radius:10px">
+        <sc-for list="{{ swatchGroups }}" as="g" hint-placeholder-count="7">
+          <div style="display:grid; grid-template-columns:48px minmax(0,1fr); align-items:start; gap:8px">
+            <span style="font-size:11px; color:#8a877f; line-height:20px">{{ g.label }}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:4px">
+              <sc-for list="{{ g.items }}" as="w" hint-placeholder-count="12">
+                <button data-year="{{ w.year }}" data-color="{{ w.c }}" title="{{ w.name }}" onClick="{{ onYearColor }}" style="width:20px; height:20px; border-radius:50%; border:0; padding:0; cursor:pointer; background:{{ w.c }}; box-shadow:{{ w.ring }}"></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if></div>
+<div style="display:flex; flex-direction:column; gap:16px; padding:18px 0; border-top:1px solid #e1ded7;"><div style="display:flex; align-items:center; justify-content:space-between; gap:8px"><div style="font-size:11px; font-weight:600; letter-spacing:.14em; color:#8a877f">{{ ui.secWm }}</div></div><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.wmPlat }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ wmTransLabel }}</span></div><input type="range" min="0" max="80" step="5" value="{{ wmTransVal }}" onChange="{{ onWmTrans }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div>
+<div style="display:flex; flex-direction:column; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.wmCustom }}</span>
+      <sc-if value="{{ noWmCustom }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onWmPick }}" style="display:flex; flex-direction:column; align-items:center; gap:4px; width:100%; border:1.5px dashed #c9c6bd; background:transparent; border-radius:10px; padding:14px 12px; cursor:pointer; color:#22211e" style-hover="border-color:#22211e; background:#fff"><span style="font-size:13px; font-weight:500">{{ wmUploadLabel }}</span><span style="font-size:11.5px; color:#8a877f; line-height:1.5; text-align:center">{{ ui.wmUploadTip }}</span></button></sc-if>
+      <sc-if value="{{ hasWmCustom }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:14px; padding:12px; border-radius:10px; background:#fff; border:1px solid #e1ded7">
+        <div style="display:flex; align-items:center; gap:10px">
+          <div style="flex:none; width:44px; height:44px; border-radius:7px; border:1px solid #d6d3cb; background:repeating-conic-gradient(#cfcdc6 0 25%, #fff 0 50%) 0 0/10px 10px; display:flex; align-items:center; justify-content:center; overflow:hidden"><img src="{{ wmCustomSrc }}" alt="" style="max-width:100%; max-height:100%; display:block"></div>
+          <div style="flex:1"></div>
+          <button onClick="{{ onWmPick }}" title="{{ ui.wmUploadTip }}" style="flex:none; border:0; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; white-space:nowrap; background:#ecebe6; color:#22211e">{{ wmUploadLabel }}</button>
+          <button onClick="{{ onWmClear }}" style="flex:none; border:0; border-radius:7px; padding:5px 8px; font-size:12px; cursor:pointer; white-space:nowrap; background:transparent; color:#a2382c">{{ ui.wmRemove }}</button>
+        </div>
+        <div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ wmToneOpts }}" as="o" hint-placeholder-count="3"><button data-tone="{{ o.key }}" onClick="{{ onWmTone }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div>
+        <div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.wmSize }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ wmCustomWLabel }}</span></div><input type="range" min="50" max="200" step="5" value="{{ wmCustomWVal }}" onChange="{{ onWmCustomW }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div>
+        <div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.wmOpacity }}</span><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8a877f">{{ wmCustomTransLabel }}</span></div><input type="range" min="0" max="80" step="5" value="{{ wmCustomTransVal }}" onChange="{{ onWmCustomTrans }}" style="display:block; width:100% !important; margin:0; cursor:pointer; accent-color:#22211e"></div>
+        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding-top:10px; border-top:1px solid #efede8"><span style="font-size:11.5px; color:#8a877f; line-height:1.5">{{ ui.wmEditHint }}</span><button onClick="{{ onWmReset }}" style="border:0; background:none; padding:0; font-size:12px; cursor:pointer; color:#3a3934; text-decoration:underline">{{ ui.wmReset }}</button></div>
+      </div></sc-if>
+      <input type="file" accept="image/png,image/webp,image/svg+xml,image/gif" ref="{{ wmFileRef }}" onChange="{{ onWmFile }}" style="display:none">
+    </div></div>
+<div style="display:flex; flex-direction:column; gap:16px; padding:18px 0; border-top:1px solid #e1ded7;"><div style="display:flex; align-items:center; justify-content:space-between; gap:8px"><div style="font-size:11px; font-weight:600; letter-spacing:.14em; color:#8a877f">{{ ui.secExport }}</div></div><div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:12px"><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.fmt }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ fmtOpts }}" as="o" hint-placeholder-count="2"><button data-fmt="{{ o.key }}" onClick="{{ onSetFmt }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div><div style="display:flex; flex-direction:column; gap:8px"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px"><span style="font-size:12.5px; color:#3a3934">{{ ui.exportScale }}</span></div><div style="display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:#e4e2dc; border-radius:9px; padding:3px; gap:2px"><sc-for list="{{ scaleOpts }}" as="o" hint-placeholder-count="3"><button data-scale="{{ o.key }}" onClick="{{ onSetScale }}" style="border:0; border-radius:7px; padding:6px 6px; font-size:12px; line-height:1.3; cursor:pointer; text-wrap:balance; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.label }}</button></sc-for></div></div></div></div>
+    </div></sc-if>
+  </div>
+</aside>
+</sc-if>
+</div>
 
-<footer style="margin-top:auto; border-top:1px solid #d9d6cf; padding:24px {{ listPad }}px 28px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:14px 32px">
-  <div style="display:flex; flex-direction:column; gap:6px; min-width:0">
-    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; color:#22211e; text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500" style-hover="color:#5d4f8c">
+<sc-if value="{{ projAsk }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ projAskNo }}" style="position:fixed; inset:0; z-index:80; background:rgba(27,26,23,.45); display:flex; align-items:center; justify-content:center; padding:20px">
+    <div onClick="{{ stopProp }}" style="width:min(100%, 380px); background:#fff; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:20px; box-shadow:0 20px 60px rgba(0,0,0,.25)">
+      <div style="font-size:15px; line-height:1.6; color:#22211e; text-wrap:pretty">{{ ui.projConfirm }}</div>
+      <div style="display:flex; justify-content:flex-end; gap:8px">
+        <button onClick="{{ projAskNo }}" style="border:1px solid #c9c6bd; background:#fff; color:#22211e; border-radius:9px; padding:9px 16px; font-size:14px; cursor:pointer">{{ ui.dlgCancel }}</button>
+        <button onClick="{{ projAskYes }}" style="border:1px solid #22211e; background:#22211e; color:#fff; border-radius:9px; padding:9px 16px; font-size:14px; cursor:pointer">{{ ui.dlgOpen }}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<footer style="margin-top:auto; position:sticky; bottom:0; z-index:15; background:#22211e; color:#f3f1ec; padding:20px {{ listPad }}px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:18px 40px">
+  <div style="display:flex; flex-direction:column; gap:10px; min-width:0">
+    <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 14px; min-width:0">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.3em; color:#8f8b82">FOLLOW · YABBIE</div>
+      <div style="font-family:'Noto Serif SC', serif; font-weight:700; font-size:16px; letter-spacing:.06em; line-height:1.4">{{ ui.socSlogan }}</div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px">
+      <a href="https://www.facebook.com/yabbily" target="_blank" rel="noopener" title="facebook.com/yabbily" style="display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:999px; background:#2d2c28; border:1px solid #3d3b36; color:#f3f1ec; text-decoration:none; font-size:13px; font-weight:600; transition:background .2s, border-color .2s" style-hover="background:#35342f; border-color:#1877f2; color:#f3f1ec">
+        <img src="assets/logo-facebook.png" alt="" style="flex:none; width:24px; height:24px; border-radius:999px; display:block">
+        <span>Facebook</span>
+        <span style="font-size:12px; color:#8f8b82">↗</span>
+      </a>
+      <a href="https://m.tb.cn/h.j2JPUK3?tk=udIJTExXM8G" target="_blank" rel="noopener" title="{{ ui.socXySub }}" style="display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:999px; background:#2d2c28; border:1px solid #3d3b36; color:#f3f1ec; text-decoration:none; font-size:13px; font-weight:600; transition:background .2s, border-color .2s" style-hover="background:#35342f; border-color:#ffd800; color:#f3f1ec">
+        <img src="assets/logo-xianyu.webp" alt="" style="flex:none; width:24px; height:24px; border-radius:999px; display:block">
+        <span>{{ ui.socXy }}</span>
+        <span style="font-size:12px; color:#8f8b82">↗</span>
+      </a>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:0; text-align:right; margin-left:auto">
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; color:#d8d5cd; text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500" style-hover="color:#f3f1ec">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="flex:none"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
       <span>yabbie / nepenthes-hybrid-cards</span>
     </a>
-    <div style="font-size:12px; color:#6b6962; line-height:1.6">{{ ghMeta }}</div>
+    <div style="font-size:11px; color:#8f8b82; line-height:1.6; margin-top:-4px">{{ ghMeta }}</div>
+    <div style="display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:6px 16px; font-size:12px">
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ghStarTxt }}</a>
+    <a href="https://yabbie.github.io/nepenthes-hybrid-cards/" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghLive }} ↗</a>
+    <a href="https://github.com/yabbie/nepenthes-hybrid-cards/issues" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghIssues }} ↗</a>
+    <a href="llms.txt" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghAgent }} ↗</a>
   </div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; font-size:13px">
-    <a href="https://github.com/yabbie/nepenthes-hybrid-cards" target="_blank" rel="noopener" style="white-space:nowrap">{{ ghStarTxt }}</a>
-    <a href="https://yabbie.github.io/nepenthes-hybrid-cards/" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghLive }} ↗</a>
-    <a href="https://github.com/yabbie/nepenthes-hybrid-cards/issues" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghIssues }} ↗</a>
-    <a href="llms.txt" target="_blank" rel="noopener" style="white-space:nowrap">{{ ui.ghAgent }} ↗</a>
   </div>
 </footer>
 
@@ -411,20 +491,20 @@ const RAW = [
   "[海盗x诺斯]x[诺斯x维奇]\tN. (Viking x northiana) x (northiana x veitchii), YAB-X2620",
 ].join('\n');
 const I18N = {
-  zh: { title:'猪笼草亲本组图', settings:'设置', preset:'预设', closeSettings:'收起', touchEdit:'手指调整照片（单指平移，双指缩放/旋转种子图）', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghAgent:'AI 操作接口', saveProj:'保存工程', openProj:'打开工程', saving:'保存中…', opening:'读取中…', projConfirm:'打开工程会替换当前所有卡片和照片，继续吗？', projSaveFail:'保存失败：', projOpenFail:'无法打开这个工程文件：', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', free:'自由', parRatio:'亲本比例', seedSize:'种子宽度', seedRatio:'种子比例（宽/高）', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
+  zh: { wmPlat:'平台水印透明度', fmt:'格式', editCard:'编辑信息', secUi:'界面', secLayout:'版式', secWm:'水印', secExport:'导出', drClose:'关闭', drSettings:'设置', drEdit:'编辑', dlgCancel:'取消', dlgOpen:'继续打开', socSlogan:'杂交是物种进化的捷径', socTitle:'关注我', socSub:'杂交苗、种子与新组图更新，欢迎来逛逛。', socXy:'闲鱼', socXySub:'点击进入我的闲鱼', title:'猪笼草亲本组图', selMode:'批量删除', selAll:'全选', selNone:'取消全选', selDel:'删除所选', selDone:'完成', selCount:'已选 {n} / {t} 张', confirmDelN:'确定删除选中的 {n} 张卡片？照片也会一起移除。', demoTag:'示例', settings:'设置', preset:'预设', closeSettings:'收起', touchEdit:'手指调整照片（单指平移，双指缩放/旋转种子图）', on:'开', off:'关', ghDesc:'猪笼草杂交亲本组图生成器，开源项目', ghLive:'在线版本', ghIssues:'报告问题', ghAgent:'AI 操作接口', saveProj:'保存工程', openProj:'打开工程', saving:'保存中…', opening:'读取中…', projConfirm:'打开工程会替换当前所有卡片和照片，继续吗？', projSaveFail:'保存失败：', projOpenFail:'无法打开这个工程文件：', ghStar:'Star', ghUpd:'最近更新 ', uiLang:'网页语言', ratio:'比例', cardText:'卡片文字', foot:'底栏', nameAlign:'名称对齐', nameSize:'名称大小', free:'自由', parRatio:'亲本比例', seedSize:'种子宽度', seedRatio:'种子比例（宽/高）', wmOpacity:'水印透明度', exportScale:'导出倍率', importBtn:'导入清单', addBlank:'＋ 空白卡片', exportAll:'导出全部', yearColor:'年份色', resetColors:'恢复默认色',
     importHelp:'每行一个杂交：中文名 [Tab] 英文名, 编号（如 YAB-X2607）。也可以只写中文名或只写英文名，会自动识别。中英文名会按最外层的 x 自动拆成母本和父本；编号相同的卡片只更新名称，照片和裁剪保留。', generate:'生成 / 更新卡片', collapse:'收起', empty:'还没有卡片。点「导入清单」粘贴杂交列表，或「＋ 空白卡片」。',
-    drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
-    phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
+    edHintW:'拖动移动水印 · 双指缩放', edZoom:'缩放', edRotate:'旋转', dropTouch:'点击添加', edDone:'完成', edHint:'双指缩放 · 单指拖动', edHintS:'双指缩放、旋转 · 单指拖动', edFlip:'翻转', edRot:'旋转 90°', edLock:'锁定', edUnlock:'解锁', edReset:'重置', edReplace:'换图', edLocked:'已锁定，解锁后可调整', tapHint:'点按照片可放大并调整', drop:'拖入或点击添加', phoM:'母本照片', phoF:'父本照片', phoS:'种子照片', locked:'已锁定', resetCrop:'重置裁剪', del:'删除', num:'编号', year:'年份', producer:'种子生产者', mother:'♀ 母本', father:'♂ 父本',
+    phCn:'中文名', phEnM:'英文名（不含 N.）', phEnF:'英文名', seedProv:'♀ 种子提供者', pollenProv:'♂ 花粉提供者', wmNone:'不加水印', wmEditHint:'双击水印解锁：拖动移动，滚轮 / 双指缩放', wmReset:'重置位置和大小', wmToneOrig:'原色', wmToneWhite:'白色', wmToneBlack:'黑色', wmCustom:'自定义水印', wmUpload:'上传水印', wmReplace:'更换水印', wmUploadTip:'上传透明背景的 PNG 图片作为水印', wmSize:'水印大小', wmRemove:'移除', wmBadFile:'无法读取这张图片，请使用透明背景的 PNG',  wmXy:'闲鱼账号', wmYab:'yabbie 水印', wmXhs:'小红书账号', wmFb:'Facebook 账号', wmIg:'Instagram 账号', acct:'账号名称',
     pickM:'换母本图', pickF:'换父本图', pickS:'换种子图', footFull:'整行平铺', footRight:'靠右·对齐名称', footLeft:'靠左·对齐种子图', cardBoth:'中英', cardEn:'仅英文', top:'靠上', center:'居中', bottom:'靠下',
     expSuffix:' · 导出 ', exporting:'导出中…', exportPre:'导出 ', exportAllPre:'导出全部 ', loadFail:'无法读取这张图片（HEIC 格式请先转成 JPG）', exportFail:'导出失败：', confirmDel:'删除这张卡片？', groups:{},
-    tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换' },
-  en: { title:'Nepenthes Parent Cards', settings:'Settings', preset:'Preset', closeSettings:'Close', touchEdit:'Touch edit (1 finger pan, 2 finger zoom; rotate seed photo)', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghAgent:'AI agent API', saveProj:'Save project', openProj:'Open project', saving:'Saving…', opening:'Opening…', projConfirm:'Opening a project replaces all current cards and photos. Continue?', projSaveFail:'Save failed: ', projOpenFail:'Could not open this project file: ', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', free:'Free', parRatio:'Parent ratio', seedSize:'Seed width', seedRatio:'Seed ratio (w/h)', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
+    tipPan:'拖动：平移', tipZoom:'滚轮：缩放', tipRot:'Ctrl + 滚轮：旋转', tipLock:'双击：锁定（同一张照片在所有卡片同步）', tipLocked:'已锁定：滚轮可翻动页面，不会缩放', tipUnlock:'双击：解锁', tipDrop:'拖入图片：替换', tipFlip:'F 键或右上角按钮：水平翻转', flipTitle:'水平翻转（F）' },
+  en: { wmPlat:'Platform watermark opacity', fmt:'Format', editCard:'Edit info', secUi:'INTERFACE', secLayout:'LAYOUT', secWm:'WATERMARK', secExport:'EXPORT', drClose:'Close', drSettings:'Settings', drEdit:'Edit', dlgCancel:'Cancel', dlgOpen:'Open anyway', socSlogan:'Hybridization is evolution\'s shortcut.', socTitle:'Follow me', socSub:'Hybrid plants, seeds and new card sets are posted here.', socXy:'Xianyu', socXySub:'Open my Xianyu shop', title:'Nepenthes Parent Cards', selMode:'Bulk delete', selAll:'Select all', selNone:'Clear selection', selDel:'Delete selected', selDone:'Done', selCount:'{n} of {t} selected', confirmDelN:'Delete {n} selected cards? Their photos will be removed too.', demoTag:'Demo', settings:'Settings', preset:'Preset', closeSettings:'Close', touchEdit:'Touch edit (1 finger pan, 2 finger zoom; rotate seed photo)', on:'On', off:'Off', ghDesc:'Parent-card maker for Nepenthes hybrids, open source', ghLive:'Live version', ghIssues:'Report an issue', ghAgent:'AI agent API', saveProj:'Save project', openProj:'Open project', saving:'Saving…', opening:'Opening…', projConfirm:'Opening a project replaces all current cards and photos. Continue?', projSaveFail:'Save failed: ', projOpenFail:'Could not open this project file: ', ghStar:'Star', ghUpd:'Updated ', uiLang:'Language', ratio:'Ratio', cardText:'Card text', foot:'Footer', nameAlign:'Name align', nameSize:'Name size', free:'Free', parRatio:'Parent ratio', seedSize:'Seed width', seedRatio:'Seed ratio (w/h)', wmOpacity:'Watermark opacity', exportScale:'Export scale', importBtn:'Import list', addBlank:'+ Blank card', exportAll:'Export all', yearColor:'Year color', resetColors:'Reset colors',
     importHelp:'One cross per line: Chinese name [Tab] English name, ID (e.g. YAB-X2607). Chinese-only or English-only lines also work and are detected automatically. Names are split into mother and father at the outermost x. Cards with the same ID only get their names updated; photos and crops are kept.', generate:'Create / update cards', collapse:'Close', empty:'No cards yet. Use "Import list" to paste crosses, or "+ Blank card".',
-    drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
-    phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
+    edHintW:'Drag to move the watermark · pinch to resize', edZoom:'Zoom', edRotate:'Rotation', dropTouch:'Tap to add', edDone:'Done', edHint:'Pinch to zoom · drag to move', edHintS:'Pinch to zoom and rotate · drag to move', edFlip:'Flip', edRot:'Rotate 90°', edLock:'Lock', edUnlock:'Unlock', edReset:'Reset', edReplace:'Replace', edLocked:'Locked. Unlock to adjust', tapHint:'Tap a photo to enlarge and adjust', drop:'Drop or click to add', phoM:'Mother photo', phoF:'Father photo', phoS:'Seed photo', locked:'Locked', resetCrop:'Reset crop', del:'Delete', num:'ID', year:'Year', producer:'Seed producer', mother:'♀ Mother', father:'♂ Father',
+    phCn:'Chinese name', phEnM:'English name (without N.)', phEnF:'English name', seedProv:'♀ Seed provider', pollenProv:'♂ Pollen provider', wmNone:'No watermark', wmEditHint:'Double-click the watermark to unlock: drag to move, wheel / pinch to resize', wmReset:'Reset position & size', wmToneOrig:'Original', wmToneWhite:'White', wmToneBlack:'Black', wmCustom:'Custom watermark', wmUpload:'Upload watermark', wmReplace:'Replace watermark', wmUploadTip:'Upload a PNG with a transparent background as the watermark', wmSize:'Watermark size', wmRemove:'Remove', wmBadFile:'Could not read this image. Use a PNG with a transparent background.',  wmXy:'Xianyu account', wmYab:'yabbie mark', wmXhs:'Xiaohongshu account', wmFb:'Facebook account', wmIg:'Instagram account', acct:'Account name',
     pickM:'Replace mother photo', pickF:'Replace father photo', pickS:'Replace seed photo', footFull:'Full width', footRight:'Right · align names', footLeft:'Left · align seed photo', cardBoth:'CN + EN', cardEn:'English only', top:'Top', center:'Center', bottom:'Bottom',
     expSuffix:' · export ', exporting:'Exporting…', exportPre:'Export ', exportAllPre:'Export all ', loadFail:'Could not read this image (convert HEIC to JPG first).', exportFail:'Export failed: ', confirmDel:'Delete this card?', groups:{'红粉':'Red','橙棕':'Brown','黄褐':'Tan','绿':'Green','青蓝':'Blue','紫':'Purple','灰':'Gray'},
-    tipPan:'Drag: pan', tipZoom:'Wheel: zoom', tipRot:'Ctrl + wheel: rotate', tipLock:'Double-click: lock (same photo syncs across all cards)', tipLocked:'Locked: wheel scrolls the page, no zoom', tipUnlock:'Double-click: unlock', tipDrop:'Drop an image: replace' },
+    tipPan:'Drag: pan', tipZoom:'Wheel: zoom', tipRot:'Ctrl + wheel: rotate', tipLock:'Double-click: lock (same photo syncs across all cards)', tipLocked:'Locked: wheel scrolls the page, no zoom', tipUnlock:'Double-click: unlock', tipDrop:'Drop an image: replace', tipFlip:'F or corner button: flip horizontally', flipTitle:'Flip horizontally (F)' },
 };
 const LS_KEY = 'yabbie-nep-cards-v1';
 const LIB = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
@@ -458,7 +538,7 @@ CARDS (async)
   updateCard(card, fields)    -> card
       fields: num, year, producer, cnM, cnF, enM, enF  (English names without the leading "N.")
               cn / en: a whole cross string, split into mother/father automatically
-              wmMType / wmFType: "none"|"xianyu"|"yabbie"|"xhs"|"fb"|"ig"  watermark on the mother / father photo
+              wmMType / wmFType: "none"|"xianyu"|"xhs"|"fb"|"ig"|"custom" (user-uploaded watermark)  watermark on the mother / father photo
               wmMName / wmFName: account name shown under the xianyu / xhs / fb / ig mark
   deleteCard(card)   clearCards()      (no confirmation dialog)
 
@@ -472,6 +552,8 @@ PHOTOS (async)
       r = rotation in degrees (meant for the seed photo). Clamped so the photo always covers its frame.
       Crops are stored per ratio (1:1, 3:4 and free each keep their own).
   resetCrop(card)
+  flipPhoto(card, slot, on?)  mirror the photo horizontally; omit on to toggle. The framing mirrors with it (crop x and r are negated).
+      A new photo starts unflipped. getState().cards[i].photos[slot].flipped reports it.
   lockPhoto(card, slot, on = true)  lock the crop; the same photo on other cards shares the locked crop. Locked photos reject setCrop.
 
 LAYOUT (async)
@@ -514,9 +596,47 @@ TYPICAL FLOW
 class Component extends DCLogic {
   state = this.initState();
   fileRef = React.createRef();
+  heroCards = [
+    { src: 'assets/demo-card.jpg', pad: '0', rot: -2, x: 0, y: 0 },
+    { src: 'assets/hero-2635.jpg', pad: '0', rot: 7, x: 28, y: -10 },
+    { src: 'assets/hero-2619.jpg', pad: '0', rot: -8, x: -30, y: 12 },
+    { src: 'assets/hero-2626.jpg', pad: '0', rot: 4, x: 18, y: 20 },
+  ];
+  heroStep = d => this.setState(s => { const n = this.heroCards.length; return { heroIdx: (((s.heroIdx || 0) + d) % n + n) % n }; });
+  onHeroWheel = e => {
+    e.preventDefault();
+    const now = Date.now();
+    this._hwAcc = (now - (this._hwT || 0) > 250 ? 0 : (this._hwAcc || 0)) + (Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX);
+    this._hwT = now;
+    if (now < (this._hwLock || 0) || Math.abs(this._hwAcc) < 40) return;
+    this.heroStep(this._hwAcc > 0 ? 1 : -1);
+    this._hwAcc = 0; this._hwLock = now + 380;
+  };
+  onHeroTouch = e => {
+    if (e.type === 'touchstart') { this._htx = e.touches[0].clientX; return; }
+    const dx = e.changedTouches[0].clientX - (this._htx ?? 0);
+    if (Math.abs(dx) > 36) this.heroStep(dx < 0 ? 1 : -1);
+  };
+  heroRef = el => {
+    if (this._heroEl) this._heroEl.removeEventListener('wheel', this.onHeroWheel);
+    this._heroEl = el;
+    if (el) el.addEventListener('wheel', this.onHeroWheel, { passive: false });
+  };
+  onHeroNext = () => this.heroStep(1);
+  onHeroDot = e => this.setState({ heroIdx: +e.currentTarget.dataset.i });
   listRef = React.createRef();
   tipRef = React.createRef();
   barRef = React.createRef();
+  bTitleRef = React.createRef(); bEyeRef = React.createRef(); bG1Ref = React.createRef(); bG2Ref = React.createRef(); bSetRef = React.createRef();
+  measureBar = () => {
+    const b = this.barRef.current, t = this.bTitleRef.current, e = this.bEyeRef.current, g1 = this.bG1Ref.current, g2 = this.bG2Ref.current, st = this.bSetRef.current;
+    if (!b || !t || !e || !g1 || !g2 || !st) return;
+    const cs = getComputedStyle(b), inner = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const eye = e.scrollWidth, title = t.offsetWidth - e.offsetWidth, w1 = g1.offsetWidth, w2 = g2.offsetWidth, ws = st.offsetWidth, GX = 18, GI = 24;
+    const row1 = title + w1 + GI + w2 + ws + 2 * GX;
+    const mode = this.state.narrow ? 'C' : row1 + eye <= inner ? 'A+' : row1 <= inner ? 'A' : w1 + GI + w2 <= inner ? 'B' : 'C';
+    if (mode !== this.state.barMode) this.setState({ barMode: mode });
+  };
   projRef = React.createRef();
   _fitState = {};
 
@@ -529,19 +649,24 @@ class Component extends DCLogic {
     const nameScale = ui.nameScale >= 0.7 && ui.nameScale <= 1.2 ? ui.nameScale : 1;
     const namesAlign = ['center', 'top', 'bottom'].includes(ui.namesAlign) ? ui.namesAlign : 'center';
     const wmTrans = ui.wmTrans >= 0 && ui.wmTrans <= 80 ? ui.wmTrans : 10;
-    const uiLang = ui.uiLang === 'en' ? 'en' : 'zh';
+    const uiLang = ui.uiLang === 'en' || ui.uiLang === 'zh' ? ui.uiLang : (() => { try { const ls = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en']; return /^zh\b/i.test(String(ls[0] || '')) ? 'zh' : 'en'; } catch (e) { return 'en'; } })();
+    const defLang = uiLang === 'en' ? 'en' : 'zh';
     const seedW = ui.seedW >= 280 && ui.seedW <= 523 ? ui.seedW : 380, seedAr = ui.seedAr >= 1 && ui.seedAr <= 1.6 ? ui.seedAr : 1.3;
     const parAr = [16 / 9, 4 / 3, 1.5].some(v => Math.abs(v - ui.parAr) < 0.001) ? ui.parAr : 1.5;
-    const base = { parAr, foot78: saved && ['full', 'right', 'left'].includes(saved.foot78) ? saved.foot78 : 'full', seedW, seedAr, uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
+    const wmCustomW = ui.wmCustomW >= 50 && ui.wmCustomW <= 200 ? ui.wmCustomW : 100;
+    const wmCustomTone = ['orig', 'white', 'black'].includes(ui.wmCustomTone) ? ui.wmCustomTone : 'white';
+    const wmCustomTrans = ui.wmCustomTrans >= 0 && ui.wmCustomTrans <= 80 ? ui.wmCustomTrans : 10;
+    const wmp = ui.wmCustomPos, wmCustomPos = wmp && wmp.fx >= 0 && wmp.fx <= 1 && wmp.fy >= 0 && wmp.fy <= 1 ? { fx: wmp.fx, fy: wmp.fy } : null;
+    const base = { wmCustomPos, wmCustomTrans, wmCustomTone, wmCustomW, parAr, foot78: saved && ['full', 'right', 'left'].includes(saved.foot78) ? saved.foot78 : 'full', seedW, seedAr, uiLang, exportScale, nameScale, namesAlign, wmTrans, fmt, showImport: false, busy: null, busyAll: false, dragKey: null, vw: 0, vh: window.innerHeight || 900, narrow: (window.innerWidth || 1000) < 720, panelOpen: false, touchEdit: false };
     if (saved && Array.isArray(saved.cards)) {
       const photos = {};
       this._pendingIdb = [];
       for (const [k, m] of Object.entries(saved.meta || {})) {
         if (m.src) photos[k] = { src: m.src, ar: m.ar, pid: m.pid || m.src }; else this._pendingIdb.push([k, m]);
       }
-      return { ...base, cards: saved.cards, ratio: saved.ratio === '45' ? '78' : (saved.ratio || '78'), foot: saved.foot || 'right', lang: saved.lang || 'zh', raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
+      return { ...base, cards: saved.cards, ratio: saved.ratio === '45' ? '78' : (saved.ratio || '78'), foot: saved.foot || 'right', lang: saved.lang || defLang, raw: saved.raw ?? '', yearColors: saved.yearColors || {}, locks: saved.locks || {}, photos };
     }
-    return { ...base, cards: [], ratio: '78', foot: 'right', lang: 'zh', raw: '', yearColors: {}, locks: {}, photos: {} };
+    return { ...base, cards: [], ratio: '78', foot: 'right', lang: defLang, raw: '', yearColors: {}, locks: {}, photos: {} };
   }
 
   splitTop(str, en) {
@@ -805,7 +930,7 @@ class Component extends DCLogic {
       const c = cs.find(x => x.id === s) || cs.find(x => x.num && x.num === s) || (d && cs.find(x => x.num === d[1])) || (/^#?\d{1,3}$/.test(s) && cs[+s.replace('#', '') - 1]);
       return c || fail('card not found: ' + JSON.stringify(ref) + '. Use a 1-based index, card id or NO. (see listCards())');
     };
-    const FIELDS = ['num', 'year', 'producer', 'cnM', 'cnF', 'enM', 'enF', 'wmMType', 'wmMName', 'wmFType', 'wmFName'], WM = ['none', 'xianyu', 'yabbie', 'xhs', 'fb', 'ig'];
+    const FIELDS = ['num', 'year', 'producer', 'cnM', 'cnF', 'enM', 'enF', 'wmMType', 'wmMName', 'wmFType', 'wmFName'], WM = ['none', 'xianyu', 'xhs', 'fb', 'ig', 'custom'];
     const norm = f => {
       const o = {};
       for (const [k, v] of Object.entries(f || {})) {
@@ -826,7 +951,7 @@ class Component extends DCLogic {
         const key = c.id + ':' + sl, p = st.photos[key], uploadSelector = 'input[data-upload="' + key + '"]';
         if (!p) { photos[sl] = { loaded: false, uploadSelector }; continue; }
         const k = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(sl, st.ratio));
-        photos[sl] = { loaded: true, aspect: r2(p.ar, 4), locked: this.isLocked(key, st), crop: { x: r2(k.x, 2), y: r2(k.y, 2), s: r2(k.s, 3), r: k.r }, uploadSelector };
+        photos[sl] = { loaded: true, aspect: r2(p.ar, 4), locked: this.isLocked(key, st), flipped: !!(c.flip && c.flip[sl]), crop: { x: r2(k.x, 2), y: r2(k.y, 2), s: r2(k.s, 3), r: k.r }, uploadSelector };
       }
       const o = { index: i + 1, id: c.id };
       FIELDS.forEach(f => { o[f] = c[f] ?? ''; });
@@ -914,6 +1039,14 @@ class Component extends DCLogic {
         return out(c.id).photos[k];
       },
       resetCrop: async ref => { const c = cardOf(ref); await set(s => ({ cards: s.cards.map(x => x.id === c.id ? { ...x, crop: {} } : x) })); await settle(); return out(c.id); },
+      flipPhoto: async (ref, sl, on) => {
+        const c = cardOf(ref), k = slotOf(sl), key = c.id + ':' + k;
+        if (!this.state.photos[key]) fail('no ' + k + ' photo on card ' + JSON.stringify(ref));
+        const cur = !!(c.flip && c.flip[k]);
+        if (on === undefined || !!on !== cur) await new Promise(r => this.flipPhoto(key, r));
+        await settle();
+        return out(c.id).photos[k];
+      },
       lockPhoto: async (ref, sl, on = true) => {
         const c = cardOf(ref), k = slotOf(sl), key = c.id + ':' + k;
         if (!this.state.photos[key]) fail('no ' + k + ' photo on card ' + JSON.stringify(ref));
@@ -989,6 +1122,8 @@ class Component extends DCLogic {
     console.info('[nepCards] AI agent API ready: run nepCards.help() for the reference');
   }
   componentDidMount() {
+    try { if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) this.setState({ touch: true }); } catch (er) {}
+    try { const w = localStorage.getItem('qb_wm_custom'); if (w) { const im = new Image(); im.onload = () => this.setState({ wmCustomAr: im.naturalHeight / im.naturalWidth }); im.src = w; this.tint(w, this.state.wmCustomTone || 'white').then(t => this.setState({ wmCustom: w, wmCustomTinted: t })); } } catch (er) {}
     fetch('https://api.github.com/repos/yabbie/nepenthes-hybrid-cards')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => this.setState({ gh: { stars: d.stargazers_count, pushed: (d.pushed_at || '').slice(0, 10), lic: d.license && d.license.spdx_id && d.license.spdx_id !== 'NOASSERTION' ? d.license.spdx_id : '' } }))
@@ -997,11 +1132,15 @@ class Component extends DCLogic {
       down: e => this.onDown(e), move: e => this.onMove(e), up: e => this.onUp(e),
       wheel: e => this.onWheel(e), over: e => this.onOver(e), drop: e => this.onDrop(e),
       leave: e => { if (!e.relatedTarget && this.state.dragKey) this.setState({ dragKey: null }); },
-      dbl: e => { const el = this.slotEl(e); if (el && this.state.photos[el.dataset.slot]) this.toggleLock(el.dataset.slot); },
+      dbl: e => { const wm = e.target.closest && e.target.closest('[data-wmc]'); if (wm && this.state.edWm) return;
+      if (wm) { const k = wm.dataset.wmc; this.setState(s => ({ wmEdit: s.wmEdit === k ? null : k })); return; } if (e.target.closest && e.target.closest('[data-flip]')) return; const el = this.slotEl(e); if (el && !el.dataset.editor && this.state.photos[el.dataset.slot]) this.toggleLock(el.dataset.slot); },
       resize: () => this.setState({ vh: window.innerHeight, narrow: window.innerWidth < 720 }),
+      key: e => { if (e.key === 'Escape' && this.state.wmEdit) { this.setState({ wmEdit: null }); return; } if ((e.code !== 'KeyF' && e.key !== 'f' && e.key !== 'F') || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return; const t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return; const k = this.state.hoverKey; if (k && this.state.photos[k]) { e.preventDefault(); this.flipPhoto(k); } },
       tip: e => { this._mx = e.clientX; this._my = e.clientY; this.placeTip(); },
       hover: e => { const el = this.slotEl(e), k = el ? el.dataset.slot : null; if (k === this.state.hoverKey) return; clearTimeout(this._tipT); this.setState({ hoverKey: k, tipGone: false }); if (k) this._tipT = setTimeout(() => this.setState({ tipGone: true }), 3000); },
     };
+    this._h.pop = () => { if (this.state.editKey) { this._edPushed = false; this.doClose(true); } else if (this.state.panelOpen) { this._panPushed = false; this.setState({ panelOpen: false }); } };
+    window.addEventListener('popstate', this._h.pop);
     document.addEventListener('pointerover', this._h.hover);
     window.addEventListener('pointermove', this._h.tip);
     document.addEventListener('pointerdown', this._h.down);
@@ -1013,6 +1152,7 @@ class Component extends DCLogic {
     document.addEventListener('drop', this._h.drop);
     document.addEventListener('dragleave', this._h.leave);
     document.addEventListener('dblclick', this._h.dbl);
+    document.addEventListener('keydown', this._h.key);
     window.addEventListener('resize', this._h.resize);
     if (window.ResizeObserver && this.listRef.current) {
       this._ro = new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w && Math.abs(w - this.state.vw) > 24) this.setState({ vw: w }); });
@@ -1021,6 +1161,10 @@ class Component extends DCLogic {
     if (window.ResizeObserver && this.barRef.current) {
       this._rb = new ResizeObserver(() => { const h = Math.round(this.barRef.current.getBoundingClientRect().height); if (Math.abs(h - (this.state.barH || 0)) > 1) this.setState({ barH: h }); });
       this._rb.observe(this.barRef.current);
+      this._rbm = new ResizeObserver(() => { cancelAnimationFrame(this._rbmR); this._rbmR = requestAnimationFrame(this.measureBar); });
+      [this.barRef, this.bTitleRef, this.bG1Ref, this.bG2Ref, this.bSetRef].forEach(r => r.current && this._rbm.observe(r.current));
+      const ft = document.querySelector('footer');
+      if (ft) { this._rf = new ResizeObserver(() => { const h = Math.round(ft.getBoundingClientRect().height); if (Math.abs(h - (this.state.footH || 0)) > 1) this.setState({ footH: h }); }); this._rf.observe(ft); }
     }
     if (document.fonts) {
       this._fl = () => { this._mc = {}; this._fitState = {}; this.forceUpdate(); };
@@ -1038,6 +1182,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     if (window.nepCards && window.nepCards._owner === this) delete window.nepCards;
     const h = this._h; if (!h) return;
+    window.removeEventListener('popstate', h.pop);
     document.removeEventListener('pointerdown', h.down);
     window.removeEventListener('pointermove', h.move);
     window.removeEventListener('pointerup', h.up);
@@ -1047,14 +1192,25 @@ class Component extends DCLogic {
     document.removeEventListener('drop', h.drop);
     document.removeEventListener('dragleave', h.leave);
     document.removeEventListener('dblclick', h.dbl);
+    document.removeEventListener('keydown', h.key);
     window.removeEventListener('resize', h.resize);
     document.removeEventListener('pointerover', h.hover);
     window.removeEventListener('pointermove', h.tip); clearTimeout(this._tipT);
     if (this._ro) this._ro.disconnect();
     if (this._rb) this._rb.disconnect();
+    if (this._rf) this._rf.disconnect();
     if (document.fonts && this._fl) document.fonts.removeEventListener('loadingdone', this._fl);
   }
+  measureOvh() {
+    const c = document.querySelector('[data-card]'), ex = c && c.querySelector('[data-export]'), pb = ex && ex.parentElement;
+    if (!pb) return;
+    const ov = Math.round(c.offsetHeight - pb.offsetHeight), k = this.state.vh + ':' + this.state.vw + ':' + this.state.barH + ':' + this.state.footH + ':' + this.state.ratio;
+    if (this._ovk !== k) { this._ovk = k; this._ovn = 0; }
+    if (ov > 0 && Math.abs(ov - (this.state.ovh || 0)) > 1 && this._ovn < 6) { this._ovn++; this.setState({ ovh: ov }); }
+  }
   componentDidUpdate() {
+    this.measureOvh();
+    this.measureBar();
     clearTimeout(this._st);
     this._st = setTimeout(() => this.save(), 400);
     this.checkFit();
@@ -1117,11 +1273,70 @@ class Component extends DCLogic {
   }
 
   slotEl(e) { return e.target && e.target.closest ? e.target.closest('[data-slot]') : null; }
+  onFlip = e => { e.stopPropagation(); this.flipPhoto(e.currentTarget.dataset.flip); };
+  flipPhoto(key, cb) {
+    const [id, slot] = key.split(':'); if (!this.state.photos[key]) return;
+    const neg = v => ({ ...v, x: -(v.x || 0), ...(v.r ? { r: -v.r } : {}) });
+    this.setState(st => ({ cards: st.cards.map(c => {
+      if (c.id !== id) return c;
+      const crop = {};
+      for (const [k, v] of Object.entries(c.crop || {})) crop[k] = k === slot || k.startsWith(slot + '@') ? neg(v) : v;
+      return { ...c, crop, flip: { ...(c.flip || {}), [slot]: !(c.flip && c.flip[slot]) } };
+    }) }), cb);
+  }
+  wmCenter(slot) {
+    const st = this.state, W = Math.round((st.wmCustomW || 100) * 0.86), H = W * (st.wmCustomAr || 1), rw = slot.offsetWidth || 1, rh = slot.offsetHeight || 1;
+    const k = slot.getBoundingClientRect().width / rw || 1, pos = st.wmCustomPos || { fx: 1, fy: 1 };
+    const cl = (v, lo, hi) => Math.max(lo, Math.min(hi < lo ? lo : hi, v));
+    return { rw, rh, k, W, H, cl, cx: cl(pos.fx * rw, 14 + W / 2, rw - 14 - W / 2), cy: cl(pos.fy * rh, 12 + H / 2, rh - 12 - H / 2) };
+  }
+  wmPersist() { clearTimeout(this._wmT); this._wmT = setTimeout(() => { const s = this.state; this.saveUi({ wmCustomW: s.wmCustomW || 100, wmCustomPos: s.wmCustomPos || null }); }, 150); }
+  wmDown(e, wm) {
+    e.preventDefault();
+    const slot = wm.closest('[data-slot]'); if (!slot) return;
+    this._wmt = this._wmt || new Map(); this._wmt.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const c = this.wmCenter(slot);
+    if (!this._wmd) this._wmd = { slot, x0: e.clientX, y0: e.clientY, cx0: c.cx, cy0: c.cy };
+    else if (this._wmt.size === 2) { const [a, b] = [...this._wmt.values()]; this._wmd.pinch = { dist: Math.hypot(b.x - a.x, b.y - a.y) || 1, pct0: this.state.wmCustomW || 100 }; }
+  }
+  wmMove(e) {
+    const d = this._wmd; if (!d) return;
+    if (this._wmt && this._wmt.has(e.pointerId)) this._wmt.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const c = this.wmCenter(d.slot);
+    if (d.pinch && this._wmt.size >= 2) {
+      const [a, b] = [...this._wmt.values()], pct = Math.min(200, Math.max(50, d.pinch.pct0 * Math.pow((Math.hypot(b.x - a.x, b.y - a.y) || 1) / d.pinch.dist, 0.8)));
+      this.setState({ wmCustomW: pct, wmCustomPos: { fx: c.cx / c.rw, fy: c.cy / c.rh } }); return;
+    }
+    if (this._wmt && this._wmt.size > 1) return;
+    const cx = c.cl(d.cx0 + (e.clientX - d.x0) / c.k, 14 + c.W / 2, c.rw - 14 - c.W / 2), cy = c.cl(d.cy0 + (e.clientY - d.y0) / c.k, 12 + c.H / 2, c.rh - 12 - c.H / 2);
+    this.setState({ wmCustomPos: { fx: cx / c.rw, fy: cy / c.rh } });
+  }
+  wmUp(e) {
+    const d = this._wmd; if (this._wmt) this._wmt.delete(e.pointerId);
+    if (d && this._wmt && this._wmt.size === 1) { const [q] = [...this._wmt.values()], c = this.wmCenter(d.slot); d.pinch = null; d.x0 = q.x; d.y0 = q.y; d.cx0 = c.cx; d.cy0 = c.cy; return; }
+    this._wmd = null; if (this._wmt) this._wmt.clear(); this.wmPersist();
+  }
+  wmWheel(e, wm) {
+    const slot = wm.closest('[data-slot]'); if (!slot) return;
+    const c = this.wmCenter(slot), pct = Math.min(200, Math.max(50, (this.state.wmCustomW || 100) * Math.exp(-e.deltaY * 0.0002)));
+    this.setState({ wmCustomW: pct, wmCustomPos: { fx: c.cx / c.rw, fy: c.cy / c.rh } }); this.wmPersist();
+  }
   onDown(e) {
     if (e.button !== 0) return;
+    const wmc = e.target.closest && e.target.closest('[data-wmc]');
+    if (this._wmd && e.pointerType === 'touch') { this.wmDown(e, this._wmd.slot.querySelector('[data-wmc]') || e.target); return; }
+    const hadWm = !!this.state.wmEdit;
+    if (this.state.edWm && !wmc) { const sl = this.slotEl(e), w2 = sl && sl.querySelector('[data-wmc]'); if (w2) this.wmDown(e, w2); return; }
+    if (this.state.wmEdit && !wmc) this.setState({ wmEdit: null });
+    if (wmc && this.state.wmEdit === wmc.dataset.wmc) { this.wmDown(e, wmc); return; }
+    if (wmc && e.pointerType === 'touch') { this.openEditor(wmc.dataset.wmc, true); return; }
+    if (e.target.closest && e.target.closest('[data-flip]')) return;
     const el = this.slotEl(e); if (!el) return;
+    if (!document.hasFocus()) { try { window.focus(); } catch (er) {} }
+    if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
     const key = el.dataset.slot, p = this.state.photos[key];
-    if (e.pointerType === 'touch' && this.state.narrow && !this.state.touchEdit && p) return;
+    if (e.pointerType === 'touch' && !this.state.touch) this.setState({ touch: true });
+    if (e.pointerType === 'touch' && !el.dataset.editor && p) { if (!hadWm) this._tap = { id: e.pointerId, key, x: e.clientX, y: e.clientY, t: Date.now() }; return; }
     e.preventDefault();
     const r = el.getBoundingClientRect(), fa = r.width / r.height;
     if (e.pointerType === 'touch') {
@@ -1141,6 +1356,7 @@ class Component extends DCLogic {
     this._drag = { key, x0: e.clientX, y0: e.clientY, r, fa, moved: false, has: !!p, locked: this.isLocked(key), c0: p ? this.clampCrop(this.rawCrop(key), p.ar, fa) : DEF };
   }
   onMove(e) {
+    if (this._wmd) { this.wmMove(e); return; }
     const d = this._drag; if (!d) return;
     if (this._tp && this._tp.has(e.pointerId)) {
       this._tp.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1150,7 +1366,7 @@ class Component extends DCLogic {
           const dist = Math.hypot(b.x - a.x, b.y - a.y) || 1, ang = Math.atan2(b.y - a.y, b.x - a.x);
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
           const px = (pc.mx - r.left - r.width / 2) / r.width * 100, py = (pc.my - r.top - r.height / 2) / r.height * 100;
-          const sc = Math.min(8, Math.max(1, c0.s * dist / pc.dist)), k = sc / c0.s;
+          const sc = Math.min(8, Math.max(1, c0.s * Math.pow(dist / pc.dist, 0.6))), k = sc / c0.s;
           let rot = c0.r;
           if (d.key.endsWith(':s')) { const raw = c0.r + (ang - pc.ang) * 180 / Math.PI, near = Math.round(raw / 90) * 90; rot = Math.abs(raw - near) < 4 ? near : raw; }
           this.updateCrop(d.key, () => ({ ...c0, s: sc, r: rot, x: px - (px - c0.x) * k + (mx - pc.mx) / r.width * 100, y: py - (py - c0.y) * k + (my - pc.my) / r.height * 100 }), d.fa);
@@ -1167,6 +1383,9 @@ class Component extends DCLogic {
     this.updateCrop(d.key, () => ({ ...c0, x: c0.x + dx / r.width * 100, y: c0.y + dy / r.height * 100 }), d.fa);
   }
   onUp(e) {
+    if (this._wmd) { this.wmUp(e); return; }
+    const tp = this._tap;
+    if (tp && e && e.pointerId === tp.id) { this._tap = null; if (e.type === 'pointerup' && Math.hypot(e.clientX - tp.x, e.clientY - tp.y) < 10 && Date.now() - tp.t < 700) this.openEditor(tp.key); return; }
     const d = this._drag;
     if (e && e.pointerType === 'touch' && this._tp) {
       this._tp.delete(e.pointerId);
@@ -1184,6 +1403,8 @@ class Component extends DCLogic {
     if (d && !d.moved && !d.has && !(e && e.type === 'pointercancel')) this.pick(d.key);
   }
   onWheel(e) {
+    const wmc = e.target.closest && e.target.closest('[data-wmc]');
+    if (wmc && this.state.wmEdit === wmc.dataset.wmc) { e.preventDefault(); this.wmWheel(e, wmc); return; }
     const el = this.slotEl(e); if (!el) return;
     const key = el.dataset.slot; if (!this.state.photos[key]) return;
     if (this.isLocked(key)) { if (e.ctrlKey) e.preventDefault(); return; }
@@ -1203,7 +1424,7 @@ class Component extends DCLogic {
       return;
     }
     const px = (e.clientX - r.left - r.width / 2) / r.width * 100, py = (e.clientY - r.top - r.height / 2) / r.height * 100;
-    const f = Math.exp(-e.deltaY * (e.ctrlKey ? 0.002 : 0.0003));
+    const f = Math.exp(-e.deltaY * (e.ctrlKey ? 0.002 : 0.00015));
     this.updateCrop(key, c => { const sc = Math.min(8, Math.max(1, c.s * f)), k = sc / c.s; return { ...c, s: sc, x: px - (px - c.x) * k, y: py - (py - c.y) * k }; }, fa);
   }
   onOver(e) {
@@ -1251,7 +1472,7 @@ class Component extends DCLogic {
       const src = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); }), pid = this.hash(src);
       await this.idb('readwrite', st => st.put(src, key));
       const [id, slot] = key.split(':');
-      await new Promise(done => this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: w / h, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') }, [slot + '@78']: { ...DEF } } } : c) }), done));
+      await new Promise(done => this.setState(st => ({ photos: { ...st.photos, [key]: { src, ar: w / h, pid } }, cards: st.cards.map(c => c.id === id ? { ...c, flip: { ...(c.flip || {}), [slot]: false }, crop: { ...c.crop, [slot]: { ...DEF, r: this.defR(slot, '11') }, [slot + '@34']: { ...DEF, r: this.defR(slot, '34') }, [slot + '@78']: { ...DEF } } } : c) }), done));
     } catch (e) { if (strict) throw new Error('[nepCards] could not decode this image (use JPG / PNG / WebP; HEIC is not supported)'); alert((I18N[this.state.uiLang] || I18N.zh).loadFail); }
   }
 
@@ -1328,13 +1549,16 @@ class Component extends DCLogic {
     try { await this.saveProjectFile({}); } catch (e) { console.error(e); alert((I18N[this.state.uiLang] || I18N.zh).projSaveFail + ((e && e.message) || e)); }
     this.setState({ projBusy: null });
   };
-  openProjectUi = () => { const inp = this.projRef.current; if (!inp || this.state.projBusy) return; this._projUi = true; inp.value = ''; inp.click(); };
+  pickProject = () => { const inp = this.projRef.current; if (!inp || this.state.projBusy) return; this._projUi = true; inp.value = ''; inp.click(); };
+  openProjectUi = () => { if (this.state.projBusy) return; if (this.state.cards.length) this.setState({ projAsk: true }); else this.pickProject(); };
+  projAskYes = () => { this.setState({ projAsk: false }); this.pickProject(); };
+  projAskNo = () => this.setState({ projAsk: false });
+  stopProp = e => e.stopPropagation();
   onProjFile = async e => {
     const f = e.target.files && e.target.files[0], viaUi = this._projUi; this._projUi = false;
     e.target.value = '';
     if (!f) return;
     const T = I18N[this.state.uiLang] || I18N.zh;
-    if (viaUi && this.state.cards.length && !confirm(T.projConfirm)) return;
     this.setState({ projBusy: 'open' });
     try { await this.loadProject(await f.text()); } catch (err) { console.error(err); alert(T.projOpenFail + ((err && err.message) || err)); }
     this.setState({ projBusy: null });
@@ -1387,6 +1611,32 @@ class Component extends DCLogic {
   onSetRatio = e => this.setState({ ratio: e.currentTarget.dataset.ratio });
   onSetFoot = e => { const f = e.currentTarget.dataset.foot; this.setState(s => s.ratio === '78' ? { foot78: f } : { foot: f }); };
   saveUi(p) { try { const u = JSON.parse(localStorage.getItem('qb_ui')) || {}; localStorage.setItem('qb_ui', JSON.stringify({ ...u, ...p })); } catch (er) {} this.setState(p); }
+  wmFileRef = React.createRef();
+  onWmPick = () => { const el = this.wmFileRef.current; if (el) el.click(); };
+  onWmFile = async e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    try {
+      const url = await this.toDataURL(f);
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+      const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, k = Math.min(1, 800 / Math.max(w, h));
+      const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(w * k)); cv.height = Math.max(1, Math.round(h * k));
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      const out = cv.toDataURL('image/png');
+      try { localStorage.setItem('qb_wm_custom', out); } catch (er) {}
+      const tone = this.state.wmCustomTone || 'white';
+      this.setState({ wmCustomAr: cv.height / cv.width, wmCustom: out, wmCustomTinted: await this.tint(out, tone) });
+    } catch (er) { alert((I18N[this.state.uiLang] || I18N.zh).wmBadFile); }
+  };
+  tint(src, tone) {
+    if (!src || tone === 'orig') return Promise.resolve('');
+    return new Promise(res => { const i = new Image(); i.onload = () => { const cv = document.createElement('canvas'); cv.width = i.naturalWidth; cv.height = i.naturalHeight; const c = cv.getContext('2d'); c.drawImage(i, 0, 0); c.globalCompositeOperation = 'source-in'; c.fillStyle = tone === 'black' ? '#000' : '#fff'; c.fillRect(0, 0, cv.width, cv.height); res(cv.toDataURL('image/png')); }; i.onerror = () => res(''); i.src = src; });
+  }
+  onWmTone = async e => { const tone = e.currentTarget.dataset.tone; this.saveUi({ wmCustomTone: tone }); const t = await this.tint(this.state.wmCustom, tone); this.setState({ wmCustomTinted: t }); };
+  onWmClear = () => { try { localStorage.removeItem('qb_wm_custom'); } catch (er) {} this.setState({ wmCustom: '', wmCustomTinted: '', wmEdit: null }); };
+  onWmReset = () => this.saveUi({ wmCustomW: 100, wmCustomPos: null });
+  onWmCustomTrans = e => this.saveUi({ wmCustomTrans: +e.target.value });
+  onWmCustomW = e => this.saveUi({ wmCustomW: +e.target.value });
   onWmTrans = e => this.saveUi({ wmTrans: +e.target.value });
   onSetScale = e => this.saveUi({ exportScale: +e.currentTarget.dataset.scale });
   onParAr = e => this.saveUi({ parAr: +e.currentTarget.dataset.par });
@@ -1397,7 +1647,37 @@ class Component extends DCLogic {
   onSetAlign = e => this.saveUi({ namesAlign: e.currentTarget.dataset.align });
   onSetLang = e => this.setState({ lang: e.currentTarget.dataset.lang });
   onSetUiLang = e => this.saveUi({ uiLang: e.currentTarget.dataset.uilang });
-  togglePanel = () => this.setState(s => ({ panelOpen: !s.panelOpen }));
+  togglePanel = () => { const open = !this.state.panelOpen; if (open && this.state.inspId) this.setState({ inspId: null }); if (open) { try { history.pushState({ nepPanel: 1 }, ''); this._panPushed = true; } catch (er) {} } else if (this._panPushed) { this._panPushed = false; try { history.back(); } catch (er) {} } this.setState({ panelOpen: open }); };
+  openEditor(key, wm) { if (!this._edPushed) { try { history.pushState({ nepEd: 1 }, ''); this._edPushed = true; } catch (er) {} } document.body.style.overflow = 'hidden'; this.setState({ editKey: key, edWm: !!wm, wmEdit: wm ? key : null, hoverKey: null }); }
+  closeEditor = () => this.doClose(false);
+  onInspect = e => {
+    const id = e.currentTarget.dataset.id;
+    if (this.state.panelOpen) this.togglePanel();
+    if (!this._inspL) { this._inspL = () => { cancelAnimationFrame(this._inspR); this._inspR = requestAnimationFrame(this.placeInsp); }; window.addEventListener('scroll', this._inspL, { passive: true, capture: true }); window.addEventListener('resize', this._inspL); }
+    this.setState(s => ({ inspId: s.inspId === id ? null : id }), () => requestAnimationFrame(this.placeInsp));
+  };
+  placeInsp = () => {
+    const id = this.state.inspId; if (!id || this.state.narrow) return;
+    const el = document.querySelector('[data-card="' + id + '"]'); if (!el) return;
+    const r = el.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, W = 360, G = 12, minT = (this.state.barH || 0) + G;
+    let left;
+    if (r.right + G + W <= vw - G) left = r.right + G;
+    else if (r.left - G - W >= G) left = r.left - G - W;
+    else left = vw - r.right >= r.left ? vw - G - W : G;
+    const top = Math.max(minT, Math.min(r.top, vh - G - 560));
+    const p = { left: Math.round(left), top: Math.round(top), maxH: Math.round(vh - top - G) }, o = this.state.inspPos;
+    if (!o || o.left !== p.left || o.top !== p.top || o.maxH !== p.maxH) this.setState({ inspPos: p });
+  };
+  closeDrawer = () => { if (this.state.panelOpen) this.togglePanel(); if (this.state.inspId) this.setState({ inspId: null }); };
+  doClose(fromPop) { if (!fromPop && this._edPushed) { this._edPushed = false; try { history.back(); } catch (er) {} } document.body.style.overflow = ''; this._drag = null; if (this._tp) this._tp.clear(); this.setState({ editKey: null, edWm: false, wmEdit: null, panning: false }); }
+  edFa() { const k = this.state.editKey; return k ? this.frameAspect(k.split(':')[1], this.state.ratio) : 1; }
+  edFlip = () => this.flipPhoto(this.state.editKey);
+  edLock = () => this.toggleLock(this.state.editKey);
+  edReplace = () => this.pick(this.state.editKey);
+  edRot = () => this.updateCrop(this.state.editKey, c => ({ ...c, r: Math.round((c.r + 90) / 90) * 90 }), this.edFa());
+  edRotSlide = e => { let v = +e.target.value; const nr = Math.round(v / 90) * 90; if (Math.abs(v - nr) < 3) v = nr; this.updateCrop(this.state.editKey, c => ({ ...c, r: v }), this.edFa()); };
+  edZoom = e => { const sc = Math.pow(8, +e.target.value); this.updateCrop(this.state.editKey, c => { const f = sc / c.s; return { ...c, s: sc, x: c.x * f, y: c.y * f }; }, this.edFa()); };
+  edReset = () => { const k = this.state.editKey; if (!k) return; const [id, slot] = k.split(':'), ck = this.ck(slot, this.state.ratio); this.setState(s => ({ cards: s.cards.map(c => { if (c.id !== id) return c; const crop = { ...c.crop }; delete crop[ck]; return { ...c, crop }; }) })); };
   onSetTouch = e => this.setState({ touchEdit: e.currentTarget.dataset.touch === '1' });
   toggleImport = () => this.setState(s => ({ showImport: !s.showImport }));
   onRaw = e => this.setState({ raw: e.target.value });
@@ -1447,6 +1727,22 @@ class Component extends DCLogic {
       });
     }
   };
+  toggleSel = () => this.setState(s => ({ selMode: !s.selMode, sel: {} }));
+  onToggleSel = e => { const id = e.currentTarget.dataset.id, on = e.currentTarget.checked; this.setState(s => ({ sel: { ...(s.sel || {}), [id]: on } })); };
+  selAllToggle = () => this.setState(s => { const all = s.cards.length && s.cards.every(c => (s.sel || {})[c.id]); return { sel: all ? {} : Object.fromEntries(s.cards.map(c => [c.id, true])) }; });
+  deleteSel = () => {
+    const sel = this.state.sel || {}, ids = this.state.cards.filter(c => sel[c.id]).map(c => c.id);
+    if (!ids.length) return;
+    const T = I18N[this.state.uiLang] || I18N.zh;
+    if (!confirm(T.confirmDelN.replace('{n}', ids.length))) return;
+    ids.forEach(id => ['m', 'f', 's'].forEach(sl => this.idb('readwrite', st => st.delete(id + ':' + sl))));
+    this.setState(s => {
+      const photos = { ...s.photos };
+      ids.forEach(id => ['m', 'f', 's'].forEach(sl => delete photos[id + ':' + sl]));
+      const cards = s.cards.filter(c => !ids.includes(c.id));
+      return { cards, photos, sel: {}, selMode: cards.length ? s.selMode : false };
+    });
+  };
   exportAll = async () => {
     if (this.state.busyAll) return;
     this.setState({ busyAll: true });
@@ -1459,20 +1755,23 @@ class Component extends DCLogic {
     const st = this.state;
     const T = I18N[st.uiLang] || I18N.zh;
     const hk = st.hoverKey, hp = hk && st.photos[hk];
-    const tipL = !hp || st.panning ? [] : (this.isLocked(hk, st) ? [T.tipLocked, T.tipUnlock] : [T.tipPan, T.tipZoom, hk.endsWith(':s') ? T.tipRot : null, T.tipLock]).concat([T.tipDrop]);
+    const tipL = !hp || st.panning ? [] : (this.isLocked(hk, st) ? [T.tipLocked, T.tipUnlock] : [T.tipPan, T.tipZoom, hk.endsWith(':s') ? T.tipRot : null, T.tipLock]).concat([T.tipFlip, T.tipDrop]);
     const tip = { display: tipL.length && !st.narrow && !st.tipGone ? 'block' : 'none', lines: tipL.filter(Boolean).map(txt => ({ txt })) };
     const H = this.canvasH();
     const r34 = st.ratio === '34', r45 = st.ratio === '78', g = this.geo(st.ratio), sw = g.sw, sh = g.sh, colGap = g.colGap, bs = sh, rowH = 0, avail = g.avail, parH = g.parH, lang = st.lang === 'en' ? 'en' : 'zh';
     const nr = !!st.narrow, listPad = nr ? 12 : 20, cardPad = nr ? 12 : 18;
-    const W = st.vw || 1000, vh = st.vh || 900, FORM = 320, CHROME = 36 + 22;
+    const W = st.vw || 1000, vh = st.vh || 900, FORM = 0, CHROME = 2 * cardPad;
+    const stackHome = nr || W < 1120;
     const barH = st.barH || 0, sticky = !barH || barH <= vh * 0.3;
-    const availH = vh - (sticky ? barH : 0) - listPad - 2 * cardPad - 46;
+    const ovh = st.ovh || (2 * cardPad + 96);
+    const availH0 = vh - (sticky ? barH : 0) - (st.footH || 0) - listPad - ovh;
+    const target = Math.max(nr ? 300 : 440, Math.min(Math.max(200, availH0 * 1080 / H) + CHROME + FORM, 1400));
+    const cols = Math.max(1, Math.floor((W + 20) / (target + 20)));
+    const availH = availH0 - listPad;
     const pwCap = Math.max(200, availH * 1080 / H);
-    const target = Math.max(820, Math.min(pwCap + CHROME + FORM, 1400));
-    const cols = Math.max(1, Math.round((W + 20) / (target + 20)));
     const cellW = (W - 20 * (cols - 1)) / cols;
     const stacked = cellW - CHROME - FORM < 420;
-    const pw = Math.floor(Math.max(200, Math.min(stacked ? cellW - 2 * cardPad : cellW - CHROME - FORM, pwCap)));
+    const pw = Math.floor(Math.max(200, Math.min(cellW - 2 * cardPad, pwCap)));
     const sc = pw / 1080, ph = Math.round(H * sc);
     const rowCols = stacked ? 'minmax(0,1fr)' : pw + 'px minmax(0,520px)';
     const rLabel = st.ratio === '34' ? '3:4' : st.ratio === '78' ? T.free : '1:1';
@@ -1480,15 +1779,17 @@ class Component extends DCLogic {
     const ns = st.nameScale ?? 1, xs = st.exportScale ?? 2;
     const nj = (r34 || r45) ? ({ top: 'flex-start', bottom: 'flex-end' }[st.namesAlign] || 'center') : 'flex-start';
     const seedJustify = r45 && foot === 'left' ? 'space-between' : 'flex-start', seedPadB = 0;
-    const rows = st.cards.map((c, i) => {
-      const photo = slot => {
+    const photoOf = (c, slot) => {
         const key = c.id + ':' + slot, p = st.photos[key], hl = st.dragKey === key;
         if (!p) return { has: false, empty: true, hl, locked: false, cursor: 'pointer' };
         const locked = this.isLocked(key, st);
         const cr = this.clampCrop(this.rawCrop(key, st), p.ar, this.frameAspect(slot, st.ratio));
-        return { has: true, empty: false, hl, locked, lockTip: locked && st.hoverKey === key, cursor: locked ? 'default' : 'grab', src: p.src, w: (() => { const th = cr.r * Math.PI / 180, ac = Math.abs(Math.cos(th)).toFixed(5), as = Math.abs(Math.sin(th)).toFixed(5); return 'max(calc(100cqw * ' + ac + ' + 100cqh * ' + as + '), calc(' + p.ar.toFixed(5) + ' * (100cqw * ' + as + ' + 100cqh * ' + ac + ')))'; })(), tf: 'translate(-50%, -50%) translate(' + cr.x.toFixed(2) + 'cqw, ' + cr.y.toFixed(2) + 'cqh) scale(' + cr.s.toFixed(3) + ') rotate(' + cr.r + 'deg)' };
+        const fl = !!(c.flip && c.flip[slot]);
+        return { has: true, empty: false, hl, locked, flipped: fl ? 'true' : 'false', flipBtn: st.hoverKey === key && !st.panning && !st.touch, flipBg: fl ? '#f2c14e' : 'rgba(27,26,23,.62)', flipFg: fl ? '#1b1a17' : '#fff', flipIco: fl ? 'scaleX(-1)' : 'none', lockTip: locked && st.hoverKey === key && !st.touch, cursor: locked ? 'default' : 'grab', src: p.src, w: (() => { const th = cr.r * Math.PI / 180, ac = Math.abs(Math.cos(th)).toFixed(5), as = Math.abs(Math.sin(th)).toFixed(5); return 'max(calc(100cqw * ' + ac + ' + 100cqh * ' + as + '), calc(' + p.ar.toFixed(5) + ' * (100cqw * ' + as + ' + 100cqh * ' + ac + ')))'; })(), tf: 'translate(-50%, -50%) translate(' + cr.x.toFixed(2) + 'cqw, ' + cr.y.toFixed(2) + 'cqh) scale(' + cr.s.toFixed(3) + ') rotate(' + cr.r + 'deg) scaleX(' + (fl ? -1 : 1) + ')' };
       };
-      const wm = (t, n) => ({ yab: t === 'yabbie', xy: t === 'xianyu', xhs: t === 'xhs', fb: t === 'fb', ig: t === 'ig', name: n || '' });
+    const rows = st.cards.map((c, i) => {
+      const photo = slot => photoOf(c, slot);
+      const wm = (t, n) => ({ xy: t === 'xianyu', xhs: t === 'xhs', fb: t === 'fb', ig: t === 'ig', custom: t === 'custom' && !!st.wmCustom, name: n || '' });
       const slotM = c.id + ':m', slotF = c.id + ':f', slotS = c.id + ':s';
       const sig = [c.cnM, c.cnF, c.enM, c.enF, lang, st.ratio, ns, foot, st.seedW, st.seedAr, st.parAr].join('|');
       const fst = this._fitState[sig] || {};
@@ -1504,24 +1805,50 @@ class Component extends DCLogic {
         hasCnF: !!c.cnF, hasEnM: !!c.enM, hasEnF: !!c.enF,
         pm: photo('m'), pf: photo('f'), ps: photo('s'), slotM, slotF, slotS,
         wmM: wm(c.wmMType, c.wmMName), wmF: wm(c.wmFType, c.wmFName),
-        label: rLabel + T.expSuffix + 1080 * xs + '×' + H * xs,
+        wmCurM: st.wmEdit === slotM ? 'move' : 'inherit', wmTouchM: st.wmEdit === slotM ? 'none' : 'auto', wmDispM: st.wmEdit === slotM ? 'block' : 'none',
+        wmCurF: st.wmEdit === slotF ? 'move' : 'inherit', wmTouchF: st.wmEdit === slotF ? 'none' : 'auto', wmDispF: st.wmEdit === slotF ? 'block' : 'none',
+        dropFs: Math.round(Math.max(34, 15 / sc)), dropFs2: Math.round(Math.max(24, 11 / sc)), label: rLabel + T.expSuffix + 1080 * xs + '×' + H * xs,
         exportLabel: st.busy === key ? T.exporting : T.exportPre + (st.fmt === 'jpg' ? 'JPG' : 'PNG'),
       };
       const tg = ' #' + (i + 1) + (c.num ? ' · ' + c.num : '');
-      return { ...c, pickMAria: T.pickM + tg, pickFAria: T.pickF + tg, pickSAria: T.pickS + tg, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmMType), fXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmFType) };
+      const isSel = !!(st.selMode && (st.sel || {})[c.id]);
+      return { ...c, demo: !!c.demo, sel: isSel, selRing: isSel ? '0 0 0 2px #a2382c' : st.inspId === c.id ? '0 0 0 2px #22211e' : 'none', pw, edPressed: st.inspId === c.id ? 'true' : 'false', edBg: st.inspId === c.id ? '#22211e' : '#fff', edFg: st.inspId === c.id ? '#fff' : '#22211e', edBd: st.inspId === c.id ? '#22211e' : '#d3d0c8', pickMAria: T.pickM + tg, pickFAria: T.pickF + tg, pickSAria: T.pickS + tg, views: [view], slotM, slotF, slotS, title: '#' + (i + 1) + (c.num ? ' · ' + c.num : ''), mXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmMType), fXianyu: ['xianyu', 'xhs', 'fb', 'ig'].includes(c.wmFType) };
     });
+    const ed = (() => {
+      const ek = st.editKey, p = ek && st.photos[ek], ec = ek && st.cards.find(c => c.id === ek.split(':')[0]);
+      if (!ec || (!p && !st.edWm)) return { show: false };
+      const slot = ek.split(':')[1], pv = p ? photoOf(ec, slot) : {}, fa = this.frameAspect(slot, st.ratio), iw = typeof window !== 'undefined' ? window.innerWidth : 390;
+      const ew = Math.floor(Math.min(iw - 24, Math.max(160, vh - 48 - (st.edWm || slot === 's' ? 165 : 120) - 40) * fa)), cr = p ? this.clampCrop(this.rawCrop(ek, st), p.ar, fa) : { s: 1 }, lk = this.isLocked(ek, st), fl = pv.flipped === 'true', gg = this.geo(st.ratio), dw = slot === 's' ? gg.sw : 523, dh = slot === 's' ? gg.sh : gg.parH;
+      const nm = T[{ m: 'phoM', f: 'phoF', s: 'phoS' }[slot]], idx = st.cards.indexOf(ec) + 1;
+      return { show: true, photoMode: !st.edWm, wmMode: !!st.edWm, hasPhoto: !!p, dw, dh, sc: ew / dw, key: ek, w: ew, h: Math.round(ew / fa), src: pv.src, imgW: pv.w, tf: pv.tf, locked: lk, showRot: slot === 's' && !st.edWm, rotVal: String(((Math.round(cr.r || 0) + 180) % 360 + 360) % 360 - 180), rotLabel: ((((Math.round(cr.r || 0) + 180) % 360 + 360) % 360) - 180) + '°', hint: st.edWm ? T.edHintW : slot === 's' ? T.edHintS : T.edHint, title: nm + ' · #' + idx + (ec.num ? ' · ' + ec.num : ''), zoomVal: String(+(Math.log(cr.s) / Math.log(8)).toFixed(4)), zoomLabel: cr.s.toFixed(1) + '×', flipBg: fl ? '#f2c14e' : '#3a3934', flipFg: fl ? '#1b1a17' : '#f3f0e6', lockBg: lk ? '#f2c14e' : '#3a3934', lockFg: lk ? '#1b1a17' : '#f3f0e6', lockLabel: lk ? T.edUnlock : T.edLock };
+    })();
     const opt1 = (k, label, on) => ({ key: k, label, bg: on ? '#22211e' : 'transparent', fg: on ? '#fff' : '#3a3934' });
     const opt = (k, label, cur) => ({ key: k, label, bg: k === cur ? '#22211e' : 'transparent', fg: k === cur ? '#fff' : '#3a3934' });
+    const insp = st.inspId ? rows.find(r => r.id === st.inspId) : null, drawerCard = !!insp, drawerSet = !insp && !!st.panelOpen, drawerOpen = drawerCard || drawerSet;
     return {
+      insp: insp || {}, drawerCard, drawerSet, drawerOpen, drawerTitle: insp ? T.drEdit + ' ' + insp.title : T.drSettings, onInspect: this.onInspect, closeDrawer: this.closeDrawer,
+      ...(() => { const ip = !nr && drawerCard && st.inspPos; if (ip) return { asPos: 'fixed', asTop: ip.top + 'px', asB: 'auto', asL: ip.left + 'px', asR: 'auto', asW: '360px', asH: 'auto', asMaxH: ip.maxH + 'px', asBd: '1px solid #dcd9d2', asRad: '14px', asSh: '0 2px 6px rgba(0,0,0,.06), 0 24px 60px -20px rgba(0,0,0,.28)' }; return { asMaxH: 'none', asPos: 'fixed', asTop: (nr ? barH : barH + 12) + 'px', asB: nr ? '0' : '12px', asL: nr ? '0' : 'auto', asR: nr ? '0' : '12px', asW: nr ? 'auto' : '360px', asH: 'auto', asBd: nr ? '0' : '1px solid #dcd9d2', asRad: nr ? '0' : '14px', asSh: nr ? 'none' : '0 2px 6px rgba(0,0,0,.06), 0 24px 60px -20px rgba(0,0,0,.28)' }; })(),
+      uiOther: st.uiLang === 'en' ? 'zh' : 'en', uiOtherLabel: st.uiLang === 'en' ? '中文' : 'EN', noWmCustom: !st.wmCustom, fmtOpts: [opt('png', 'PNG', st.fmt === 'jpg' ? 'jpg' : 'png'), opt('jpg', 'JPG', st.fmt === 'jpg' ? 'jpg' : 'png')], ...(() => { const m = nr ? 'C' : (st.barMode || 'C'), one = m === 'A' || m === 'A+'; return { eyeMax: m === 'A+' ? '400px' : '0px', actOrder: one ? 2 : 3, actFlex: one ? '1 1 auto' : '1 1 100%', actOv: m === 'C' ? 'auto' : 'visible', setOrder: one ? 3 : 2, setML: one ? '0' : 'auto' }; })(), bTitleRef: this.bTitleRef, bEyeRef: this.bEyeRef, bG1Ref: this.bG1Ref, bG2Ref: this.bG2Ref, bSetRef: this.bSetRef,
+      setPressed: drawerSet ? 'true' : 'false', setBg: drawerSet ? '#22211e' : '#fff', setFg: drawerSet ? '#fff' : '#22211e', setBd: drawerSet ? '#22211e' : '#d3d0c8',
       barRef: this.barRef, barPos: sticky ? 'sticky' : 'relative',
-      narrow: nr, narrowDisp: nr ? 'flex' : 'none', wideDisp: nr ? 'none' : 'flex', barPad: nr ? '10px 12px' : '12px 20px', listPad, cardPad,
+      narrow: nr, narrowDisp: nr ? 'flex' : 'none', wideDisp: nr ? 'none' : 'flex', barPad: nr ? '8px 12px' : '9px 20px', listPad, cardPad,
       ctlDisp: !nr || st.panelOpen ? 'flex' : 'none', ctlMax: nr ? '68vh' : 'none', ctlOv: nr ? 'auto' : 'visible',
       panelLabel: st.panelOpen ? T.closeSettings + ' ▴' : T.settings + ' ▾', panelBg: st.panelOpen ? '#22211e' : '#fff', panelFg: st.panelOpen ? '#fff' : '#22211e', togglePanel: this.togglePanel,
-      touchAct: nr && !st.touchEdit ? 'pan-y' : 'none', onSetTouch: this.onSetTouch, touchOpts: [opt1('0', T.off, !st.touchEdit), opt1('1', T.on, !!st.touchEdit)],
-      rows, cols, rowCols, listRef: this.listRef, ui: T, tip, tipRef: this.tipRef,
+      touchAct: nr || st.touch ? 'pan-y' : 'none', tapHintDisp: nr || st.touch ? 'block' : 'none', ed, closeEditor: this.closeEditor, edFlip: this.edFlip, edLock: this.edLock, edReset: this.edReset, edRot: this.edRot, edRotSlide: this.edRotSlide, edZoom: this.edZoom, edReplace: this.edReplace, onSetTouch: this.onSetTouch, touchOpts: [opt1('0', T.off, !st.touchEdit), opt1('1', T.on, !!st.touchEdit)],
+      selMode: !!st.selMode, selOff: !st.selMode, toggleSel: this.toggleSel, onToggleSel: this.onToggleSel, selAllToggle: this.selAllToggle, deleteSel: this.deleteSel,
+      ...(() => { const sel = st.sel || {}, n = st.cards.filter(c => sel[c.id]).length, t = st.cards.length; return { selCountTxt: T.selCount.replace('{n}', n).replace('{t}', t), selAllLabel: t && n === t ? T.selNone : T.selAll, delSelLabel: T.selDel + (n ? ' (' + n + ')' : ''), delSelOp: n ? 1 : 0.4 }; })(),
+      heroW: 'min(calc(100% - 70px), ' + (stackHome ? 560 : Math.max(240, Math.round((vh - barH - 2 * listPad - 28 - 22 - 56) * 2160 / 2390))) + 'px)',
+      heroH: Math.max(360, vh - barH) + 'px',
+      listMinH: Math.max(0, vh - (sticky ? barH : 0) - (st.footH || 0)) + 'px',
+      heroRef: this.heroRef, onHeroNext: this.onHeroNext, onHeroDot: this.onHeroDot, onHeroTouch: this.onHeroTouch,
+      heroStack: (() => { const n = this.heroCards.length, idx = st.heroIdx || 0; return this.heroCards.map((c, i) => { const p = (i - idx + n) % n, top = p === 0; return { src: c.src, pad: c.pad, z: n - p, shadow: top ? '0 2px 4px rgba(0,0,0,.12), 0 30px 60px -24px rgba(0,0,0,.4)' : '0 1px 3px rgba(0,0,0,.12), 0 10px 24px -14px rgba(0,0,0,.28)', tf: 'translate(' + (top ? 0 : c.x) + 'px,' + (top ? 0 : c.y - p * 6) + 'px) rotate(' + (top ? c.rot * 0.4 : c.rot) + 'deg) scale(' + (1 - p * 0.04) + ')', cursor: top ? 'pointer' : 'default', dim: top ? '0' : String(Math.min(0.28, p * 0.09)) }; }); })(),
+      heroDots: this.heroCards.map((c, i) => ({ i, bg: i === (st.heroIdx || 0) ? '#22211e' : '#c9c6bd', w: i === (st.heroIdx || 0) ? '18px' : '6px' })),
+      eyebrowDisp: st.uiLang === 'en' ? 'none' : 'block', titleLs: st.uiLang === 'en' ? '.01em' : '.04em', titleWs: st.uiLang === 'en' ? 'normal' : 'nowrap', titleSize: (st.uiLang === 'en' ? (nr ? 36 : 46) : (nr ? 40 : 52)) + 'px', splitGap: stackHome ? '72px' : '48px',
+      splitCols: stackHome ? 'minmax(0,1fr)' : 'minmax(440px,470px) minmax(0,1fr)', splitAlign: stackHome ? 'center' : 'flex-start', splitText: stackHome ? 'center' : 'left',
+      rows, cols, rowCols, listRef: this.listRef, ui: nr || st.touch ? { ...T, drop: T.dropTouch } : T, tip, tipRef: this.tipRef,
       ghMeta: [T.ghDesc, (st.gh || {}).lic, (st.gh || {}).pushed ? T.ghUpd + st.gh.pushed : ''].filter(Boolean).join(' · '),
       ghStarTxt: '★ ' + T.ghStar + ((st.gh || {}).stars != null ? ' ' + st.gh.stars : ''),
-      uiOpts: [opt('zh', '中文', st.uiLang || 'zh'), opt('en', 'English', st.uiLang || 'zh')], onSetUiLang: this.onSetUiLang,
+      uiOpts: [opt('zh', '中文', st.uiLang || 'zh'), opt('en', 'EN', st.uiLang || 'zh')], onSetUiLang: this.onSetUiLang,
       onRawKey: this.onRawKey, noCards: !st.cards.length, emptyHome: !st.cards.length && !st.showImport,
       presetOpts: Object.keys(PRESETS).map(k => { const p = PRESETS[k]; return opt(k, k, st.foot78 === p.foot && st.seedW === p.w && Math.abs(st.seedAr - p.ar) < 0.001 ? k : ''); }), onPreset: this.onPreset,
       ratioOpts: [opt('11', '1:1', st.ratio), opt('34', '3:4', st.ratio), opt('78', T.free, st.ratio)],
@@ -1529,6 +1856,7 @@ class Component extends DCLogic {
       langOpts: [opt('zh', T.cardBoth, lang), opt('en', T.cardEn, lang)], onSetLang: this.onSetLang,
       years: [...new Set(st.cards.map(c => c.year).filter(Boolean))].sort().map(y => { const cur = this.yc(y).toLowerCase(), on = st.activeYear === y; return { year: y, color: cur, name: st.uiLang === 'en' ? cur : (COLOR_NAME[cur] || cur), border: on ? '#22211e' : '#dcd9d2', shadow: on ? '0 0 0 1px #22211e' : 'none' }; }),
       scaleOpts: [1, 2, 4].map(n => opt(n, n + '×', xs)), onSetScale: this.onSetScale,
+      wmCustomOpacity: (100 - (st.wmCustomTrans ?? 10)) / 100, wmCustomTransVal: String(st.wmCustomTrans ?? 10), wmCustomTransLabel: (st.wmCustomTrans ?? 10) + '%', onWmCustomTrans: this.onWmCustomTrans, wmCustomSrc: st.wmCustomTinted || st.wmCustom || '', hasWmCustom: !!st.wmCustom, wmToneOpts: [['white', T.wmToneWhite], ['black', T.wmToneBlack], ['orig', T.wmToneOrig]].map(([k, l]) => ({ key: k, label: l, bg: (st.wmCustomTone || 'white') === k ? '#22211e' : 'transparent', fg: (st.wmCustomTone || 'white') === k ? '#fff' : '#3a3934' })), onWmTone: this.onWmTone, ...(() => { const pct = st.wmCustomW || 100, W = Math.round(pct * 0.86), pos = st.wmCustomPos || { fx: 1, fy: 1 }, H = W * (st.wmCustomAr || 1); return { wmCustomPx: W, wmCustomL: 'clamp(' + (14 + W / 2) + 'px, ' + pos.fx * 100 + '%, calc(100% - ' + (14 + W / 2) + 'px))', wmCustomT: 'clamp(' + (12 + H / 2) + 'px, ' + pos.fy * 100 + '%, calc(100% - ' + (12 + H / 2) + 'px))', wmCustomWLabel: Math.round(pct) + '%', wmCustomWVal: String(Math.round(pct)) }; })(), onWmReset: this.onWmReset, wmFileRef: this.wmFileRef, onWmPick: this.onWmPick, onWmFile: this.onWmFile, onWmClear: this.onWmClear, onWmCustomW: this.onWmCustomW, wmUploadLabel: st.wmCustom ? T.wmReplace : T.wmUpload,
       wmOpacity: (100 - (st.wmTrans ?? 10)) / 100, wmTransVal: String(st.wmTrans ?? 10), wmTransLabel: (st.wmTrans ?? 10) + '%', onWmTrans: this.onWmTrans,
       nameScaleVal: String(ns), nameScaleLabel: Math.round(ns * 100) + '%', onNameScale: this.onNameScale,
       alignOpts: [opt('top', T.top, st.namesAlign), opt('center', T.center, st.namesAlign || 'center'), opt('bottom', T.bottom, st.namesAlign)], onSetAlign: this.onSetAlign,
@@ -1540,8 +1868,8 @@ class Component extends DCLogic {
       fileRef: this.fileRef,
       onSetRatio: this.onSetRatio, onSetFmt: this.onSetFmt,
       fmtPngBg: st.fmt !== 'jpg' ? '#22211e' : '#fff', fmtPngFg: st.fmt !== 'jpg' ? '#fff' : '#22211e', fmtJpgBg: st.fmt === 'jpg' ? '#22211e' : '#fff', fmtJpgFg: st.fmt === 'jpg' ? '#fff' : '#22211e', toggleImport: this.toggleImport, onRaw: this.onRaw,
-      doImport: this.doImport, addCard: this.addCard, onField: this.onField, onYearColor: this.onYearColor,
-      resetColors: this.resetColors, onFile: this.onFile, onUpload: this.onUpload, projRef: this.projRef, onProjFile: this.onProjFile, saveProjectUi: this.saveProjectUi, openProjectUi: this.openProjectUi, hasCards: !!st.cards.length, saveProjLabel: st.projBusy === 'save' ? T.saving : T.saveProj, openProjLabel: st.projBusy === 'open' ? T.opening : T.openProj, onAction: this.onAction, exportAll: this.exportAll,
+      doImport: this.doImport, addCard: this.addCard, onField: this.onField, onFlip: this.onFlip, onYearColor: this.onYearColor,
+      resetColors: this.resetColors, onFile: this.onFile, onUpload: this.onUpload, projRef: this.projRef, onProjFile: this.onProjFile, saveProjectUi: this.saveProjectUi, projAsk: !!st.projAsk, projAskYes: this.projAskYes, projAskNo: this.projAskNo, stopProp: this.stopProp, openProjectUi: this.openProjectUi, hasCards: !!st.cards.length, saveProjLabel: st.projBusy === 'save' ? T.saving : T.saveProj, openProjLabel: st.projBusy === 'open' ? T.opening : T.openProj, onAction: this.onAction, exportAll: this.exportAll,
     };
   }
 }
