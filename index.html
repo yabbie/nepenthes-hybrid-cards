@@ -144,7 +144,7 @@ body { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
       <div ref="{{ heroRef }}" onTouchStart="{{ onHeroTouch }}" onTouchEnd="{{ onHeroTouch }}" style="position:relative; width:{{ heroW }}; aspect-ratio:2160 / 2390; touch-action:pan-y; user-select:none">
         <sc-for list="{{ heroStack }}" as="c" hint-placeholder-count="4">
           <div onClick="{{ onHeroNext }}" style="position:absolute; inset:0; z-index:{{ c.z }}; transform:{{ c.tf }}; transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s; background:#fff; padding:{{ c.pad }}; box-sizing:border-box; box-shadow:{{ c.shadow }}; cursor:{{ c.cursor }}">
-            <img src="{{ c.src }}" alt="" draggable="false" style="display:block; width:100%; height:100%; object-fit:cover; pointer-events:none">
+            <img src="{{ c.src }}" alt="" draggable="false" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none">
             <div style="position:absolute; inset:0; background:#e7e5e0; opacity:{{ c.dim }}; transition:opacity .5s; pointer-events:none"></div>
           </div>
         </sc-for>
@@ -481,8 +481,6 @@ const YEAR_COLORS = { '2022': '#847060', '2023': '#687865', '2024': '#5e7775', '
 const CYCLE = ['#687865', '#5e7775', '#617686', '#777086', '#8f6b5e', '#8d6a6c', '#847060'];
 const DEF = { x: 0, y: 0, s: 1 };
 const PRESETS = { A: { foot: 'right', w: 340, ar: 1 }, B: { foot: 'full', w: 380, ar: 1.3 }, C: { foot: 'left', w: 410, ar: 1.6 } };
-const DEMO = { m: { src: 'assets/demo-mother.jpg', ar: 0.7994 }, f: { src: 'assets/demo-father.jpg', ar: 0.75 }, s: { src: 'assets/demo-seed.jpg', ar: 1.3323 } };
-const DEMO_CROP = { m: { x: 2, y: -4, s: 1.12 }, f: { x: 0, y: 0, s: 1.05 }, s: { x: 5.5, y: 0, s: 1.05 } };
 const RAW = [
   "飞翼海盗x[(飞翼奇异x黑月苹果)x(飞翼奇异x(海盗x苹果))]\tN. Viking Winged x ((mirabilis Winged x ampullaria 'Black Miracle') x (mirabilis Winged x (Viking x ampullaria))), YAB-X2607",
   "[(三色莱佛士x海盗)x莱佛士]x草莓新地\tN. ((rafflesiana Tricolor x Viking) x rafflesiana) x 'Strawberry Sundae', YAB-X2611",
@@ -597,10 +595,11 @@ class Component extends DCLogic {
   state = this.initState();
   fileRef = React.createRef();
   heroCards = [
-    { src: 'assets/demo-card.jpg', pad: '0', rot: -2, x: 0, y: 0 },
-    { src: 'assets/hero-2635.jpg', pad: '0', rot: 7, x: 28, y: -10 },
-    { src: 'assets/hero-2619.jpg', pad: '0', rot: -8, x: -30, y: 12 },
-    { src: 'assets/hero-2626.jpg', pad: '0', rot: 4, x: 18, y: 20 },
+    { src: 'assets/hero-2611.jpg', pad: '0', rot: -2, x: 0, y: 0 },
+    { src: 'assets/hero-2613.jpg', pad: '0', rot: 7, x: 28, y: -10 },
+    { src: 'assets/hero-2623.jpg', pad: '0', rot: -8, x: -30, y: 12 },
+    { src: 'assets/hero-2625.jpg', pad: '0', rot: 4, x: 18, y: 20 },
+    { src: 'assets/hero-2635.jpg', pad: '0', rot: -5, x: -20, y: 28 },
   ];
   heroStep = d => this.setState(s => { const n = this.heroCards.length; return { heroIdx: (((s.heroIdx || 0) + d) % n + n) % n }; });
   onHeroWheel = e => {
@@ -1837,8 +1836,8 @@ class Component extends DCLogic {
       touchAct: nr || st.touch ? 'pan-y' : 'none', tapHintDisp: nr || st.touch ? 'block' : 'none', ed, closeEditor: this.closeEditor, edFlip: this.edFlip, edLock: this.edLock, edReset: this.edReset, edRot: this.edRot, edRotSlide: this.edRotSlide, edZoom: this.edZoom, edReplace: this.edReplace, onSetTouch: this.onSetTouch, touchOpts: [opt1('0', T.off, !st.touchEdit), opt1('1', T.on, !!st.touchEdit)],
       selMode: !!st.selMode, selOff: !st.selMode, toggleSel: this.toggleSel, onToggleSel: this.onToggleSel, selAllToggle: this.selAllToggle, deleteSel: this.deleteSel,
       ...(() => { const sel = st.sel || {}, n = st.cards.filter(c => sel[c.id]).length, t = st.cards.length; return { selCountTxt: T.selCount.replace('{n}', n).replace('{t}', t), selAllLabel: t && n === t ? T.selNone : T.selAll, delSelLabel: T.selDel + (n ? ' (' + n + ')' : ''), delSelOp: n ? 1 : 0.4 }; })(),
-      heroW: 'min(calc(100% - 70px), ' + (stackHome ? 560 : Math.max(240, Math.round((vh - barH - 2 * listPad - 28 - 22 - 56) * 2160 / 2390))) + 'px)',
-      heroH: Math.max(360, vh - barH) + 'px',
+      heroW: 'min(calc(100% - 70px), ' + (stackHome ? 560 : Math.max(240, Math.round((vh - (sticky ? barH : 0) - (st.footH || 0) - 2 * listPad - 28 - 22 - 56) * 2160 / 2390))) + 'px)',
+      heroH: Math.max(360, vh - (sticky ? barH : 0) - (st.footH || 0)) + 'px',
       listMinH: Math.max(0, vh - (sticky ? barH : 0) - (st.footH || 0)) + 'px',
       heroRef: this.heroRef, onHeroNext: this.onHeroNext, onHeroDot: this.onHeroDot, onHeroTouch: this.onHeroTouch,
       heroStack: (() => { const n = this.heroCards.length, idx = st.heroIdx || 0; return this.heroCards.map((c, i) => { const p = (i - idx + n) % n, top = p === 0; return { src: c.src, pad: c.pad, z: n - p, shadow: top ? '0 2px 4px rgba(0,0,0,.12), 0 30px 60px -24px rgba(0,0,0,.4)' : '0 1px 3px rgba(0,0,0,.12), 0 10px 24px -14px rgba(0,0,0,.28)', tf: 'translate(' + (top ? 0 : c.x) + 'px,' + (top ? 0 : c.y - p * 6) + 'px) rotate(' + (top ? c.rot * 0.4 : c.rot) + 'deg) scale(' + (1 - p * 0.04) + ')', cursor: top ? 'pointer' : 'default', dim: top ? '0' : String(Math.min(0.28, p * 0.09)) }; }); })(),
