@@ -158,7 +158,7 @@ body { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
   </div>
 </sc-if>
 
-<div ref="{{ listRef }}" style="padding:{{ listPad }}px; box-sizing:border-box; min-height:{{ listMinH }}; display:{{ listDisp }}; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:{{ listPad }}px; align-content:center; align-items:start; justify-items:center">
+<div ref="{{ listRef }}" style="padding:{{ listPad }}px; box-sizing:border-box; min-height:{{ listMinH }}; display:{{ listDisp }}; grid-template-columns:repeat({{ cols }}, minmax(0,1fr)); gap:{{ listPad }}px; align-content:center; align-items:start; justify-items:start">
 <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
 <div data-card="{{ r.id }}" style="min-width:0; max-width:100%; background:#fbfaf8; border-radius:14px; box-shadow:{{ r.selRing }}; padding:{{ cardPad }}px; display:flex; flex-direction:column; gap:10px; transition:box-shadow .2s">
   <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:{{ r.pw }}px; max-width:100%">
@@ -398,7 +398,11 @@ body { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
   </div>
 </sc-if>
 
-<footer style="margin-top:auto; position:sticky; bottom:0; z-index:15; background:#22211e; color:#f3f1ec; padding:20px {{ listPad }}px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:18px 40px">
+<footer style="margin-top:auto; position:sticky; bottom:0; z-index:15; background:#22211e; color:#f3f1ec">
+  <button onClick="{{ toggleFoot }}" title="{{ footBtnTip }}" aria-label="{{ footBtnTip }}" aria-expanded="{{ footExpanded }}" style="position:absolute; right:{{ listPad }}px; bottom:100%; display:flex; align-items:center; justify-content:center; width:44px; height:22px; padding:0; border:0; border-radius:8px 8px 0 0; background:#22211e; color:#a7a399; cursor:pointer" style-hover="color:#f3f1ec; background:#2d2c28"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; transition:transform .25s; transform:rotate({{ footRot }})"><path d="M3.5 6l4.5 4.5L12.5 6"></path></svg></button>
+  <div style="display:grid; grid-template-rows:{{ footRows }}; visibility:{{ footVis }}; transition:grid-template-rows .25s ease, visibility 0s linear {{ footVisDelay }}">
+  <div style="overflow:hidden; min-height:0">
+  <div style="padding:20px {{ listPad }}px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:18px 40px">
   <div style="display:flex; flex-direction:column; gap:10px; min-width:0">
     <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 14px; min-width:0">
       <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.3em; color:#8f8b82">FOLLOW · YABBIE</div>
@@ -428,6 +432,9 @@ body { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
     <a href="https://yabbie.github.io/nepenthes-hybrid-cards/" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghLive }} ↗</a>
     <a href="https://github.com/yabbie/nepenthes-hybrid-cards/issues" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghIssues }} ↗</a>
     <a href="llms.txt" target="_blank" rel="noopener" style="white-space:nowrap; color:#a7a399; text-decoration:none" style-hover="color:#f3f1ec">{{ ui.ghAgent }} ↗</a>
+  </div>
+  </div>
+  </div>
   </div>
   </div>
 </footer>
@@ -626,6 +633,8 @@ class Component extends DCLogic {
     if (mode !== this.state.barMode) this.setState({ barMode: mode });
   };
   projRef = React.createRef();
+  footOff() { if (this.state.footOff !== undefined) return !!this.state.footOff; try { return localStorage.getItem('qb_footOff') === '1'; } catch (e) { return false; } }
+  toggleFoot = () => { const v = !this.footOff(); try { localStorage.setItem('qb_footOff', v ? '1' : '0'); } catch (e) {} this.setState({ footOff: v }); };
   _fitState = {};
 
   initState() {
@@ -1859,6 +1868,7 @@ class Component extends DCLogic {
       ...(() => { const sel = st.sel || {}, n = st.cards.filter(c => sel[c.id]).length, t = st.cards.length; return { selCountTxt: T.selCount.replace('{n}', n).replace('{t}', t), selAllLabel: t && n === t ? T.selNone : T.selAll, delSelLabel: T.selDel + (n ? ' (' + n + ')' : ''), delSelOp: n ? 1 : 0.4 }; })(),
       heroW: 'min(calc(100% - 70px), ' + (stackHome ? 560 : Math.max(240, Math.round((vh - (sticky ? barH : 0) - (st.footH || 0) - 2 * listPad - 28 - 22 - 56) * 2160 / 2390))) + 'px)',
       heroH: Math.max(360, vh - (sticky ? barH : 0) - (st.footH || 0)) + 'px',
+      toggleFoot: this.toggleFoot, footRot: this.footOff() ? '180deg' : '0deg', footRows: this.footOff() ? '0fr' : '1fr', footVis: this.footOff() ? 'hidden' : 'visible', footVisDelay: this.footOff() ? '.25s' : '0s', footExpanded: !this.footOff(), footBtnTip: st.uiLang === 'en' ? (this.footOff() ? 'Expand footer' : 'Collapse footer') : (this.footOff() ? '展开底栏' : '收起底栏'),
       listDisp: (!st.cards.length && !st.showImport) ? 'none' : 'grid',
       listMinH: (!st.cards.length && !st.showImport) ? '0px' : Math.max(0, vh - (sticky ? barH : 0) - (st.footH || 0)) + 'px',
       heroRef: this.heroRef, onHeroNext: this.onHeroNext, onHeroDot: this.onHeroDot, onHeroTouch: this.onHeroTouch,
